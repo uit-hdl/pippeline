@@ -1,0 +1,8 @@
+Package: pippeline
+Version: 0.1
+Date: 2017-03-21
+Title: Pippeline
+Description: Pipeline for Preparing Analysis-Ready Biobank Data
+Author: Till Halbach <till.halbach@nr.no>
+Maintainer: Till Halbach <till.halbach@nr.no>
+Licence: MIT
