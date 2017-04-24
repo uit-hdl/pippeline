@@ -91,7 +91,7 @@ readTab = list(
       p( 'Data successfully read and available for further processing or immediate download.'),
       hr(),
       actionButton( 'readNext', label = 'Continue'),
-      span( 'or', style='margin-left:1em'), # fixme
+      span( 'or', class='or'),
       actionLink( 'readDown', 'download')
     )
   )
@@ -114,7 +114,7 @@ outlierTab = list(
       ),
       hr(),
       actionButton( 'outlierNext', label = 'Continue'),
-      span( 'or', style='margin-left:1em'), # fixme
+      span( 'or', class='or'),
       actionLink( 'outlierDown', 'download')
     )
   )
@@ -137,7 +137,7 @@ corrTab = list(
       ),
       hr(),
       actionButton( 'corrNext', label = 'Continue'),
-      span( 'or', style='margin-left:1em'), # fixme
+      span( 'or', class='or'),
       actionLink( 'corrDown', 'download')
     )
   )
@@ -160,7 +160,7 @@ filterTab = list(
       ),
       hr(),
       actionButton( 'filtNext', label = 'Continue'),
-      span( 'or', style='margin-left:1em'), # fixme
+      span( 'or', class='or'),
       actionLink( 'filtDown', 'download')
     )
   )
@@ -183,7 +183,7 @@ normTab = list(
       ),
       hr(),
       actionButton( 'normNext', label = 'Continue'),
-      span( 'or', style='margin-left:1em'), # fixme
+      span( 'or', class='or'),
       actionLink( 'normDown', 'download')
     )
   )
@@ -221,7 +221,7 @@ downloadTab = list(
     list( 
       p( 'Here you can download an archive (a .zip file), containing the processed dataset (.Rdata file), documentation of all processing steps (.pdf file), and the source (.R file).'),
       downloadButton( 'download', 'Download archive'),
-      span( 'or', style='margin-left:1em'), # fixme
+      span( 'or', class='or'),
       actionLink( 'quit', 'quit')
     )
   )
@@ -230,30 +230,30 @@ jscode <- 'shinyjs.closeWindow = function() { window.close() }'
 
 # client: definition of UI
 ui <- fluidPage(
-   
-   # window title
-   title = appName,
-   
-   # tabs defined through list
-   navlistPanel(
-     appName, # page title
-     widths = c( 3, 9), # 25% width
-     selected = 'download', # fixme
-     tabPanel( 'About', value = 'about', aboutTab),  # list item, ID, tab content
-     tabPanel( 'Name', value = 'name', nameTab),
-     tabPanel( 'Design & other choices', value = 'design', designTab),
-     tabPanel( 'Read in datasets', value = 'read', readTab),
-     tabPanel( 'Outliers', value = 'outliers', outlierTab),
-     tabPanel( 'Background correction', value = 'corr', corrTab),
-     tabPanel( 'Probe filtering', value = 'filter', filterTab),
-     tabPanel( 'Normalization', value = 'norm', normTab),
-     tabPanel( 'Questionnaires', value = 'quest', questTab),
-     tabPanel( 'Download & quit', value = 'download', downloadTab),
-     id = 'steps'
-   ),
-   img( src='logo-uit.svg', width = 200, height = 'auto', style='float:right'),  # fixme
-   useShinyjs(),
-   extendShinyjs( text = jscode, functions = c( 'closeWindow') )
+  # external CSS
+  includeCSS( 'www/pippeline.css'),
+  # window title
+  title = appName,
+  # tabs defined through list
+  navlistPanel(
+    appName, # page title
+    widths = c( 3, 9), # 25% width
+    selected = 'download', # fixme
+    tabPanel( 'About', value = 'about', aboutTab),  # list item, ID, tab content
+    tabPanel( 'Name', value = 'name', nameTab),
+    tabPanel( 'Design & other choices', value = 'design', designTab),
+    tabPanel( 'Read in datasets', value = 'read', readTab),
+    tabPanel( 'Outliers', value = 'outliers', outlierTab),
+    tabPanel( 'Background correction', value = 'corr', corrTab),
+    tabPanel( 'Probe filtering', value = 'filter', filterTab),
+    tabPanel( 'Normalization', value = 'norm', normTab),
+    tabPanel( 'Questionnaires', value = 'quest', questTab),
+    tabPanel( 'Download & quit', value = 'download', downloadTab),
+    id = 'steps'
+  ),
+  img( src='logo-uit.svg', width = 200, height = 'auto', style='float:right'),  # fixme
+  useShinyjs(),
+  extendShinyjs( text = jscode, functions = c( 'closeWindow') )
 )
 
 # server: interaction & logic
@@ -335,7 +335,7 @@ server <- function( input, output, session) {
     'fixme'
   } )
   # fixme: documentation
-
+  
   # variables to pass to the client
   prereqsAreValid <- reactive( {
     input$author != '' && input$name != ''
