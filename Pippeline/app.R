@@ -1,50 +1,232 @@
-# This is the app wrapper which invokes the both the server and client scripts.
+# This is the app wrapper which invokes both the server and client scripts.
 
 # includes
 library(shiny)
+library(shinyjs)
 
 # globals
-appName <- 'Pippeline'
-prereqMsg <- 'First, you need to select a source.'
+appName <- 'Pippeline' # fixme: needed?
+procMsg = 'First, you need to enter basic information, make your choices, and read in the data.'
+
 # UI elements
-sourceTab <- list( 
-  p( 'Please select a data source and design.'),
-  selectInput( inputId = 'src', label = 'Choose', choices = c(
-    'No source' = 'src0',
-    'Source 1' = 'src1',
-    'Source 2' = 'src2',
-    'Source 3' = 'src3'
-  ) ),
+aboutTab <- list( 
+  h2( 'About'),
+  p( 'This is Pippeline, a pipeline for processing high-dimensional multi-omics biobank datasets.'),
+  p( 'Navigate by following buttons/links, or pick an item from the list of processing steps.'),
+  hr(),
+  actionButton( 'aboutNext', label = 'Continue') 
+)
+nameTab <- list( 
+  h2( 'Naming'),
+  p( 'Please enter the basic information below.'),
+  textInput( inputId = 'author', label = 'Your name/initals', value = 'tha'), # fixme
+  textInput( inputId = 'name', label = 'Pipeline name', value = 'foo'), # fixme
+  textAreaInput( inputId = 'descr', label = 'Description of processing (optional)', value = ''),
+  hr(),
   conditionalPanel( 
-    condition = 'input.src != "src0"',
-    actionButton( 'srcNext', label = 'Next step') 
+    condition = 'output.prereqsAreValid',
+    actionButton( 'nameNext', label = 'Continue') 
   )
 )
-sampleTab = list(
+designTab <- list( 
   conditionalPanel( 
-    condition = 'input.src == "src0"',
-    p( prereqMsg)
+    condition = '!output.prereqsAreValid',
+    p( 'First you must provide some basic information.'),
+    actionButton( 'designReq', label = 'Go there') 
   ),
   conditionalPanel( 
-    condition = 'input.src != "src0"',
-    p( 'Select the sample type of the source.')
+    condition = 'output.prereqsAreValid',
+    h2( 'Basic choices'),
+    p( 'Please select a design and make your choices.'),
+    selectInput( inputId = 'design', label = 'Design', selected = 'design1', choices = c( # fixme
+      'Not selected' = 'design0',
+      'Design 1' = 'design1',
+      'Design 2' = 'design2',
+      'Design 3' = 'design3'
+    ) ),
+    selectInput( inputId = 'loc', label = 'Probe location', selected = 'loc2', choices = c( # fixme
+      'Not selected' = 'loc0',
+      'Location 1' = 'loc1',
+      'Location 2' = 'loc2',
+      'Location 3' = 'loc3'
+    ) ),
+    selectInput( inputId = 'mat', label = 'Biological material', selected = 'mat3', choices = c( # fixme
+      'Not selected' = 'mat0',
+      'Material 1' = 'mat1',
+      'Material 2' = 'mat2',
+      'Material 3' = 'mat3'
+    ) ),
+    selectInput( inputId = 'ana', label = 'Genomic analysis', selected = 'ana1', choices = c( # fixme
+      'Not selected' = 'ana0',
+      'Analysis 1' = 'ana1',
+      'Analysis 2' = 'ana2',
+      'Analysis 3' = 'ana3'
+    ) ),
+    checkboxInput( inputId = 'trans', label = 'Exclude control-case transitions', value = T),
+    hr(),
+    conditionalPanel( 
+      condition = 'output.choicesAreValid',
+      actionButton( 'designNext', label = 'Continue')
+    )
+  )
+)
+readTab = list(
+  conditionalPanel( 
+    condition = '!output.prereqsAreValid || !output.choicesAreValid',
+    p( 'First, you need to enter basic information and make your choices.'),
+    actionButton( 'readReq', label = 'Go there') 
+  ),
+  conditionalPanel( 
+    condition = 'output.prereqsAreValid && output.choicesAreValid',
+    h2( 'Input'),
+    p( 'Here you can read in the data based on your previous choices.'),
+    actionButton( 'read', label = 'Read in data'),
+    br(), br(),
+    conditionalPanel( 
+      condition = '!output.procIsAllowed',
+      p( 'No data available so far.')
+    ),
+    conditionalPanel( 
+      condition = 'output.procIsAllowed',
+      p( 'Data successfully read and available for further processing or immediate download.'),
+      hr(),
+      actionButton( 'readNext', label = 'Continue'),
+      span( 'or', style='margin-left:1em'), # fixme
+      actionLink( 'readDown', 'download')
+    )
+  )
+)
+outlierTab = list(
+  conditionalPanel( 
+    condition = '!output.procIsAllowed',
+    p( procMsg),
+    actionButton( 'outlierReq', label = 'Go there') 
+  ),
+  conditionalPanel( 
+    condition = 'output.procIsAllowed',
+    list( 
+      h2( 'Outlier removal'),
+      p( 'Here you can delete single data points from the dataset.'),
+      checkboxInput( 'outlierEnabled', 'Enabled'),
+      conditionalPanel(
+        condition = 'input.outlierEnabled',
+        p( 'Fixme')
+      ),
+      hr(),
+      actionButton( 'outlierNext', label = 'Continue'),
+      span( 'or', style='margin-left:1em'), # fixme
+      actionLink( 'outlierDown', 'download')
+    )
+  )
+)
+corrTab = list(
+  conditionalPanel( 
+    condition = '!output.procIsAllowed',
+    p( procMsg),
+    actionButton( 'corrReq', label = 'Go there') 
+  ),
+  conditionalPanel( 
+    condition = 'output.procIsAllowed',
+    list( 
+      h2( 'Background correction'),
+      p( 'Here you can do a background correction by means of negative control probes.'),
+      checkboxInput( 'corrEnabled', 'Enabled'),
+      conditionalPanel(
+        condition = 'input.corrEnabled',
+        p( 'Fixme')
+      ),
+      hr(),
+      actionButton( 'corrNext', label = 'Continue'),
+      span( 'or', style='margin-left:1em'), # fixme
+      actionLink( 'corrDown', 'download')
+    )
+  )
+)
+filterTab = list(
+  conditionalPanel( 
+    condition = '!output.procIsAllowed',
+    p( procMsg),
+    actionButton( 'filtReq', label = 'Go there') 
+  ),
+  conditionalPanel( 
+    condition = 'output.procIsAllowed',
+    list( 
+      h2( 'Probe filtering'),
+      p( 'Here you can fixme'),
+      checkboxInput( 'filtEnabled', 'Enabled'),
+      conditionalPanel(
+        condition = 'input.filtEnabled',
+        p( 'Fixme')
+      ),
+      hr(),
+      actionButton( 'filtNext', label = 'Continue'),
+      span( 'or', style='margin-left:1em'), # fixme
+      actionLink( 'filtDown', 'download')
+    )
+  )
+)
+normTab = list(
+  conditionalPanel( 
+    condition = '!output.procIsAllowed',
+    p( procMsg),
+    actionButton( 'normReq', label = 'Go there') 
+  ),
+  conditionalPanel( 
+    condition = 'output.procIsAllowed',
+    list( 
+      h2( 'Normalization'),
+      p( 'Here you can fixme'),
+      checkboxInput( 'normEnabled', 'Enabled'),
+      conditionalPanel(
+        condition = 'input.normEnabled',
+        p( 'Fixme')
+      ),
+      hr(),
+      actionButton( 'normNext', label = 'Continue'),
+      span( 'or', style='margin-left:1em'), # fixme
+      actionLink( 'normDown', 'download')
+    )
+  )
+)
+questTab = list(
+  conditionalPanel( 
+    condition = '!output.procIsAllowed',
+    p( procMsg),
+    actionButton( 'questReq', label = 'Go there')
+  ),
+  conditionalPanel( 
+    condition = 'output.procIsAllowed',
+    list( 
+      h2( 'Questionnaires'),
+      p( 'Here you can fixme'),
+      checkboxInput( 'questEnabled', 'Enabled'),
+      conditionalPanel(
+        condition = 'input.questEnabled',
+        p( 'Fixme')
+      ),
+      hr(),
+      actionButton( 'questNext', label = 'Continue')
+    )
   )
 )
 downloadTab = list(
   conditionalPanel( 
-    condition = 'input.src == "src0"',
-    p( prereqMsg)
+    condition = '!output.procIsAllowed',
+    p( procMsg),
+    actionButton( 'downloadReq', label = 'Go there') 
   ),
   conditionalPanel( 
-    condition = 'input.src != "src0"',
+    condition = 'output.procIsAllowed',
+    h2( 'Download'),
     list( 
-      p( 'Get analysis ready data as CSV file.'),
-      downloadButton( 'data', 'Download data'),
-      p( 'Get detailed documentation of each processing step as PDF.'),
-      downloadButton( 'doc', 'Download documentation')
+      p( 'Here you can download an archive (a .zip file), containing the processed dataset (.Rdata file), documentation of all processing steps (.pdf file), and the source (.R file).'),
+      downloadButton( 'download', 'Download archive'),
+      span( 'or', style='margin-left:1em'), # fixme
+      actionLink( 'quit', 'quit')
     )
   )
 )
+jscode <- 'shinyjs.closeWindow = function() { window.close() }'
 
 # client: definition of UI
 ui <- fluidPage(
@@ -56,76 +238,140 @@ ui <- fluidPage(
    navlistPanel(
      appName, # page title
      widths = c( 3, 9), # 25% width
-     tabPanel( 'Source',  # list item
-               value = 'source',
-               sourceTab),  # tab content
-     tabPanel( 'Sample type',
-               value = 'type',
-               sampleTab),
-     tabPanel( 'Analysis',
-               p( 'Choose the analysis type')
-     ),
-     tabPanel( 'Questionnaire',
-               p( 'Connect questionnaire responses')
-     ),
-     tabPanel( 'Case control',
-               p( 'Check cases and controls')
-     ),
-     tabPanel( 'Gene expression',
-               p( 'Fetch probes')
-     ),
-     tabPanel( 'Illumina',
-               p( 'Process data in Illumina')
-     ),
-     tabPanel( 'Outliers',
-               p( 'Remove single data points')
-     ),
-     tabPanel( 'Corrections',
-               p( 'Reduce noise and negative probes')
-     ),
-     tabPanel( 'Statistics',
-               p( 'Calculate summary')
-     ),
-     tabPanel( 'Normalization',
-               p( 'Correct batches')
-     ),
-     tabPanel( 'Download',
-               value = 'download',
-               downloadTab),
+     selected = 'download', # fixme
+     tabPanel( 'About', value = 'about', aboutTab),  # list item, ID, tab content
+     tabPanel( 'Name', value = 'name', nameTab),
+     tabPanel( 'Design & other choices', value = 'design', designTab),
+     tabPanel( 'Read in datasets', value = 'read', readTab),
+     tabPanel( 'Outliers', value = 'outliers', outlierTab),
+     tabPanel( 'Background correction', value = 'corr', corrTab),
+     tabPanel( 'Probe filtering', value = 'filter', filterTab),
+     tabPanel( 'Normalization', value = 'norm', normTab),
+     tabPanel( 'Questionnaires', value = 'quest', questTab),
+     tabPanel( 'Download & quit', value = 'download', downloadTab),
      id = 'steps'
    ),
-   img( src='logo-uit.svg', width = 200, height = 'auto', style='float:right')
+   img( src='logo-uit.svg', width = 200, height = 'auto', style='float:right'),  # fixme
+   useShinyjs(),
+   extendShinyjs( text = jscode, functions = c( 'closeWindow') )
 )
 
 # server: interaction & logic
 server <- function( input, output, session) {
-  # data and documentation
-  data <- NULL
-  doc <- NULL
-
-    # next-step button
-  observeEvent( input$srcNext, {
-    updateNavlistPanel( session, 'steps', selected = 'type')
+  # navigation buttons bindings
+  observeEvent( input$aboutNext, {
+    updateNavlistPanel( session, 'steps', selected = 'name')
   } )
+  observeEvent( input$nameNext, {
+    updateNavlistPanel( session, 'steps', selected = 'design')
+  } )
+  observeEvent( input$designReq, {
+    updateNavlistPanel( session, 'steps', selected = 'name')
+  } )
+  observeEvent( input$designNext, {
+    updateNavlistPanel( session, 'steps', selected = 'read')
+  } )
+  observeEvent( input$readReq, {
+    updateNavlistPanel( session, 'steps', selected = 'design')
+  } )
+  observeEvent( input$readNext, {
+    updateNavlistPanel( session, 'steps', selected = 'outliers')
+  } )
+  observeEvent( input$readDown, {
+    updateNavlistPanel( session, 'steps', selected = 'download')
+  } )
+  observeEvent( input$outlierReq, {
+    updateNavlistPanel( session, 'steps', selected = 'read')
+  } )
+  observeEvent( input$outlierNext, {
+    updateNavlistPanel( session, 'steps', selected = 'corr')
+  } )
+  observeEvent( input$outlierDown, {
+    updateNavlistPanel( session, 'steps', selected = 'download')
+  } )
+  observeEvent( input$corrReq, {
+    updateNavlistPanel( session, 'steps', selected = 'read')
+  } )
+  observeEvent( input$corrNext, {
+    updateNavlistPanel( session, 'steps', selected = 'filter')
+  } )
+  observeEvent( input$corrDown, {
+    updateNavlistPanel( session, 'steps', selected = 'download')
+  } )
+  observeEvent( input$filtReq, {
+    updateNavlistPanel( session, 'steps', selected = 'read')
+  } )
+  observeEvent( input$filtNext, {
+    updateNavlistPanel( session, 'steps', selected = 'norm')
+  } )
+  observeEvent( input$filtDown, {
+    updateNavlistPanel( session, 'steps', selected = 'download')
+  } )
+  observeEvent( input$normReq, {
+    updateNavlistPanel( session, 'steps', selected = 'read')
+  } )
+  observeEvent( input$normNext, {
+    updateNavlistPanel( session, 'steps', selected = 'quest')
+  } )
+  observeEvent( input$normDown, {
+    updateNavlistPanel( session, 'steps', selected = 'download')
+  } )
+  observeEvent( input$questReq, {
+    updateNavlistPanel( session, 'steps', selected = 'read')
+  } )
+  observeEvent( input$questNext, {
+    updateNavlistPanel( session, 'steps', selected = 'download')
+  } )
+  observeEvent( input$downloadReq, {
+    updateNavlistPanel( session, 'steps', selected = 'read')
+  } )
+  observeEvent( input$quit, {
+    js$closeWindow()
+    stopApp()
+  })
   
-  # download filenames
-  output$data <- downloadHandler(
+  # fixme: data
+  data <- eventReactive( input$read, {
+    'fixme'
+  } )
+  # fixme: documentation
+
+  # variables to pass to the client
+  prereqsAreValid <- reactive( {
+    input$author != '' && input$name != ''
+  } )
+  output$prereqsAreValid <- reactive( { 
+    prereqsAreValid()
+  } )
+  outputOptions( output, 'prereqsAreValid', suspendWhenHidden = FALSE)
+  choicesAreValid <- reactive( { 
+    input$design != "design0" && input$loc != "loc0" && input$mat != "mat0" && input$ana != "ana0"
+  } )
+  output$choicesAreValid <- reactive( { 
+    choicesAreValid()
+  } )
+  outputOptions( output, 'choicesAreValid', suspendWhenHidden = FALSE)
+  output$procIsAllowed <- reactive( { 
+    prereqsAreValid() && choicesAreValid() && !is.null( data() )
+  } )
+  outputOptions( output, 'procIsAllowed', suspendWhenHidden = FALSE)
+  
+  # download files
+  output$download <- downloadHandler(
     filename = function() {
-      paste( 'data-', Sys.Date(), '.csv', sep = '')
+      # setting the filename works currently only when run in an external browser window, 
+      # but not in Rstudio window/viewer pane
+      paste( 'data-', format( Sys.time(), '%Y-%m-%d_%H-%M-%S'), '.csv', sep = '')
     },
-    content = function( file) {
-      write.csv( data, file)
-    }
-  )
-  output$doc <- downloadHandler(
-    filename = function() {
-      paste( 'documentation-', Sys.Date(), '.pdf', sep = '')
-    },
-    content = function( file) {
-      # fixme: produce PDF
+    content = function( filename) {
+      # fixme: need to remove all ID and running nombers
+      fileName <- tempfile( paste0(appName, '-'), fileext = '.rmd')
+      writeLines( c( 'foo'), fileName)
+      'bar'
+      #write.csv( data, filename)
     }
   )
 }
 
 # now put client and server together and run app
-shinyApp( ui, server)
+shinyApp( ui, server, options = list( 'display.mode' = 'showcase') ) # fixme
