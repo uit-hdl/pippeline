@@ -108,10 +108,9 @@ outlierTab = list(
       h2( 'Outlier removal'),
       p( 'Here you can delete outliers from the dataset.'),
       checkboxInput( 'outlierEnabled', 'Enabled'),
-      conditionalPanel(
-        condition = 'input.outlierEnabled',
-        p( 'Fixme')
-      ),
+      # conditionalPanel(
+      #   condition = 'input.outlierEnabled'
+      # ),
       hr(),
       actionButton( 'outlierNext', label = 'Continue'),
       span( 'or', class='or'),
@@ -131,10 +130,9 @@ corrTab = list(
       h2( 'Background correction'),
       p( 'Here you can do a background correction by means of negative control probes.'),
       checkboxInput( 'corrEnabled', 'Enabled'),
-      conditionalPanel(
-        condition = 'input.corrEnabled',
-        p( 'Fixme')
-      ),
+      # conditionalPanel(
+      #   condition = 'input.corrEnabled'
+      # ),
       hr(),
       actionButton( 'corrNext', label = 'Continue'),
       span( 'or', class='or'),
@@ -156,7 +154,8 @@ filterTab = list(
       checkboxInput( 'filtEnabled', 'Enabled'),
       conditionalPanel(
         condition = 'input.filtEnabled',
-        p( 'Fixme')
+        sliderInput( 'pval', 'P-value', min = 0, max = 1, value = 0.05),
+        sliderInput( 'plimit', 'Filtering limit', min = 0, max = 1, value = 0.7)
       ),
       hr(),
       actionButton( 'filtNext', label = 'Continue'),
@@ -175,16 +174,22 @@ normTab = list(
     condition = 'output.procIsAllowed',
     list( 
       h2( 'Normalization'),
-      p( 'Here you can fixme'),
+      p( 'Here you can normalize the current dataset.'),
       checkboxInput( 'normEnabled', 'Enabled'),
       conditionalPanel(
         condition = 'input.normEnabled',
-        p( 'Fixme')
+        selectInput( 'normMethod', label = 'Method', choices = c( # fixme
+          'Not selected' = 'nmeth0',
+          'Method 1' = 'nmeth1'
+        ) )
       ),
       hr(),
-      actionButton( 'normNext', label = 'Continue'),
-      span( 'or', class='or'),
-      actionLink( 'normDown', 'download')
+      conditionalPanel( 
+        condition = '!input.normEnabled || input.normMethod != "nmeth0"',
+        actionButton( 'normNext', label = 'Continue'),
+        span( 'or', class='or'),
+        actionLink( 'normDown', 'download')
+      )
     )
   )
 )
@@ -221,6 +226,7 @@ downloadTab = list(
     list( 
       p( 'Here you can download an archive (a .zip file) containing the processed dataset (.csv file), documentation of all processing steps (.pdf file), and the source (.R file).'),
       p( 'The datset consists of genes if not chosen otherwise.'),
+      checkboxInput( 'wantProbes', 'Probes instead of genes'),
       downloadButton( 'download', 'Download archive'),
       span( 'or', class='or'),
       actionLink( 'quit', 'quit')
