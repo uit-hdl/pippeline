@@ -333,9 +333,20 @@ server <- function( input, output, session) {
     updateNavlistPanel( session, 'steps', selected = 'read')
   } )
   observeEvent( input$quit, {
+    showModal( modalDialog(
+      title = 'Quit',
+      paste0( 'Really quit ', appName, '?'),
+      size = 's',
+      footer = tagList(
+        actionButton( 'reallyQuit', 'Yes, quit'),
+        modalButton( 'No, continue')
+      )
+    ) )
+  } )
+  observeEvent( input$reallyQuit, {
     js$closeWindow()
     stopApp()
-  })
+  } )
   
   # fixme: data
   data <- eventReactive( input$read, {
