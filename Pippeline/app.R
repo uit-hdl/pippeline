@@ -44,25 +44,25 @@ designTab <- list(
       'Design 2' = 'design2',
       'Design 3' = 'design3'
     ) ),
-    selectInput( inputId = 'loc', label = 'Probe location', selected = 'loc2', choices = c( # fixme
+    selectInput( 'loc', label = 'Probe location', selected = 'loc2', choices = c( # fixme
       'Not selected' = 'loc0',
       'Location 1' = 'loc1',
       'Location 2' = 'loc2',
       'Location 3' = 'loc3'
     ) ),
-    selectInput( inputId = 'mat', label = 'Biological material', selected = 'mat3', choices = c( # fixme
+    selectInput( 'mat', label = 'Biological material', selected = 'mat3', choices = c( # fixme
       'Not selected' = 'mat0',
       'Material 1' = 'mat1',
       'Material 2' = 'mat2',
       'Material 3' = 'mat3'
     ) ),
-    selectInput( inputId = 'ana', label = 'Genomic analysis', selected = 'ana1', choices = c( # fixme
+    selectInput( 'ana', label = 'Genomic analysis', selected = 'ana1', choices = c( # fixme
       'Not selected' = 'ana0',
       'Analysis 1' = 'ana1',
       'Analysis 2' = 'ana2',
       'Analysis 3' = 'ana3'
     ) ),
-    checkboxInput( inputId = 'trans', label = 'Exclude control-case transitions', value = T),
+    checkboxInput( 'trans', label = 'Exclude control-case transitions', value = T),
     hr(),
     conditionalPanel( 
       condition = 'output.choicesAreValid',
@@ -106,7 +106,7 @@ outlierTab = list(
     condition = 'output.procIsAllowed',
     list( 
       h2( 'Outlier removal'),
-      p( 'Here you can delete single data points from the dataset.'),
+      p( 'Here you can delete outliers from the dataset.'),
       checkboxInput( 'outlierEnabled', 'Enabled'),
       conditionalPanel(
         condition = 'input.outlierEnabled',
@@ -152,7 +152,7 @@ filterTab = list(
     condition = 'output.procIsAllowed',
     list( 
       h2( 'Probe filtering'),
-      p( 'Here you can fixme'),
+      p( 'Here you can filter the probes with regard to p-value and limit.'),
       checkboxInput( 'filtEnabled', 'Enabled'),
       conditionalPanel(
         condition = 'input.filtEnabled',
@@ -219,7 +219,8 @@ downloadTab = list(
     condition = 'output.procIsAllowed',
     h2( 'Download'),
     list( 
-      p( 'Here you can download an archive (a .zip file), containing the processed dataset (.Rdata file), documentation of all processing steps (.pdf file), and the source (.R file).'),
+      p( 'Here you can download an archive (a .zip file) containing the processed dataset (.csv file), documentation of all processing steps (.pdf file), and the source (.R file).'),
+      p( 'The datset consists of genes if not chosen otherwise.'),
       downloadButton( 'download', 'Download archive'),
       span( 'or', class='or'),
       actionLink( 'quit', 'quit')
@@ -364,7 +365,7 @@ server <- function( input, output, session) {
       paste( 'data-', format( Sys.time(), '%Y-%m-%d_%H-%M-%S'), '.csv', sep = '')
     },
     content = function( filename) {
-      # fixme: need to remove all ID and running nombers
+      # fixme: need to remove all ID and running numbers
       fileName <- tempfile( paste0(appName, '-'), fileext = '.rmd')
       writeLines( c( 'foo'), fileName)
       'bar'
