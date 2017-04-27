@@ -258,7 +258,7 @@ ui <- fluidPage(
     tabPanel( 'Download & quit', value = 'download', downloadTab),
     id = 'steps'
   ),
-  img( src='logo-uit.svg', width = 200, height = 'auto', style='float:right'),  # fixme
+  img( src='logo-uit.svg', width = 200, height = 'auto', class='logo'),
   useShinyjs(),
   extendShinyjs( text = jscode, functions = c( 'closeWindow') )
 )
