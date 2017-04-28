@@ -29,6 +29,7 @@ nameTab <- list(
   )
 )
 designTab <- list( 
+  h2( 'Basic choices'),
   conditionalPanel( 
     condition = '!output.prereqsAreValid',
     p( 'First you must provide some basic information.'),
@@ -36,7 +37,6 @@ designTab <- list(
   ),
   conditionalPanel( 
     condition = 'output.prereqsAreValid',
-    h2( 'Basic choices'),
     p( 'Please select a design and make your choices.'),
     selectInput( inputId = 'design', label = 'Design', selected = 'design1', choices = c( # fixme
       'Not selected' = 'design0',
@@ -71,14 +71,14 @@ designTab <- list(
   )
 )
 readTab = list(
+  h2( 'Your choices'),
   conditionalPanel( 
     condition = '!output.prereqsAreValid || !output.choicesAreValid',
-    p( 'First, you need to enter basic information and make your choices.'),
+    p( 'First you need to enter basic information and make your choices.'),
     actionButton( 'readReq', label = 'Go there') 
   ),
   conditionalPanel( 
     condition = 'output.prereqsAreValid && output.choicesAreValid',
-    h2( 'Input'),
     p( 'Here you can read in the data based on your previous choices.'),
     actionButton( 'read', label = 'Read in data'),
     br(), br(),
@@ -97,6 +97,7 @@ readTab = list(
   )
 )
 outlierTab = list(
+  h2( 'Outlier removal'),
   conditionalPanel( 
     condition = '!output.procIsAllowed',
     p( procMsg),
@@ -105,7 +106,6 @@ outlierTab = list(
   conditionalPanel( 
     condition = 'output.procIsAllowed',
     list( 
-      h2( 'Outlier removal'),
       p( 'Here you can delete outliers from the dataset.'),
       checkboxInput( 'outlierEnabled', 'Enabled'),
       # conditionalPanel(
@@ -119,6 +119,7 @@ outlierTab = list(
   )
 )
 corrTab = list(
+  h2( 'Background correction'),
   conditionalPanel( 
     condition = '!output.procIsAllowed',
     p( procMsg),
@@ -127,7 +128,6 @@ corrTab = list(
   conditionalPanel( 
     condition = 'output.procIsAllowed',
     list( 
-      h2( 'Background correction'),
       p( 'Here you can do a background correction by means of negative control probes.'),
       checkboxInput( 'corrEnabled', 'Enabled'),
       # conditionalPanel(
@@ -141,6 +141,7 @@ corrTab = list(
   )
 )
 filterTab = list(
+  h2( 'Probe filtering'),
   conditionalPanel( 
     condition = '!output.procIsAllowed',
     p( procMsg),
@@ -149,7 +150,6 @@ filterTab = list(
   conditionalPanel( 
     condition = 'output.procIsAllowed',
     list( 
-      h2( 'Probe filtering'),
       p( 'Here you can filter the probes with regard to p-value and limit.'),
       checkboxInput( 'filtEnabled', 'Enabled'),
       conditionalPanel(
@@ -165,6 +165,7 @@ filterTab = list(
   )
 )
 normTab = list(
+  h2( 'Normalization'),
   conditionalPanel( 
     condition = '!output.procIsAllowed',
     p( procMsg),
@@ -173,7 +174,6 @@ normTab = list(
   conditionalPanel( 
     condition = 'output.procIsAllowed',
     list( 
-      h2( 'Normalization'),
       p( 'Here you can normalize the current dataset.'),
       checkboxInput( 'normEnabled', 'Enabled'),
       conditionalPanel(
@@ -194,6 +194,7 @@ normTab = list(
   )
 )
 questTab = list(
+  h2( 'Questionnaires'),
   conditionalPanel( 
     condition = '!output.procIsAllowed',
     p( procMsg),
@@ -202,7 +203,6 @@ questTab = list(
   conditionalPanel( 
     condition = 'output.procIsAllowed',
     list( 
-      h2( 'Questionnaires'),
       p( 'Here you can fixme'),
       checkboxInput( 'questEnabled', 'Enabled'),
       conditionalPanel(
@@ -215,6 +215,7 @@ questTab = list(
   )
 )
 downloadTab = list(
+  h2( 'Download'),
   conditionalPanel( 
     condition = '!output.procIsAllowed',
     p( procMsg),
@@ -222,16 +223,15 @@ downloadTab = list(
   ),
   conditionalPanel( 
     condition = 'output.procIsAllowed',
-    h2( 'Download'),
     list( 
       p( 'Here you can download an archive (a .zip file) containing the processed dataset (.csv file), documentation of all processing steps (.pdf file), and the source (.R file).'),
       p( 'The datset consists of genes if not chosen otherwise.'),
       checkboxInput( 'wantProbes', 'Probes instead of genes'),
-      downloadButton( 'download', 'Download archive'),
-      span( 'or', class='or'),
-      actionLink( 'quit', 'quit')
+      downloadButton( 'download', 'Download archive')
     )
-  )
+  ),
+  hr(),
+  actionLink( 'quit', 'Quit')
 )
 jscode <- 'shinyjs.closeWindow = function() { window.close() }'
 
