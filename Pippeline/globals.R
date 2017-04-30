@@ -1,8 +1,16 @@
 # globals
 appName <- 'Pippeline'
 procMsg <- 'First, you need to enter basic information, make your choices, and read in the data.'
+notSelOpt <- 'Not selected'
 
-# UI elements
+# determine options for basic choices
+choices <- read.csv( 'choices.csv')
+dsgs <- c( notSelOpt, levels( choices[ , 'Design'] ) )
+locs <- c( notSelOpt, levels( choices[ , 'Location'] ) )
+mats <- c( notSelOpt, levels( choices[ , 'Material'] ) )
+anas <- c( notSelOpt, levels( choices[ , 'Analysis'] ) )
+
+# UI elements: tabs
 aboutTab <- list( 
   h2( 'About'),
   p( paste0( 'This is ', appName, ', a pipeline for processing high-dimensional multi-omics biobank datasets.') ),
@@ -34,30 +42,10 @@ designTab <- list(
   conditionalPanel( 
     condition = 'output.prereqsAreValid',
     p( 'Please select a design and make your choices.'),
-    selectInput( inputId = 'design', label = 'Design', selected = 'design1', choices = c( # fixme
-      'Not selected' = 'design0',
-      'Design 1' = 'design1',
-      'Design 2' = 'design2',
-      'Design 3' = 'design3'
-    ) ),
-    selectInput( 'loc', label = 'Probe location', selected = 'loc2', choices = c( # fixme
-      'Not selected' = 'loc0',
-      'Location 1' = 'loc1',
-      'Location 2' = 'loc2',
-      'Location 3' = 'loc3'
-    ) ),
-    selectInput( 'mat', label = 'Biological material', selected = 'mat3', choices = c( # fixme
-      'Not selected' = 'mat0',
-      'Material 1' = 'mat1',
-      'Material 2' = 'mat2',
-      'Material 3' = 'mat3'
-    ) ),
-    selectInput( 'ana', label = 'Genomic analysis', selected = 'ana1', choices = c( # fixme
-      'Not selected' = 'ana0',
-      'Analysis 1' = 'ana1',
-      'Analysis 2' = 'ana2',
-      'Analysis 3' = 'ana3'
-    ) ),
+    selectInput( 'design', label = 'Design', selected = 'Nested matched case-controll - prospective', choices = dsgs), # fixme
+    selectInput( 'loc', label = 'Probe location', selected = 'Ovaria', choices = locs), # fixme
+    selectInput( 'mat', label = 'Biological material', selected = 'Blood', choices = mats), # fixme
+    selectInput( 'ana', label = 'Genomic analysis', selected = 'mRNA', choices = anas), # fixme
     checkboxInput( 'trans', label = 'Exclude control-case transitions', value = T),
     hr(),
     conditionalPanel( 

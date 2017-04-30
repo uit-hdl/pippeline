@@ -97,7 +97,7 @@ server <- function( input, output, session) {
   } )
   outputOptions( output, 'prereqsAreValid', suspendWhenHidden = FALSE)
   choicesAreValid <- reactive( { 
-    input$design != "design0" && input$loc != "loc0" && input$mat != "mat0" && input$ana != "ana0"
+    input$design != notSelOpt && input$loc != notSelOpt && input$mat != notSelOpt && input$ana != notSelOpt
   } )
   output$choicesAreValid <- reactive( { 
     choicesAreValid()

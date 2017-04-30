@@ -7,7 +7,7 @@ ui <- fluidPage(
   navlistPanel(
     appName, # page title
     widths = c( 3, 9), # 25% width
-    selected = 'download', # fixme
+    selected = 'design', # fixme
     tabPanel( 'About', value = 'about', aboutTab),  # list item, ID, tab content
     tabPanel( 'Name', value = 'name', nameTab),
     tabPanel( 'Design & other choices', value = 'design', designTab),
