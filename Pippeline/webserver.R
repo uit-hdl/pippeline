@@ -10,19 +10,13 @@ server <- function( input, output, session) {
     updateNavlistPanel( session, 'steps', selected = 'name')
   } )
   observeEvent( input$designNext, {
-    updateNavlistPanel( session, 'steps', selected = 'read')
-  } )
-  observeEvent( input$readReq, {
-    updateNavlistPanel( session, 'steps', selected = 'design')
-  } )
-  observeEvent( input$readNext, {
     updateNavlistPanel( session, 'steps', selected = 'outliers')
   } )
-  observeEvent( input$readDown, {
+  observeEvent( input$designDown, {
     updateNavlistPanel( session, 'steps', selected = 'download')
   } )
   observeEvent( input$outlierReq, {
-    updateNavlistPanel( session, 'steps', selected = 'read')
+    updateNavlistPanel( session, 'steps', selected = 'design')
   } )
   observeEvent( input$outlierNext, {
     updateNavlistPanel( session, 'steps', selected = 'corr')
@@ -31,7 +25,7 @@ server <- function( input, output, session) {
     updateNavlistPanel( session, 'steps', selected = 'download')
   } )
   observeEvent( input$corrReq, {
-    updateNavlistPanel( session, 'steps', selected = 'read')
+    updateNavlistPanel( session, 'steps', selected = 'design')
   } )
   observeEvent( input$corrNext, {
     updateNavlistPanel( session, 'steps', selected = 'filter')
@@ -40,7 +34,7 @@ server <- function( input, output, session) {
     updateNavlistPanel( session, 'steps', selected = 'download')
   } )
   observeEvent( input$filtReq, {
-    updateNavlistPanel( session, 'steps', selected = 'read')
+    updateNavlistPanel( session, 'steps', selected = 'design')
   } )
   observeEvent( input$filtNext, {
     updateNavlistPanel( session, 'steps', selected = 'norm')
@@ -49,7 +43,7 @@ server <- function( input, output, session) {
     updateNavlistPanel( session, 'steps', selected = 'download')
   } )
   observeEvent( input$normReq, {
-    updateNavlistPanel( session, 'steps', selected = 'read')
+    updateNavlistPanel( session, 'steps', selected = 'design')
   } )
   observeEvent( input$normNext, {
     updateNavlistPanel( session, 'steps', selected = 'quest')
@@ -58,13 +52,13 @@ server <- function( input, output, session) {
     updateNavlistPanel( session, 'steps', selected = 'download')
   } )
   observeEvent( input$questReq, {
-    updateNavlistPanel( session, 'steps', selected = 'read')
+    updateNavlistPanel( session, 'steps', selected = 'design')
   } )
   observeEvent( input$questNext, {
     updateNavlistPanel( session, 'steps', selected = 'download')
   } )
   observeEvent( input$downloadReq, {
-    updateNavlistPanel( session, 'steps', selected = 'read')
+    updateNavlistPanel( session, 'steps', selected = 'design')
   } )
   observeEvent( input$quit, {
     showModal( modalDialog(
@@ -82,29 +76,57 @@ server <- function( input, output, session) {
     stopApp()
   } )
   
-  # fixme: data
-  data <- eventReactive( input$read, {
-    'fixme'
-  } )
-  # fixme: documentation
-  
-  # variables to pass to the client
+  # helper functions
+  getDataFiles <- function() {
+    row <- which( ( choices[ , 'Design'] == input$dsg &
+                      choices[ , 'Location'] == input$loc &
+                      choices[ , 'Material'] == input$mat &
+                      choices[ , 'Analysis'] == input$ana ) )
+    if( row < 1) {
+      showNotification( 'No data found. (Check file with available choices?) Error code #1.', type = 'error')
+      return( NULL)
+    }
+    ## fixme: trengs Subfile?
+    files <- as.vector( unname( unlist( choices[ row, c( 'File1', 'File2', 'File3') ] ) ) )
+    files <- files[ files != '']
+    areReadable = ( file.access( files, 4) > -1)
+    if( sum( areReadable) != length( areReadable) ) {
+      showNotification( 'Data not readable. (Check file with available choices?) Error code #2.', type = 'error')
+      return( NULL)
+    }
+    return( files)
+  } # function getDataFiles
+
+  # reactive variables
   prereqsAreValid <- reactive( {
-    input$author != '' && input$name != ''
+    input$author != '' && 
+      input$name != ''
   } )
   output$prereqsAreValid <- reactive( { 
     prereqsAreValid()
   } )
   outputOptions( output, 'prereqsAreValid', suspendWhenHidden = FALSE)
   choicesAreValid <- reactive( { 
-    input$design != notSelOpt && input$loc != notSelOpt && input$mat != notSelOpt && input$ana != notSelOpt
+    input$dsg != notSelOpt && 
+      input$loc != notSelOpt && 
+      input$mat != notSelOpt && 
+      input$ana != notSelOpt
   } )
   output$choicesAreValid <- reactive( { 
     choicesAreValid()
   } )
   outputOptions( output, 'choicesAreValid', suspendWhenHidden = FALSE)
+  files <- reactive( {
+    if( choicesAreValid() ) {
+      getDataFiles()
+    } else {
+      NULL
+    }
+  } )
   output$procIsAllowed <- reactive( { 
-    prereqsAreValid() && choicesAreValid() && !is.null( data() )
+    prereqsAreValid() && 
+      choicesAreValid() #&& 
+      !is.null( files() )
   } )
   outputOptions( output, 'procIsAllowed', suspendWhenHidden = FALSE)
   

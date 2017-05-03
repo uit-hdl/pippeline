@@ -42,42 +42,17 @@ designTab <- list(
   conditionalPanel( 
     condition = 'output.prereqsAreValid',
     p( 'Please select a design and make your choices.'),
-    selectInput( 'design', label = 'Design', selected = 'Nested matched case-controll - prospective', choices = dsgs), # fixme
+    selectInput( 'dsg', label = 'Design', selected = 'Nested matched case-control - prospective', choices = dsgs), # fixme
     selectInput( 'loc', label = 'Probe location', selected = 'Ovaria', choices = locs), # fixme
     selectInput( 'mat', label = 'Biological material', selected = 'Blood', choices = mats), # fixme
     selectInput( 'ana', label = 'Genomic analysis', selected = 'mRNA', choices = anas), # fixme
-    checkboxInput( 'trans', label = 'Exclude control-case transitions', value = T),
+    checkboxInput( 'trans', label = 'Exclude control-case transitions', value = TRUE),
     hr(),
     conditionalPanel( 
-      condition = 'output.choicesAreValid',
-      actionButton( 'designNext', label = 'Continue')
-    )
-  )
-)
-
-readTab <- list(
-  h2( 'Your choices'),
-  conditionalPanel( 
-    condition = '!output.prereqsAreValid || !output.choicesAreValid',
-    p( 'First you need to enter basic information and make your choices.'),
-    actionButton( 'readReq', label = 'Go there') 
-  ),
-  conditionalPanel( 
-    condition = 'output.prereqsAreValid && output.choicesAreValid',
-    p( 'Here you can read in the data based on your previous choices.'),
-    actionButton( 'read', label = 'Read in data'),
-    br(), br(),
-    conditionalPanel( 
-      condition = '!output.procIsAllowed',
-      p( 'No data available so far.')
-    ),
-    conditionalPanel( 
       condition = 'output.procIsAllowed',
-      p( 'Data successfully read and available for further processing or immediate download.'),
-      hr(),
-      actionButton( 'readNext', label = 'Continue'),
+      actionButton( 'designNext', label = 'Continue'),
       span( 'or', class='or'),
-      actionLink( 'readDown', 'download')
+      actionLink( 'designDown', 'download')
     )
   )
 )

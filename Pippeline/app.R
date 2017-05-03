@@ -12,4 +12,4 @@ source( 'gui.R', local = TRUE)
 source( 'webserver.R', local = TRUE) # name different from 'server.R' to avoid RStudio bug
 
 # run app, build UI, start webserver
-shinyApp( ui, server, options = list( 'display.mode' = 'showcase') ) # fixme
+shinyApp( ui, server, options = list( display.mode = 'showcase', width = 1000) ) # fixme

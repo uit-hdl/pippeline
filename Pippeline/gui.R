@@ -11,7 +11,6 @@ ui <- fluidPage(
     tabPanel( 'About', value = 'about', aboutTab),  # list item, ID, tab content
     tabPanel( 'Name', value = 'name', nameTab),
     tabPanel( 'Design & other choices', value = 'design', designTab),
-    tabPanel( 'Read in datasets', value = 'read', readTab),
     tabPanel( 'Outliers', value = 'outliers', outlierTab),
     tabPanel( 'Background correction', value = 'corr', corrTab),
     tabPanel( 'Probe filtering', value = 'filter', filterTab),
