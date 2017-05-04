@@ -1,14 +1,14 @@
 # globals
 appName <- 'Pippeline'
-procMsg <- 'First, you need to enter basic information, make your choices, and read in the data.'
+procMsg <- 'First, you need to enter basic information and make your choices.'
 notSelOpt <- 'Not selected'
 
 # determine options for basic choices
-choices <- read.csv( 'choices.csv')
-dsgs <- c( notSelOpt, levels( choices[ , 'Design'] ) )
-locs <- c( notSelOpt, levels( choices[ , 'Location'] ) )
-mats <- c( notSelOpt, levels( choices[ , 'Material'] ) )
-anas <- c( notSelOpt, levels( choices[ , 'Analysis'] ) )
+options <- read.csv( 'options.csv')
+dsgs <- c( notSelOpt, levels( options[ , 'Design'] ) )
+locs <- c( notSelOpt, levels( options[ , 'Location'] ) )
+mats <- c( notSelOpt, levels( options[ , 'Material'] ) )
+anas <- c( notSelOpt, levels( options[ , 'Analysis'] ) )
 
 # UI elements: tabs
 aboutTab <- list( 
@@ -33,7 +33,7 @@ nameTab <- list(
 )
 
 designTab <- list( 
-  h2( 'Basic choices'),
+  h2( 'Design & basic choices'),
   conditionalPanel( 
     condition = '!output.prereqsAreValid',
     p( 'First you must provide some basic information.'),
@@ -181,7 +181,7 @@ questTab <- list(
 )
 
 downloadTab <- list(
-  h2( 'Download'),
+  h2( 'Download & quit'),
   conditionalPanel( 
     condition = '!output.procIsAllowed',
     p( procMsg),
@@ -200,4 +200,5 @@ downloadTab <- list(
   actionLink( 'quit', 'Quit')
 )
 
+# JavaScript
 jscode <- 'shinyjs.closeWindow = function() { window.close() }'

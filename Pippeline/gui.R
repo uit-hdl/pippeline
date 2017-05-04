@@ -9,11 +9,11 @@ ui <- fluidPage(
     widths = c( 3, 9), # 25% width
     selected = 'design', # fixme
     tabPanel( 'About', value = 'about', aboutTab),  # list item, ID, tab content
-    tabPanel( 'Name', value = 'name', nameTab),
-    tabPanel( 'Design & other choices', value = 'design', designTab),
+    tabPanel( 'Naming', value = 'name', nameTab),
+    tabPanel( 'Choices', value = 'design', designTab),
     tabPanel( 'Outliers', value = 'outliers', outlierTab),
-    tabPanel( 'Background correction', value = 'corr', corrTab),
-    tabPanel( 'Probe filtering', value = 'filter', filterTab),
+    tabPanel( 'Correction', value = 'corr', corrTab),
+    tabPanel( 'Filtering', value = 'filter', filterTab),
     tabPanel( 'Normalization', value = 'norm', normTab),
     tabPanel( 'Questionnaires', value = 'quest', questTab),
     tabPanel( 'Download & quit', value = 'download', downloadTab),

@@ -78,20 +78,20 @@ server <- function( input, output, session) {
   
   # helper functions
   getDataFiles <- function() {
-    row <- which( ( choices[ , 'Design'] == input$dsg &
-                      choices[ , 'Location'] == input$loc &
-                      choices[ , 'Material'] == input$mat &
-                      choices[ , 'Analysis'] == input$ana ) )
+    row <- which( ( options[ , 'Design'] == input$dsg &
+                      options[ , 'Location'] == input$loc &
+                      options[ , 'Material'] == input$mat &
+                      options[ , 'Analysis'] == input$ana ) )
     if( row < 1) {
-      showNotification( 'No data found. (Check file with available choices?) Error code #1.', type = 'error')
+      showNotification( 'No data found. (Check file with available options?) Error code #1.', type = 'error')
       return( NULL)
     }
     ## fixme: trengs Subfile?
-    files <- as.vector( unname( unlist( choices[ row, c( 'File1', 'File2', 'File3') ] ) ) )
+    files <- as.vector( unname( unlist( options[ row, c( 'File1', 'File2', 'File3') ] ) ) )
     files <- files[ files != '']
     areReadable = ( file.access( files, 4) > -1)
     if( sum( areReadable) != length( areReadable) ) {
-      showNotification( 'Data not readable. (Check file with available choices?) Error code #2.', type = 'error')
+      showNotification( 'Data source not readable. (Check file with available options?) Error code #2.', type = 'error')
       return( NULL)
     }
     return( files)
