@@ -1,7 +1,7 @@
 # UI elements: tabs
 aboutTab <- list( 
   h2( 'About'),
-  p( paste0( 'This is ', appName, ', a pipeline for processing high-dimensional multi-omics biobank datasets.') ),
+  p( paste0( 'This is ', basics$appName, ', a ', tolower( basics$appDescr), '.') ),
   p( 'Navigate by following buttons/links, or pick an item from the list of processing steps.'),
   hr(),
   actionButton( 'aboutNext', label = 'Continue') 
@@ -11,7 +11,7 @@ nameTab <- list(
   h2( 'Naming'),
   p( 'Please enter the basic information below.'),
   textInput( inputId = 'author', label = 'Your name/initals', value = 'tha'), # fixme
-  textInput( inputId = 'name', label = 'Pipeline name', value = 'foo'), # fixme
+  textInput( inputId = 'name', label = 'Pipeline name', value = 'foo'), # fixme (needed?)
   textAreaInput( inputId = 'descr', label = 'Description of processing (optional)', value = ''),
   hr(),
   conditionalPanel( 

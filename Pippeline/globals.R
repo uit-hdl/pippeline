@@ -1,6 +1,15 @@
 # globals
 
-appName <- 'Pippeline'
+# pipeline: basics
+basics <- list(
+  appName = 'Pippeline',
+  appVersion = '0.9',
+  appDescr = 'Pipeline for processing high-dimensional multi-omics biobank datasets',
+  title = 'Biobank Dataset Processing Script & Report',
+  docFormat = 'pdf'  # see documentation for rmarkdown::render()
+)
+
+# strings
 procMsg <- 'First, you need to enter basic information and make your choices.'
 notSelOpt <- 'Not selected'
 

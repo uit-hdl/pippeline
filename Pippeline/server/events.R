@@ -60,10 +60,12 @@ observeEvent( input$questNext, {
 observeEvent( input$downloadReq, {
   updateNavlistPanel( session, 'steps', selected = 'design')
 } )
+
+# quit
 observeEvent( input$quit, {
   showModal( modalDialog(
     title = 'Quit',
-    paste0( 'Really quit ', appName, '?'),
+    paste0( 'Really quit ', basics$appName, '?'),
     size = 's',
     footer = tagList(
       actionButton( 'reallyQuit', 'Yes, quit'),
@@ -75,3 +77,29 @@ observeEvent( input$reallyQuit, {
   js$closeWindow()
   stopApp()
 } )
+
+# download results
+output$download <- downloadHandler(
+  # setting the filename works currently only when run in an external browser window, 
+  # but not in Rstudio window/viewer pane
+  filename = function() {
+    # timestamp
+    ts <- Sys.time()  # fixme: make available for doc
+    paste0( basics$appName, '-', format( ts, '%Y-%m-%d_%H-%M-%S'), '.zip')  # archive
+  },
+  content = function( arFile) {
+    dir <- tempdir()
+    scriptFile <- file.path( dir, 'pipeline.R')
+    dataFile <- file.path( dir, 'data.csv')
+    docFile <- file.path( dir, paste0( 'pipeline.', basics$docFormat) )  # documentation
+    pipeline <- generatePipeline( list(
+      sourceFiles = sourceFiles(),
+      targetFile = dataFile
+    ) )
+    writeScript( pipeline, scriptFile, Sys.time() )
+    #produceDocumenationAndData( scriptFile, docFile) fixme
+#    files <- c( scriptFile, docFile, dataFile) fixme
+    files <- c( scriptFile)
+    zip( arFile, files, '-j')  # only files, no directories
+  }
+)
