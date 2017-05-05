@@ -84,10 +84,11 @@ output$download <- downloadHandler(
   # but not in Rstudio window/viewer pane
   filename = function() {
     # timestamp
-    ts <<- Sys.time()  # fixme: make available for doc
+    ts <<- Sys.time()
     paste0( basics$appName, '-', format( ts, '%Y-%m-%d_%H-%M-%S'), '.zip')  # archive
   },
   content = function( arFile) {
+    # point out 3 files to be zipped together
     dir <- tempdir()
     scriptFile <- file.path( dir, 'pipeline.R')
     dataFile <- file.path( dir, 'data.csv')
@@ -96,9 +97,11 @@ output$download <- downloadHandler(
       sourceFiles = sourceFiles(),
       targetFile = dataFile
     ) )
+    # fill files with content
     writeScript( pipeline, scriptFile)
     #produceDocumenationAndData( scriptFile, docFile) fixme
 #    files <- c( scriptFile, docFile, dataFile) fixme
+    # now create archive
     files <- c( scriptFile)
     zip( arFile, files, '-j')  # only files, no directories
   }
