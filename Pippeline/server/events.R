@@ -78,13 +78,13 @@ observeEvent( input$reallyQuit, {
   stopApp()
 } )
 
-# download results
+# download (assembly, computation, documentation)
 output$download <- downloadHandler(
   # setting the filename works currently only when run in an external browser window, 
   # but not in Rstudio window/viewer pane
   filename = function() {
     # timestamp
-    ts <- Sys.time()  # fixme: make available for doc
+    ts <<- Sys.time()  # fixme: make available for doc
     paste0( basics$appName, '-', format( ts, '%Y-%m-%d_%H-%M-%S'), '.zip')  # archive
   },
   content = function( arFile) {
@@ -96,7 +96,7 @@ output$download <- downloadHandler(
       sourceFiles = sourceFiles(),
       targetFile = dataFile
     ) )
-    writeScript( pipeline, scriptFile, Sys.time() )
+    writeScript( pipeline, scriptFile)
     #produceDocumenationAndData( scriptFile, docFile) fixme
 #    files <- c( scriptFile, docFile, dataFile) fixme
     files <- c( scriptFile)

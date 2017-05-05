@@ -33,3 +33,7 @@ output$procIsAllowed <- reactive( {
   !is.null( sourceFiles() )
 } )
 outputOptions( output, 'procIsAllowed', suspendWhenHidden = FALSE)
+
+# normal variables
+# timestamp
+ts = NULL

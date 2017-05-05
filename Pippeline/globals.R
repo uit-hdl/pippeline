@@ -1,4 +1,4 @@
-# globals
+# globals, all sessions
 
 # pipeline: basics
 basics <- list(

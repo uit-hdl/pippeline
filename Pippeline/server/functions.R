@@ -67,7 +67,7 @@ documentSteps <- function( pipeline) {
 # @param list object with pipeline attributes
 # @param string: filename to write the code to
 # @param string: timestamp
-writeScript <- function( pipeline, scriptFile, ts) {
+writeScript <- function( pipeline, scriptFile) {
   doc <- c(
     ## YAML
     cmt( '---'),
@@ -113,7 +113,7 @@ generatePipeline <- function( params) {
   # fixme: need to remove all ID and running numbers
   writeStep <- createStep( 'Storage', TRUE, c(
     cmt( 'Writing processed datasets'),
-    paste0( 'write.csv( data, ', wrapInQuotes( 'fixme'), ')')
+    paste0( 'write.csv( data, ', wrapInQuotes( params$targetFile), ')')
   ) )
   # details for non-mandatory processing steps
   exclStep <- createStep( 'Transitions', input$trans, c(
