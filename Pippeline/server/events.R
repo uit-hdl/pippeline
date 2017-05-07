@@ -103,6 +103,6 @@ output$download <- downloadHandler(
 #    files <- c( scriptFile, docFile, dataFile) fixme
     # now create archive
     files <- c( scriptFile)
-    zip( arFile, files, '-j')  # only files, no directories
+    zip( arFile, files, '-j')  # only files, no directories fixme?: move zipping into script
   }
 )

@@ -6,6 +6,7 @@ basics <- list(
   appVersion = '0.9',
   appDescr = 'Pipeline for processing high-dimensional multi-omics biobank datasets',
   title = 'Biobank Dataset Processing Script & Report',
+  optionsFile = 'options.csv',
   docFormat = 'pdf'  # see documentation for rmarkdown::render()
 )
 
@@ -14,11 +15,12 @@ procMsg <- 'First, you need to enter basic information and make your choices.'
 notSelOpt <- 'Not selected'
 
 # determine options for basic choices
-options <- read.csv( 'options.csv')
+options <- read.csv( basics$optionsFile)
 dsgs <- c( notSelOpt, levels( options[ , 'Design'] ) )
 locs <- c( notSelOpt, levels( options[ , 'Location'] ) )
 mats <- c( notSelOpt, levels( options[ , 'Material'] ) )
 anas <- c( notSelOpt, levels( options[ , 'Analysis'] ) )
+nmeths <- c( notSelOpt, 'fixme')  # trenger navn fra Marit
 
 # JavaScript
 jscode <- 'shinyjs.closeWindow = function() { window.close() }'

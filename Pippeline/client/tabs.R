@@ -130,14 +130,11 @@ normTab <- list(
       checkboxInput( 'normEnabled', 'Enabled'),
       conditionalPanel(
         condition = 'input.normEnabled',
-        selectInput( 'normMethod', label = 'Method', choices = c( # fixme
-          'Not selected' = 'nmeth0',
-          'Method 1' = 'nmeth1'
-        ) )
+        selectInput( 'nmeth', label = 'Method', choices = nmeths)
       ),
       hr(),
       conditionalPanel( 
-        condition = '!input.normEnabled || input.normMethod != "nmeth0"',
+        condition = sprintf( '!input.normEnabled || input.nmeth != "%s"', notSelOpt),
         actionButton( 'normNext', label = 'Continue'),
         span( 'or', class='or'),
         actionLink( 'normDown', 'download')
