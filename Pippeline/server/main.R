@@ -27,12 +27,28 @@ sourceFiles <- reactive( {
   }
 } )
 
-output$procIsAllowed <- reactive( { 
-  prereqsAreValid() && 
-    choicesAreValid() && 
-  !is.null( sourceFiles() )
+dataIsAvailable <- reactive( { 
+  choicesAreValid() && 
+    !is.null( sourceFiles() )
 } )
-outputOptions( output, 'procIsAllowed', suspendWhenHidden = FALSE)
+output$dataIsAvailable <- reactive( { 
+  dataIsAvailable()
+} )
+outputOptions( output, 'dataIsAvailable', suspendWhenHidden = FALSE)
+
+allInputIsValid <- reactive( {
+  if( input$normEnabled)
+    input$nmeth != notSelOpt
+  else
+    TRUE
+} )
+
+output$downlIsAllowed <- reactive( { 
+  prereqsAreValid() && 
+    dataIsAvailable() &&
+    allInputIsValid()
+} )
+outputOptions( output, 'downlIsAllowed', suspendWhenHidden = FALSE)
 
 # normal variables
 # timestamp

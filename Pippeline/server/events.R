@@ -58,7 +58,7 @@ observeEvent( input$questNext, {
   updateNavlistPanel( session, 'steps', selected = 'download')
 } )
 observeEvent( input$downloadReq, {
-  updateNavlistPanel( session, 'steps', selected = 'design')
+  updateNavlistPanel( session, 'steps', selected = 'name')
 } )
 
 # quit

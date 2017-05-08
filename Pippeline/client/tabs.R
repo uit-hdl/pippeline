@@ -37,7 +37,7 @@ designTab <- list(
     checkboxInput( 'trans', label = 'Exclude control-case transitions', value = TRUE),
     hr(),
     conditionalPanel( 
-      condition = 'output.procIsAllowed',
+      condition = 'output.dataIsAvailable',
       actionButton( 'designNext', label = 'Continue'),
       span( 'or', class='or'),
       actionLink( 'designDown', 'download')
@@ -48,12 +48,12 @@ designTab <- list(
 outlierTab <- list(
   h2( 'Outlier removal'),
   conditionalPanel( 
-    condition = '!output.procIsAllowed',
+    condition = '!output.dataIsAvailable',
     p( procMsg),
     actionButton( 'outlierReq', label = 'Go there') 
   ),
   conditionalPanel( 
-    condition = 'output.procIsAllowed',
+    condition = 'output.dataIsAvailable',
     list( 
       p( 'Here you can delete outliers from the dataset.'),
       checkboxInput( 'outlierEnabled', 'Enabled'),
@@ -71,12 +71,12 @@ outlierTab <- list(
 corrTab <- list(
   h2( 'Background correction'),
   conditionalPanel( 
-    condition = '!output.procIsAllowed',
+    condition = '!output.dataIsAvailable',
     p( procMsg),
     actionButton( 'corrReq', label = 'Go there') 
   ),
   conditionalPanel( 
-    condition = 'output.procIsAllowed',
+    condition = 'output.dataIsAvailable',
     list( 
       p( 'Here you can do a background correction by means of negative control probes.'),
       checkboxInput( 'corrEnabled', 'Enabled'),
@@ -94,12 +94,12 @@ corrTab <- list(
 filterTab <- list(
   h2( 'Probe filtering'),
   conditionalPanel( 
-    condition = '!output.procIsAllowed',
+    condition = '!output.dataIsAvailable',
     p( procMsg),
     actionButton( 'filtReq', label = 'Go there') 
   ),
   conditionalPanel( 
-    condition = 'output.procIsAllowed',
+    condition = 'output.dataIsAvailable',
     list( 
       p( 'Here you can filter the probes with regard to p-value and limit.'),
       checkboxInput( 'filtEnabled', 'Enabled'),
@@ -119,12 +119,12 @@ filterTab <- list(
 normTab <- list(
   h2( 'Normalization'),
   conditionalPanel( 
-    condition = '!output.procIsAllowed',
+    condition = '!output.dataIsAvailable',
     p( procMsg),
     actionButton( 'normReq', label = 'Go there') 
   ),
   conditionalPanel( 
-    condition = 'output.procIsAllowed',
+    condition = 'output.dataIsAvailable',
     list( 
       p( 'Here you can normalize the current dataset.'),
       checkboxInput( 'normEnabled', 'Enabled'),
@@ -146,12 +146,12 @@ normTab <- list(
 questTab <- list(
   h2( 'Questionnaires'),
   conditionalPanel( 
-    condition = '!output.procIsAllowed',
+    condition = '!output.dataIsAvailable',
     p( procMsg),
     actionButton( 'questReq', label = 'Go there')
   ),
   conditionalPanel( 
-    condition = 'output.procIsAllowed',
+    condition = 'output.dataIsAvailable',
     list( 
       p( 'Here you can fixme'),
       checkboxInput( 'questEnabled', 'Enabled'),
@@ -168,12 +168,13 @@ questTab <- list(
 downloadTab <- list(
   h2( 'Download & quit'),
   conditionalPanel( 
-    condition = '!output.procIsAllowed',
-    p( procMsg),
+    condition = '!output.downlIsAllowed',
+    p( 'Download is not allowed.'),
+    p( 'This could be due to incomplete or invalid input in any of the processing steps.'),
     actionButton( 'downloadReq', label = 'Go there') 
   ),
   conditionalPanel( 
-    condition = 'output.procIsAllowed',
+    condition = 'output.downlIsAllowed',
     list( 
       p( 'Here you can download an archive (a .zip file) containing the processed dataset (.csv file), documentation of all processing steps (.pdf file), and the source (.R file).'),
       p( 'The datset consists of genes if not chosen otherwise.'),
