@@ -29,7 +29,7 @@ sourceFiles <- reactive( {
 
 output$procIsAllowed <- reactive( { 
   prereqsAreValid() && 
-    choicesAreValid() #&& 
+    choicesAreValid() && 
   !is.null( sourceFiles() )
 } )
 outputOptions( output, 'procIsAllowed', suspendWhenHidden = FALSE)
