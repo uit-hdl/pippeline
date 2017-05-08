@@ -108,21 +108,23 @@ produceDocumenationAndData <- function( scriptFile, docFile) {
 # @param list: parameters
 # @return list: pipeline attributes
 generatePipeline <- function( params) {
-  numberOfRuns = length( params$sourceFiles)
+  numberOfRuns <- length( params$sourceFiles)
+  idxSeq <- 1 : numberOfRuns
   # details for mandatory processing steps
   # reading
   instrs <- c(   # instructions
-    cmt( 'The following object contains both lumi objects, gene expressions, and negative control probes'),
-    'data <- vector()'
+    sprintf( 'data <- vector(length=%d)', numberOfRuns),
+    sprintf( 'data[%d] <- read.csv("%s")', idxSeq, params$sourceFiles[ idxSeq] )
   )
-  for( fileIdx in numberOfRuns) {
-    instrs <- c( 
-      instrs,
-      sprintf( 'data[%d] <- read.csv("%s")', fileIdx, params$sourceFiles[ fileIdx] )
-    )
-  }
   readStep <- createStep( 'Datasets', 'Reading in datasets', TRUE, instrs)
 
+  # combination
+  args <- paste( sprintf( 'data[%d]', idxSeq), collapse = ',')
+  instrs <- c(
+    sprintf( 'data <- combine(%s)', args) # fixme: Marit: må kunne håndtere kun 1 argument
+  )
+  combStep <- createStep( 'Combination', 'Combine all runs', TRUE, instrs)
+  
   # anonymization
   instrs <- c(
     cmt( 'fixme: NR')
@@ -161,20 +163,8 @@ generatePipeline <- function( params) {
 
   # background correction
   instrs <- c(
-    cmt( 'fixme: NR')
-  )
-  args <- vector()
-  for( fileIdx in numberOfRuns) {
-    instrs <- c( 
-      instrs,
-      sprintf( 'data[%d] <- performBackgroundCorrection( data[%1$d]$lumi, data[%1$d]$expr, data[%1$d]$negCtrl)', fileIdx)
-    )
-    args[ fileIdx] <- sprintf( 'data[%d]', fileIdx)
-  }
-  args <- paste( args, sep = ',')
-  instrs <- c(
-    instrs,
-    sprintf( 'data <- combine(%s)', args) # fixme: Marit: må kunne håndtere kun 1 argument
+    cmt( 'fixme: NR'),
+    sprintf( 'data[%d] <- performBackgroundCorrection( data[%1$d]$lumi, data[%1$d]$expr, data[%1$d]$negCtrl)', idxSeq)
   )
   bcorrStep <- createStep( 'Background correction', '', input$corrEnabled, instrs)
   
@@ -205,6 +195,7 @@ generatePipeline <- function( params) {
     exclStep,
     outlStep,
     bcorrStep,
+    combStep, # mandatory
     filtStep,
     normStep,
     questStep,
