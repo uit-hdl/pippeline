@@ -77,6 +77,7 @@ observeEvent( input$reallyQuit, {
   js$closeWindow()
   stopApp()
 } )
+session$onSessionEnded( stopApp)
 
 # download (assembly, computation, documentation)
 output$download <- downloadHandler(
@@ -103,6 +104,6 @@ output$download <- downloadHandler(
 #    files <- c( scriptFile, docFile, dataFile) fixme
     # now create archive
     files <- c( scriptFile)
-    zip( arFile, files, '-j')  # only files, no directories fixme?: move zipping into script
+    zip( arFile, files, '-j')  # only files, no directories
   }
 )
