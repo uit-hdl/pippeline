@@ -1,7 +1,6 @@
 # includes
-library(shiny)
-library(shinyjs)
-#library(rmarkdown) # fixme
+require(shiny)
+require(shinyjs, quietly = TRUE)
 
 # globals, common resources
 source( 'globals.R', local = TRUE)

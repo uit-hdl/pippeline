@@ -23,4 +23,4 @@ anas <- c( notSelOpt, levels( options[ , 'Analysis'] ) )
 nmeths <- c( notSelOpt, 'fixme')  # trenger navn fra Marit
 
 # JavaScript
-jscode <- 'shinyjs.closeWindow = function() { window.close() }'
+jscode <- 'shinyjs.closeWindow = function() { window.close() }'  # works only in RStudio, not external browser

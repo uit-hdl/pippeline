@@ -1,8 +1,15 @@
 Package: pippeline
-Version: 0.1
-Date: 2017-03-21
-Title: Pippeline
-Description: Pipeline for Preparing Analysis-Ready Biobank Data
+Title: Pipeline for processing high-dimensional multi-omics biobank datasets
+Version: 0.9
+License: file LICENSE
+Maintainer: TBA TBA <tba@uit.no>
+Date: 2017-05-09
+Description: This package offers a graphical user interface for choosing datasets
+	     and statistically processing them in terms of removal of outliers,
+	     background correction, filtering, normalization, linking questionnaires,
+	     and other methods.
+Depends: R (>= 3.2.3)
+Imports: shiny (>= 1.0.0),
+	 shinyjs (>= 0.9)
 Author: Till Halbach <till.halbach@nr.no>
-Maintainer: Till Halbach <till.halbach@nr.no>
-Licence: MIT
+RoxygenNote: 6.0.1
