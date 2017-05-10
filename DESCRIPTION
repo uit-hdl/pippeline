@@ -10,6 +10,7 @@ Description: This package offers a graphical user interface for choosing dataset
 	     and other methods.
 Depends: R (>= 3.2.3)
 Imports: shiny (>= 1.0.0),
-	 shinyjs (>= 0.9)
+	 shinyjs (>= 0.9),
+	 rmarkdown (>= 1.4)
 Author: Till Halbach <till.halbach@nr.no>
 RoxygenNote: 6.0.1

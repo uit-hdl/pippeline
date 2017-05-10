@@ -100,8 +100,8 @@ output$download <- downloadHandler(
     ) )
     # fill files with content
     writeScript( pipeline, scriptFile)
-    #produceDocumenationAndData( scriptFile, docFile) fixme
-#    files <- c( scriptFile, docFile, dataFile) fixme
+    #fixme produceDocumenationAndData( scriptFile, docFile)
+    #fixme files <- c( scriptFile, docFile, dataFile)
     # now create archive
     files <- c( scriptFile)
     zip( arFile, files, '-j')  # only files, no directories

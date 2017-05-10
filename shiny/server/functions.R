@@ -98,6 +98,7 @@ writeScript <- function( pipeline, scriptFile) {
 # @param string: filename of script
 # @param string: filename for documentation
 produceDocumenationAndData <- function( scriptFile, docFile) {
+  library( rmarkdown)
   # fixme: parse before sourcing scriptFile
   # note: pandoc'ing with target PDF is buggy in R 3.2.3, rmarkdown 1.4, pandoc 1.16.0.2
   render( scriptFile, paste0( basics$docFormat, '_document'), docFile)
