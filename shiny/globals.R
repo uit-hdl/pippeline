@@ -3,11 +3,9 @@
 # pipeline: basics
 basics <- list(
   appName = 'Pippeline',
-  appVersion = '0.9',
-  appDescr = 'Pipeline for processing high-dimensional multi-omics biobank datasets',
   title = 'Biobank Dataset Processing Script & Report',
   optionsFile = 'options.csv',
-  docFormat = 'pdf'  # see documentation for rmarkdown::render()
+  docFormat = 'html'  # see documentation for rmarkdown::render() # fixme
 )
 
 # strings

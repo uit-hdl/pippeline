@@ -1,7 +1,7 @@
 # UI elements: tabs
 aboutTab <- list( 
   h2( 'About'),
-  p( paste0( 'This is ', basics$appName, ', a ', tolower( basics$appDescr), '.') ),
+  p( paste0( 'This is ', basics$appName, ', a ', tolower( read.dcf( file.path( '..', 'DESCRIPTION'), fields = 'Title')[1,1] ), '.') ),
   p( 'Navigate by following buttons/links, or pick an item from the list of processing steps.'),
   hr(),
   actionButton( 'aboutNext', label = 'Continue') 
