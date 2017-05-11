@@ -7,12 +7,11 @@ aboutTab <- list(
   actionButton( 'aboutNext', label = 'Continue') 
 )
 
-nameTab <- list( 
-  h2( 'Naming'),
-  p( 'Please enter the basic information below.'),
+descrTab <- list( 
+  h2( 'Description'),
+  p( 'Please enter the information below.'),
   textInput( inputId = 'author', label = 'Your name/initals', value = 'tha'), # fixme
-  textInput( inputId = 'name', label = 'Pipeline name', value = 'foo'), # fixme (needed?)
-  textAreaInput( inputId = 'descr', label = 'Description of processing (optional)', value = ''),
+  textAreaInput( inputId = 'descr', label = 'Processing description', value = 'foo'), # fixme
   hr(),
   conditionalPanel( 
     condition = 'output.prereqsAreValid',
@@ -37,7 +36,7 @@ designTab <- list(
     checkboxInput( 'trans', label = 'Exclude control-case transitions', value = TRUE),
     hr(),
     conditionalPanel( 
-      condition = 'output.dataIsAvailable',
+      condition = 'output.procIsAllowed',
       actionButton( 'designNext', label = 'Continue'),
       span( 'or', class='or'),
       actionLink( 'designDown', 'download')
@@ -48,12 +47,12 @@ designTab <- list(
 outlierTab <- list(
   h2( 'Outlier removal'),
   conditionalPanel( 
-    condition = '!output.dataIsAvailable',
+    condition = '!output.procIsAllowed',
     p( procMsg),
     actionButton( 'outlierReq', label = 'Go there') 
   ),
   conditionalPanel( 
-    condition = 'output.dataIsAvailable',
+    condition = 'output.procIsAllowed',
     list( 
       p( 'Here you can delete outliers from the dataset.'),
       checkboxInput( 'outlierEnabled', 'Enabled'),
@@ -71,12 +70,12 @@ outlierTab <- list(
 corrTab <- list(
   h2( 'Background correction'),
   conditionalPanel( 
-    condition = '!output.dataIsAvailable',
+    condition = '!output.procIsAllowed',
     p( procMsg),
     actionButton( 'corrReq', label = 'Go there') 
   ),
   conditionalPanel( 
-    condition = 'output.dataIsAvailable',
+    condition = 'output.procIsAllowed',
     list( 
       p( 'Here you can do a background correction by means of negative control probes.'),
       checkboxInput( 'corrEnabled', 'Enabled'),
@@ -94,12 +93,12 @@ corrTab <- list(
 filterTab <- list(
   h2( 'Probe filtering'),
   conditionalPanel( 
-    condition = '!output.dataIsAvailable',
+    condition = '!output.procIsAllowed',
     p( procMsg),
     actionButton( 'filtReq', label = 'Go there') 
   ),
   conditionalPanel( 
-    condition = 'output.dataIsAvailable',
+    condition = 'output.procIsAllowed',
     list( 
       p( 'Here you can filter the probes with regard to p-value and limit.'),
       checkboxInput( 'filtEnabled', 'Enabled'),
@@ -119,12 +118,12 @@ filterTab <- list(
 normTab <- list(
   h2( 'Normalization'),
   conditionalPanel( 
-    condition = '!output.dataIsAvailable',
+    condition = '!output.procIsAllowed',
     p( procMsg),
     actionButton( 'normReq', label = 'Go there') 
   ),
   conditionalPanel( 
-    condition = 'output.dataIsAvailable',
+    condition = 'output.procIsAllowed',
     list( 
       p( 'Here you can normalize the current dataset.'),
       checkboxInput( 'normEnabled', 'Enabled'),
@@ -146,12 +145,12 @@ normTab <- list(
 questTab <- list(
   h2( 'Questionnaires'),
   conditionalPanel( 
-    condition = '!output.dataIsAvailable',
+    condition = '!output.procIsAllowed',
     p( procMsg),
     actionButton( 'questReq', label = 'Go there')
   ),
   conditionalPanel( 
-    condition = 'output.dataIsAvailable',
+    condition = 'output.procIsAllowed',
     list( 
       p( 'Here you can fixme'),
       checkboxInput( 'questEnabled', 'Enabled'),

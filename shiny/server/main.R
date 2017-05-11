@@ -1,7 +1,7 @@
 # reactive variables
 prereqsAreValid <- reactive( {
   input$author != '' && 
-    input$name != ''
+    input$descr != ''
 } )
 output$prereqsAreValid <- reactive( { 
   prereqsAreValid()
@@ -27,14 +27,15 @@ sourceFiles <- reactive( {
   }
 } )
 
-dataIsAvailable <- reactive( { 
-  choicesAreValid() && 
+procIsAllowed <- reactive( { 
+  prereqsAreValid() &&
+    choicesAreValid() && 
     !is.null( sourceFiles() )
 } )
-output$dataIsAvailable <- reactive( { 
-  dataIsAvailable()
+output$procIsAllowed <- reactive( { 
+  procIsAllowed()
 } )
-outputOptions( output, 'dataIsAvailable', suspendWhenHidden = FALSE)
+outputOptions( output, 'procIsAllowed', suspendWhenHidden = FALSE)
 
 allInputIsValid <- reactive( {
   if( input$normEnabled)
@@ -45,7 +46,7 @@ allInputIsValid <- reactive( {
 
 output$downlIsAllowed <- reactive( { 
   prereqsAreValid() && 
-    dataIsAvailable() &&
+    procIsAllowed() &&
     allInputIsValid()
 } )
 outputOptions( output, 'downlIsAllowed', suspendWhenHidden = FALSE)

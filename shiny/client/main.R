@@ -4,7 +4,7 @@ navlistPanel(
   widths = c( 3, 9), # 25% width
   selected = 'design', # fixme
   tabPanel( 'About', value = 'about', aboutTab),  # list item, ID, tab content
-  tabPanel( 'Naming', value = 'name', nameTab),
+  tabPanel( 'Description', value = 'name', descrTab),
   tabPanel( 'Choices', value = 'design', designTab),
   tabPanel( 'Outliers', value = 'outliers', outlierTab),
   tabPanel( 'Correction', value = 'corr', corrTab),
