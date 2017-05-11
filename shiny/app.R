@@ -1,5 +1,4 @@
 # includes
-require(shiny)
 require(shinyjs, quietly = TRUE)
 
 # globals, common resources

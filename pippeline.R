@@ -5,7 +5,6 @@
 
 # includes
 require(shiny)
-require(shinyjs, quietly = TRUE)
 
 # run app in the given directory
 runApp( 'shiny')
