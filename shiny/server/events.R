@@ -101,13 +101,13 @@ output$download <- downloadHandler(
     # fill files with content
     tryCatch( {
       writeScript( pipeline, scriptFile)
-      render( scriptFile, paste0( basics$docFormat, '_document'), docFile)
+      render( scriptFile, paste0( basics$docFormat, '_document'), docFile, quiet = TRUE)
     }, error = function( err){
       showNotification( 'Could not produce data/documentation. (Error in script?) Error code #3.', type = 'error')  
     } )
     # now create archive
     files <- c( scriptFile, docFile, dataFile)
     files <- files[ file.access( files, mode = 4) > -1]
-    zip( arFile, files, '-j')  # only files, no directories
+    zip( arFile, files, '-jq')  # only files, no directories
   }
 )
