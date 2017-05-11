@@ -93,17 +93,21 @@ output$download <- downloadHandler(
     dir <- tempdir()
     scriptFile <- file.path( dir, 'pipeline.R')
     dataFile <- file.path( dir, 'data.csv')
-    docFile <- file.path( dir, paste0( 'pipeline.', basics$docFormat) )  # documentation
+    docFile <- file.path( dir, paste0( 'documentation.', basics$docFormat) )  # documentation
     pipeline <- generatePipeline( list(
       sourceFiles = sourceFiles(),
       targetFile = dataFile
     ) )
     # fill files with content
-    writeScript( pipeline, scriptFile)
-    #fixme produceDocumenationAndData( scriptFile, docFile)
-    #fixme files <- c( scriptFile, docFile, dataFile)
+    tryCatch( {
+      writeScript( pipeline, scriptFile)
+      render( scriptFile, paste0( basics$docFormat, '_document'), docFile)
+    }, error = function( err){
+      showNotification( 'Could not produce data/documentation. (Error in script?) Error code #3.', type = 'error')  
+    } )
     # now create archive
-    files <- c( scriptFile)
+    files <- c( scriptFile, docFile, dataFile)
+    files <- files[ file.access( files, mode = 4) > -1]
     zip( arFile, files, '-j')  # only files, no directories
   }
 )

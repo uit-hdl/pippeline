@@ -93,16 +93,6 @@ writeScript <- function( pipeline, scriptFile) {
   writeLines( doc, scriptFile)
 } # function writeScript
 
-# Run a script (file) to compute all resulting data and produce its documentation.
-# @param string: filename of script
-# @param string: filename for documentation
-produceDocumenationAndData <- function( scriptFile, docFile) {
-  library( rmarkdown)
-  # fixme: parse before sourcing scriptFile
-  # note: pandoc'ing with target PDF is buggy in R 3.2.3, rmarkdown 1.4, pandoc 1.16.0.2
-  render( scriptFile, paste0( basics$docFormat, '_document'), docFile)
-} # function produceDocumenationAndData
-
 # Build a list object which keeps all pipeline details stored.
 # @param list: parameters
 # @return list: pipeline attributes

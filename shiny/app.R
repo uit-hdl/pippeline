@@ -1,5 +1,6 @@
 # includes
-require(shinyjs, quietly = TRUE)
+require( shinyjs, quietly = TRUE)
+require( rmarkdown)
 
 # globals, common resources
 source( 'globals.R', local = TRUE)
