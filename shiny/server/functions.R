@@ -108,10 +108,16 @@ generatePipeline <- function( params) {
   readStep <- createStep( 'Datasets', 'Reading in datasets', TRUE, instrs)
 
   # combination
-  args <- paste( sprintf( 'data[%d]', idxSeq), collapse = ',')
-  instrs <- c(
-    sprintf( 'data <- combine(%s)', args) # fixme: Marit: må kunne håndtere kun 1 argument
-  )
+  if( numberOfRuns > 1) {
+    args <- paste( sprintf( 'data[%d]', idxSeq), collapse = ',')
+    instrs <- c(
+      sprintf( 'data <- combine(%s)', args)
+    )
+  } else {
+    instrs <- c(
+      sprintf( 'data <- data[1]')
+    )
+  }
   combStep <- createStep( 'Combination', 'Combine all runs', TRUE, instrs)
   
   # anonymization
