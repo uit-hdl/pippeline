@@ -8,5 +8,6 @@
 #' `library(shinyjs)`
 #' `runApp( 'shiny')`
 .onLoad <- function( libname, pkgname) {
+  require(shiny)
   runApp( system.file( package = pkgname, mustWork=TRUE) )
 }
