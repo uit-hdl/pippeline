@@ -15,3 +15,5 @@ source('pippeline.R')
 * There is no preset filename in the download dialog in RStudio's 
   internal app window. This appears to be a bug in RStudio. You 
   simply have to choose a filename yourself.
+* The package maintainer may consider removing the column "Subfile"
+  in the file "options.csv"; it is currently not in use.
