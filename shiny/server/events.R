@@ -92,7 +92,7 @@ output$download <- downloadHandler(
     # point out 3 files to be zipped together
     dir <- tempdir()
     scriptFile <- file.path( dir, 'pipeline.R')
-    dataFile <- file.path( dir, 'data.csv')
+    dataFile <- file.path( dir, 'data.RData')
     docFile <- file.path( dir, paste0( 'documentation.', basics$docFormat) )  # documentation
     pipeline <- generatePipeline( list(
       sourceFiles = sourceFiles(),

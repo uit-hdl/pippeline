@@ -129,11 +129,11 @@ generatePipeline <- function( params) {
     instrs <- c(
       cmt( 'The target data file contains genes.'),
       cmt( 'fixme: NR'),
-      'data <- mapToGenes( data)'
+      'data <- mapToGenes(data)'
     )
   instrs <- c(
     instrs,
-    sprintf( 'write.csv( data, "%s")', params$targetFile)
+    sprintf( 'save(data, file="%s")', params$targetFile)
   )
   writeStep <- createStep( 'Storage', 'Writing processed datasets', TRUE, instrs)
   
@@ -153,7 +153,7 @@ generatePipeline <- function( params) {
   # background correction
   instrs <- c(
     cmt( 'fixme: NR'),
-    sprintf( 'data[%d] <- performBackgroundCorrection( data[%1$d]$lumi, data[%1$d]$expr, data[%1$d]$negCtrl)', idxSeq)
+    sprintf( 'data[%d] <- performBackgroundCorrection(data[%1$d]$lumi, data[%1$d]$expr, data[%1$d]$negCtrl)', idxSeq)
   )
   bcorrStep <- createStep( 'Background correction', '', input$corrEnabled, instrs)
   
