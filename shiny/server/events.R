@@ -89,11 +89,13 @@ output$download <- downloadHandler(
     paste0( basics$appName, '-', format( ts, '%Y-%m-%d_%H-%M-%S'), '.zip')  # archive
   },
   content = function( arFile) {
+    # make temporary directory
+    tmpDir <- file.path( tempdir(), paste0( basics$appName, '-', as.numeric( as.POSIXct( ts) ) ) )
+    dir.create( tmpDir)
     # point out 3 files to be zipped together
-    dir <- tempdir()
-    scriptFile <- file.path( dir, 'pipeline.R')
-    dataFile <- file.path( dir, 'data.RData')
-    docFile <- file.path( dir, paste0( 'documentation.', basics$docFormat) )  # documentation
+    scriptFile <- file.path( tmpDir, 'pipeline.R')
+    dataFile <- file.path( tmpDir, 'data.RData')
+    docFile <- file.path( tmpDir, paste0( 'documentation.', basics$docFormat) )  # documentation
     pipeline <- generatePipeline( list(
       sourceFiles = sourceFiles(),
       targetFile = dataFile
