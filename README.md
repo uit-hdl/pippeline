@@ -15,5 +15,8 @@ source('pippeline.R')
 * There is no preset filename in the download dialog in RStudio's 
   internal app window. This appears to be a bug in RStudio. You 
   simply have to choose a filename yourself.
+* Generating PDFs with pandoc is buggy in R 3.2.3, rmarkdown 1.4, 
+  pandoc 1.16.0.2. If so, set to docFormat to 'html' in file globals.R.
+  PDFs work in RStudio 1.0.136, though.
 * The package maintainer may consider removing the column "Subfile"
   in the file "options.csv"; it is currently not in use.
