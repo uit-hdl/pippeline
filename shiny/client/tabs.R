@@ -129,7 +129,7 @@ normTab <- list(
       checkboxInput( 'normEnabled', 'Enabled', T), # fixme
       conditionalPanel(
         condition = 'input.normEnabled',
-        selectInput( 'nmeth', label = 'Method', choices = nmeths, selected = 'fixme')
+        selectInput( 'nmeth', label = 'Method', choices = nmeths, selected = 'vstQuantileNorm')
       ),
       hr(),
       conditionalPanel( 

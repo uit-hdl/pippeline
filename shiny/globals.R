@@ -19,7 +19,7 @@ dsgs <- c( notSelOpt, levels( options[ , 'Design'] ) )
 locs <- c( notSelOpt, levels( options[ , 'Location'] ) )
 mats <- c( notSelOpt, levels( options[ , 'Material'] ) )
 anas <- c( notSelOpt, levels( options[ , 'Analysis'] ) )
-nmeths <- c( notSelOpt, 'fixme')  # trenger navn fra Marit
+nmeths <- c( notSelOpt, 'vstQuantileNorm')
 
 # JavaScript
 jscode <- 'shinyjs.closeWindow = function() { window.close() }'  # works only in RStudio, not external browser
