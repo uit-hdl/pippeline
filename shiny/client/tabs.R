@@ -55,7 +55,7 @@ outlierTab <- list(
     condition = 'output.procIsAllowed',
     list( 
       p( 'Here you can delete outliers from the dataset.'),
-      checkboxInput( 'outlierEnabled', 'Enabled'),
+      checkboxInput( 'outlierEnabled', 'Enabled', TRUE), # fixme
       # conditionalPanel(
       #   condition = 'input.outlierEnabled'
       # ),
@@ -78,7 +78,7 @@ corrTab <- list(
     condition = 'output.procIsAllowed',
     list( 
       p( 'Here you can do a background correction by means of negative control probes.'),
-      checkboxInput( 'corrEnabled', 'Enabled'),
+      checkboxInput( 'corrEnabled', 'Enabled', TRUE), # fixme
       # conditionalPanel(
       #   condition = 'input.corrEnabled'
       # ),
@@ -101,7 +101,7 @@ filterTab <- list(
     condition = 'output.procIsAllowed',
     list( 
       p( 'Here you can filter the probes with regard to p-value and limit.'),
-      checkboxInput( 'filtEnabled', 'Enabled'),
+      checkboxInput( 'filtEnabled', 'Enabled', TRUE), # fixme
       conditionalPanel(
         condition = 'input.filtEnabled',
         sliderInput( 'pval', 'P-value', min = 0, max = 1, value = 0.05),
@@ -126,10 +126,10 @@ normTab <- list(
     condition = 'output.procIsAllowed',
     list( 
       p( 'Here you can normalize the current dataset.'),
-      checkboxInput( 'normEnabled', 'Enabled'),
+      checkboxInput( 'normEnabled', 'Enabled', T), # fixme
       conditionalPanel(
         condition = 'input.normEnabled',
-        selectInput( 'nmeth', label = 'Method', choices = nmeths)
+        selectInput( 'nmeth', label = 'Method', choices = nmeths, selected = 'fixme')
       ),
       hr(),
       conditionalPanel( 
@@ -153,7 +153,7 @@ questTab <- list(
     condition = 'output.procIsAllowed',
     list( 
       p( 'Here you can fixme'),
-      checkboxInput( 'questEnabled', 'Enabled'),
+      checkboxInput( 'questEnabled', 'Enabled', T), # fixme
       conditionalPanel(
         condition = 'input.questEnabled',
         p( 'Fixme')
