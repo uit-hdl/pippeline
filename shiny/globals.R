@@ -6,7 +6,7 @@ basics <- list(
   title = 'Biobank Dataset Processing Script & Report',
   optionsFile = 'options.csv',
   # note: pandoc'ing with target PDF is buggy in R 3.2.3, rmarkdown 1.4, pandoc 1.16.0.2
-  docFormat = 'pdf'  # see documentation for rmarkdown::render() # fixme
+  docFormat = 'html'  # see documentation for rmarkdown::render() # fixme
 )
 
 # strings
