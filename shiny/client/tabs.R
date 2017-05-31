@@ -55,10 +55,15 @@ outlierTab <- list(
     condition = 'output.procIsAllowed',
     list( 
       p( 'Here you can delete outliers from the dataset.'),
+      p( 'Outliers can be found by means of the ', a( 'nowaclean', href='https://github.com/3inar/nowaclean'), ' R package.'),
       checkboxInput( 'outlierEnabled', 'Enabled', TRUE), # fixme
-      # conditionalPanel(
-      #   condition = 'input.outlierEnabled'
-      # ),
+      conditionalPanel(
+        condition = 'input.outlierEnabled',
+        p( 'Identify outliers as described in the vignette of nowaclean and save them like so:', code( 'save(for_removal, file="outliers.RData")'), '.'),
+        p( 'You can then import this file here. It is vital that the variable name is not changed.'),
+        fileInput( 'outlierFile', 'RData file with outliers'),
+        textAreaInput( inputId = 'outlierDescr', label = 'Outlier description (optional)', value = '')
+      ),
       hr(),
       actionButton( 'outlierNext', label = 'Continue'),
       span( 'or', class='or'),

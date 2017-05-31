@@ -2,7 +2,7 @@
 navlistPanel(
   basics$appName, # page title
   widths = c( 3, 9), # 25% width
-  selected = 'design', # fixme
+  selected = 'outliers', # fixme
   tabPanel( 'About', value = 'about', aboutTab),  # list item, ID, tab content
   tabPanel( 'Description', value = 'name', descrTab),
   tabPanel( 'Choices', value = 'design', designTab),

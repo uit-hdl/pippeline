@@ -11,7 +11,6 @@ getDataFiles <- function() {
     showNotification( 'No data found. (Check file with available options?) Error code #1.', type = 'error')
     return( NULL)
   }
-  # fixme: trengs Subfile?
   files <- as.vector( unname( unlist( options[ row, c( 'File1', 'File2', 'File3') ] ) ) )
   files <- files[ files != '']
   return( files) # fixme
@@ -33,10 +32,23 @@ cmt <- function( line = '') {
 # @param string: step label
 # @param character vector: step explanation
 # @param boolean: true if step is enabled, false otherwise
-# @param character vector: code line strings
-# @return list
-createStep <- function( label, explanation = c(), enabled = FALSE, code = c() ) {
-  list( label = label, expl = explanation, enabled = enabled, code = code)
+# @param function which generates a vector with code line strings
+# @param arguments to the function call
+# @return mixed: list if enabled, NULL otherwise
+createStep <- function( label, 
+                        explanation = c(), 
+                        enabled = FALSE, 
+                        generateCode = function(){c()}, 
+                        args = list() ) {
+  if( enabled)
+    list( 
+      label = label, 
+      expl = explanation, 
+      enabled = enabled, 
+      code = do.call( generateCode, args)
+    )
+  else
+    NULL
 }
 
 # Generate the documentation for all processing steps.
@@ -45,7 +57,8 @@ createStep <- function( label, explanation = c(), enabled = FALSE, code = c() ) 
 documentSteps <- function( pipeline) {
   doc <- c()
   for( step in pipeline) {
-    if( step$enabled) {
+    if( !is.null( step) &&
+        step$enabled) {
       doc <- c(
         doc,
         '',
@@ -61,7 +74,8 @@ documentSteps <- function( pipeline) {
 # Write the code that instantiates both the processing and documentation of a processing pipeline.
 # @param list object with pipeline attributes
 # @param string: filename to write the code to
-writeScript <- function( pipeline, scriptFile) {
+writeScript <- function( pipeline, 
+                         scriptFile) {
   pkgInfo = read.dcf( file.path( '..', 'DESCRIPTION'), fields = c( 'Package', 'Version') )
   doc <- c(
     # YAML
@@ -87,7 +101,7 @@ writeScript <- function( pipeline, scriptFile) {
     cmt(),
     cmt( paste( 'File name(s) of data source taken from file:', basics$optionsFile) ),
     '',
-    paste0( '##source("', file.path( '..', '..', 'R', 'NR_functions.R'), '")'),
+    sprintf( '##source("%s")', file.path( system.file( package = pkgInfo[ 1], mustWork=TRUE), 'R', 'NR_functions.R') ),
     # steps, incl. read and write
     documentSteps( pipeline),
     # footer
@@ -104,89 +118,114 @@ generatePipeline <- function( params) {
   numberOfRuns <- length( params$sourceFiles)
   idxSeq <- 1 : numberOfRuns
   # details for mandatory processing steps
-  # reading
-  instrs <- c(   # instructions
-    sprintf( '##data <- vector(length=%d)', numberOfRuns),
-    sprintf( '##data[%d] <- read.csv("%s")', idxSeq, params$sourceFiles[ idxSeq] )
-  )
-  readStep <- createStep( 'Datasets', 'Reading in datasets', TRUE, instrs)
-
-  # combination
-  if( numberOfRuns > 1) {
-    args <- paste( sprintf( 'data[%d]', idxSeq), collapse = ',')
-    instrs <- c(
-      sprintf( '##data <- combine(%s)', args)
-    )
-  } else {
-    instrs <- c(
-      sprintf( '##data <- data[1]')
+  # step: reading
+  generateCode <- function( vecLength, idxSeq, file) {
+    c(   # instructions
+      sprintf( '##data <- vector(length=%d)', vecLength),
+      sprintf( '##data[%d] <- read.csv("%s")', idxSeq, file)
     )
   }
-  combStep <- createStep( 'Combination', 'Combine all runs', TRUE, instrs)
+  readStep <- createStep( 'Datasets', 'Reading in datasets', TRUE, generateCode, list( numberOfRuns, idxSeq, params$sourceFiles[ idxSeq] ) )
   
-  # anonymization
-  instrs <- c(
-    '# fixme: NR'
-  )
-  anoStep <- createStep( 'Anonymization', 'Removal of all IDs and running numbers', TRUE, instrs)
+  # step: combination
+  generateCode <- function( idxSeq) {
+    if( numberOfRuns > 1) {
+      args <- paste( sprintf( 'data[%d]', idxSeq), collapse = ',')
+      c( sprintf( '##data <- combine(%s)', args) )
+    } else {
+      c( sprintf( '##data <- data[1]') )
+    }
+  }
+  combStep <- createStep( 'Combination', 'Combining all runs.', TRUE, generateCode, list( idxSeq) )
+  
+  # step: anonymization
+  generateCode <- function() {
+    c(
+      '# fixme: NR'
+    )
+  }
+  anoStep <- createStep( 'Anonymization', 'Removal of all IDs and running numbers.', TRUE, generateCode)
 
-  # storage
-  if( input$wantProbes)
-    instrs <- c(
-      cmt( 'The target data file contains probes.')
+  # step: storage
+  generateCode <- function( file) {
+    if( input$wantProbes)
+      ins <- c(
+        cmt( 'The target data file contains probes.')
+      )
+    else
+      ins <- c(
+        cmt( 'The target data file contains genes.'),
+        '# fixme: NR',
+        '##data <- mapToGenes(data)'
+      )
+    c(
+      ins,
+      sprintf( 'save(pValue, file="%s")', file) # fixme: data
     )
-  else
-    instrs <- c(
-      cmt( 'The target data file contains genes.'),
-      '# fixme: NR',
-      '##data <- mapToGenes(data)'
-    )
-  instrs <- c(
-    instrs,
-    sprintf( 'save(pValue, file="%s")', params$targetFile) # fixme: data
-  )
-  writeStep <- createStep( 'Storage', 'Writing processed datasets', TRUE, instrs)
+  }
+  writeStep <- createStep( 'Storage', 'Writing processed datasets.', TRUE, generateCode, list( params$targetFile) )
   
   # details for non-mandatory processing steps
-  # control transitions
-  instrs <- c(
-    '# fixme: UiT'
-  )
-  exclStep <- createStep( 'Transitions', 'Exclusion of control-case transitions', input$trans, instrs)
+  # step: control transitions
+  generateCode <- function() {
+    c(
+      '# fixme: UiT'
+    )
+  }
+  exclStep <- createStep( 'Transitions', 'Exclusion of control-case transitions.', input$trans, generateCode)
 
-  # outliers
-  instrs <- c(
-    '# fixme: UiT'
-  )
-  outlStep <- createStep( 'Outliers', 'Removal of outliers', input$outlierEnabled, instrs)
+  # step: outliers
+  generateCode <- function() {
+    outlierFile <- input$outlierFile$datapath
+    if( length( outlierFile) == 0 ||
+        as.integer( file.access( outlierFile, mode = 4) ) < 0)
+      showNotification( 'Could not read outlier file. Error code #4.', type = 'error')  
+    c(
+      cmt(),
+      cmt( paste( 'Identification of outliers:', ifelse( input$outlierDescr != '', input$outlierDescr, 'Not described') ) ),
+      sprintf( 'load("%s")', outlierFile),
+      'for_removal',
+      '## fixme: remove outliers'
+    )
+  }
+  outlStep <- createStep( 'Outliers', 'Removal of outliers.', input$outlierEnabled, generateCode)
 
-  # background correction
-  instrs <- c(
-    '# fixme: NR',
-    sprintf( '##data[%d] <- performBackgroundCorrection(data[%1$d]$lumi, data[%1$d]$expr, data[%1$d]$negCtrl)', idxSeq)
-  )
-  bcorrStep <- createStep( 'Background correction', '', input$corrEnabled, instrs)
+  # step: background correction
+  generateCode <- function( idxSeq) {
+    c(
+      '# fixme: NR',
+      sprintf( '##data[%d] <- performBackgroundCorrection(data[%1$d]$lumi, data[%1$d]$expr, data[%1$d]$negCtrl)', idxSeq)
+    )
+  }
+  bcorrStep <- createStep( 'Background correction', '', input$corrEnabled, generateCode, list( idxSeq) )
   
-  # probe filtering
-  instrs <- c(
-    '# fixme: NR',
-    sprintf( 'pValue <- %1.2f', input$pval),
-    sprintf( 'pLimit <- %1.2f', input$plimit),
-    '##data <- filterData(data,pValue,pLimit)'
-  ) 
-  filtStep <- createStep( 'Probe filtering', '', input$filtEnabled, instrs)
+  # step: probe filtering
+  generateCode <- function() {
+    c(
+      '# fixme: NR',
+      sprintf( 'pValue <- %1.2f', input$pval),
+      sprintf( 'pLimit <- %1.2f', input$plimit),
+      '##data <- filterData(data,pValue,pLimit)'
+    ) 
+  }
+  filtStep <- createStep( 'Probe filtering', '', input$filtEnabled, generateCode)
   
-  # normalization
-  instrs <- c(
-    '# fixme: NR',
-    sprintf( '##data <- normalizeData(data,"%s")', input$nmeth)
-  )
-  normStep <- createStep( 'Normalization', '', input$normEnabled, instrs)
+  # step: normalization
+  generateCode <- function() {
+    c(
+      '# fixme: NR',
+      sprintf( '##data <- normalizeData(data,"%s")', input$nmeth)
+    )
+  }
+  normStep <- createStep( 'Normalization', '', input$normEnabled, generateCode)
   
-  # questionnaires 
-  questStep <- createStep( 'Questionnaires', '', input$questEnabled, c(
-    '# fixme: UiT/NR'
-  ) )
+  # step: questionnaires 
+  generateCode <- function() {
+    c(
+      '# fixme: UiT/NR'
+    )
+  }
+  questStep <- createStep( 'Questionnaires', '', input$questEnabled, generateCode)
   
   # now concatenate all steps
   list(
