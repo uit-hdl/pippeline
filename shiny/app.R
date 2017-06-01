@@ -29,4 +29,4 @@ server <- function( input, output, session) {
 }
 
 # run app, build UI, start webserver
-shinyApp( ui, server, options = list( display.mode = 'showcase', width = 1000) ) # fixme
+shinyApp( ui, server)

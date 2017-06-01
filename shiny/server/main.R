@@ -53,4 +53,4 @@ outputOptions( output, 'downlIsAllowed', suspendWhenHidden = FALSE)
 
 # normal variables
 # timestamp
-ts = NULL
+ts <- NULL

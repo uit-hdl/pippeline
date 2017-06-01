@@ -141,7 +141,7 @@ generatePipeline <- function( params) {
   # step: anonymization
   generateCode <- function() {
     c(
-      '# fixme: NR'
+      '## fixme: NR'
     )
   }
   anoStep <- createStep( 'Anonymization', 'Removal of all IDs and running numbers.', TRUE, generateCode)
@@ -155,7 +155,7 @@ generatePipeline <- function( params) {
     else
       ins <- c(
         cmt( 'The target data file contains genes.'),
-        '# fixme: NR',
+        '## fixme: NR',
         '##data <- mapToGenes(data)'
       )
     c(
@@ -169,7 +169,7 @@ generatePipeline <- function( params) {
   # step: control transitions
   generateCode <- function() {
     c(
-      '# fixme: UiT'
+      '## fixme: UiT'
     )
   }
   exclStep <- createStep( 'Transitions', 'Exclusion of control-case transitions.', input$trans, generateCode)
@@ -193,7 +193,7 @@ generatePipeline <- function( params) {
   # step: background correction
   generateCode <- function( idxSeq) {
     c(
-      '# fixme: NR',
+      '## fixme: NR',
       sprintf( '##data[%d] <- performBackgroundCorrection(data[%1$d]$lumi, data[%1$d]$expr, data[%1$d]$negCtrl)', idxSeq)
     )
   }
@@ -202,7 +202,7 @@ generatePipeline <- function( params) {
   # step: probe filtering
   generateCode <- function() {
     c(
-      '# fixme: NR',
+      '## fixme: NR',
       sprintf( 'pValue <- %1.2f', input$pval),
       sprintf( 'pLimit <- %1.2f', input$plimit),
       '##data <- filterData(data,pValue,pLimit)'
@@ -213,7 +213,7 @@ generatePipeline <- function( params) {
   # step: normalization
   generateCode <- function() {
     c(
-      '# fixme: NR',
+      '## fixme: NR',
       sprintf( '##data <- normalizeData(data,"%s")', input$nmeth)
     )
   }
@@ -222,7 +222,7 @@ generatePipeline <- function( params) {
   # step: questionnaires 
   generateCode <- function() {
     c(
-      '# fixme: UiT/NR'
+      '## fixme: UiT/NR'
     )
   }
   questStep <- createStep( 'Questionnaires', '', input$questEnabled, generateCode)
