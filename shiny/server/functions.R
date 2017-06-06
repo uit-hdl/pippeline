@@ -101,7 +101,7 @@ writeScript <- function( pipeline,
     cmt(),
     cmt( paste( 'File name(s) of data source taken from file:', basics$optionsFile) ),
     '',
-    sprintf( '##source("%s")', file.path( system.file( package = pkgInfo[ 1], mustWork=TRUE), 'R', 'NR_functions.R') ),
+    sprintf( 'source("%s")', file.path( system.file( package = pkgInfo[ 1], mustWork=TRUE), 'R', 'NR_functions.R') ),
     # steps, incl. read and write
     documentSteps( pipeline),
     # footer

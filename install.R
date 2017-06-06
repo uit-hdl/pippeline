@@ -1,0 +1,10 @@
+# See section 'Installing' in the README for an explanation.
+source( 'http://bioconductor.org/biocLite.R')
+biocLite( 'limma')
+biocLite( 'nlme')
+biocLite( 'illuminaHumanv3.db')
+biocLite( 'illuminaHumanv4.db')
+biocLite( 'arrayQualityMetrics')
+biocLite( 'lumi')
+biocLite( 'lumiHumanIDMapping')
+biocLite( 'genefilter')

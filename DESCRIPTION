@@ -7,7 +7,8 @@ Date: 2017-05-09
 Description: This package offers a graphical user interface for choosing datasets
 	     and statistically processing them in terms of removal of outliers,
 	     background correction, filtering, normalization, linking questionnaires,
-	     and other methods.
+	     and other methods. It requires some non-CTAN packages; see the README for
+	     installation directions.
 Depends: R (>= 3.2.3)
 Imports: shiny (>= 1.0.0),
 	 shinyjs (>= 0.9),
