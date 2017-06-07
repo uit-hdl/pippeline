@@ -197,7 +197,7 @@ generatePipeline <- function( params) {
       sprintf( '##data[%d] <- performBackgroundCorrection(data[%1$d]$lumi, data[%1$d]$expr, data[%1$d]$negCtrl)', idxSeq)
     )
   }
-  bcorrStep <- createStep( 'Background correction', '', input$corrEnabled, generateCode, list( idxSeq) )
+  bcorrStep <- createStep( 'Background correction', 'Perform background correction and remove bad probes', input$corrEnabled, generateCode, list( idxSeq) )
   
   # step: probe filtering
   generateCode <- function() {
@@ -208,7 +208,7 @@ generatePipeline <- function( params) {
       '##data <- filterData(data,pValue,pLimit)'
     ) 
   }
-  filtStep <- createStep( 'Probe filtering', '', input$filtEnabled, generateCode)
+  filtStep <- createStep( 'Probe filtering', 'Filtering based on on pValue and presentLimit', input$filtEnabled, generateCode)
   
   # step: normalization
   generateCode <- function() {
@@ -217,7 +217,7 @@ generatePipeline <- function( params) {
       sprintf( '##data <- normalizeData(data,"%s")', input$nmeth)
     )
   }
-  normStep <- createStep( 'Normalization', '', input$normEnabled, generateCode)
+  normStep <- createStep( 'Normalization', 'Normalization procedure from Vanesssa', input$normEnabled, generateCode)
   
   # step: questionnaires 
   generateCode <- function() {
@@ -225,7 +225,7 @@ generatePipeline <- function( params) {
       '## fixme: UiT/NR'
     )
   }
-  questStep <- createStep( 'Questionnaires', '', input$questEnabled, generateCode)
+  questStep <- createStep( 'Questionnaires', 'Selecting variables from linked questionnaires', input$questEnabled, generateCode)
   
   # now concatenate all steps
   list(
