@@ -34,11 +34,22 @@ mapToGenes <- function(data) {
 
 #' Perform background correction and remove bad probes.
 #' @export
-#' @param lumi object where colnames(data)=sample IDs and rownames(data) = probe IDs
-#' @param matrix where rownames(exprs)=sample IDs and colnames(exprs) = probe IDs
-#' @param matrix where rownames(exprs)=sample IDs and colnames(data) = negative control IDs
-#' @return background corrected lumi object where colnames(data)=sample IDs and rownames(data) = gene IDs
-performBackgroundCorrection <- function(data, exprs, negCtrl) {
+#' @param lumi object with gene expression matrix exprs(data) where
+#'        colnames(exprs(data)) = sample IDs ( = labnr)
+#'        rownames(exprs(data)) = probe IDs
+#' @param matrix where
+#'        rownames(negCtrl) is a subset of colnames(exprs(data))
+#'        each column in negCtrl contains expression values for a negative control probe
+#' @return background-corrected lumi object where 
+#'         colnames(exprs(data)) = sample IDs ( = labnr)
+#'         rownames(exprs(data)) = probe IDs
+performBackgroundCorrection <- function(data, negCtrl) {
+  
+  ## --- Extract and transpose the expression matrix from the lumi object data
+  ##     and select rows from the negCtrl matrix  
+  exprs <- t(exprs(data))
+  negCtrl <- negCtrl[rownames(exprs),]
+  ## Now: rownames(exprs)==rownames(negCtrl) 
   
   # --- Combine data, status vector (stating for each row if it corresponds to gene or control)
   totalData <- t(cbind(exprs,negCtrl)) # neg control probes
