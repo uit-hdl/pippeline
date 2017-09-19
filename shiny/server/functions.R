@@ -101,7 +101,7 @@ writeScript <- function( pipeline,
     cmt(),
     cmt( paste( 'File name(s) of data source taken from file:', basics$optionsFile) ),
     '',
-    sprintf( 'source("%s")', file.path( system.file( package = pkgInfo[ 1], mustWork=TRUE), 'R', 'NR_functions.R') ),
+    sprintf( '##source("%s")', file.path( system.file( package = pkgInfo[ 1], mustWork=TRUE), 'R', 'NR_functions.R') ),
     # steps, incl. read and write
     documentSteps( pipeline),
     # footer
@@ -125,7 +125,7 @@ generatePipeline <- function( params) {
       sprintf( '##data[%d] <- read.csv("%s")', idxSeq, file)
     )
   }
-  readStep <- createStep( 'Datasets', 'Reading in datasets', TRUE, generateCode, list( numberOfRuns, idxSeq, params$sourceFiles[ idxSeq] ) )
+  readStep <- createStep( 'Datasets', 'Reading in datasets into a list', TRUE, generateCode, list( numberOfRuns, idxSeq, params$sourceFiles[ idxSeq] ) )
   
   # step: combination
   generateCode <- function( idxSeq) {
