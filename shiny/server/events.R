@@ -105,6 +105,7 @@ output$download <- downloadHandler(
     tryCatch( {
       writeScript( pipeline, scriptFile)
       render( scriptFile, paste0( basics$docFormat, '_document'), docFile, quiet = TRUE)
+      showNotification( 'Archive successfully written.', type = 'message')  
     }, error = function( err){
       showNotification( 'Could not produce data/documentation. (Error in generated pipeline?) Error code #3.', type = 'error')  
     } )
