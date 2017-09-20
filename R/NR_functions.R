@@ -91,7 +91,8 @@ filterData <- function(data, pValue, presentLimit) {
 }
 
 
-#' Normalization procedure from Vanesssa.
+#' Log2 transformation using a variance stabilizing technique* and quantile normalization.
+#' * Lin SM, Du P, Huber W, Kibbe WA. Model-based variance-stabilizing transformation for Illumina microarray data. Nucleic Acids Res. 2008;36(2):e11.
 #' @export
 #' @param lumi object where colnames(data)=sample IDs and rownames(data) = probe IDs
 #' @return normalized matrix where colnames(data)=sample IDs and rownames(data) = probe IDs

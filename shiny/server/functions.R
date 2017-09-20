@@ -219,7 +219,7 @@ generatePipeline <- function( params) {
       '# have now gene expressions matrix'
     )
   }
-  normStep <- createStep( 'Normalization', 'Normalization procedure from Vanessa', input$normEnabled, generateCode)
+  normStep <- createStep( 'Normalization', 'Log2 transformation and quantile normalization', input$normEnabled, generateCode)
   
   # step: questionnaires 
   generateCode <- function() {
