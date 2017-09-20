@@ -157,14 +157,23 @@ questTab <- list(
   conditionalPanel( 
     condition = 'output.procIsAllowed',
     list( 
-      p( 'Here you can fixme'),
+      p( 'Here you can link questionnaires to the biobank datasets.'),
       checkboxInput( 'questEnabled', 'Enabled', T), # fixme
       conditionalPanel(
         condition = 'input.questEnabled',
-        p( 'Fixme')
+        p( 'Choose a questionnaire first, then select the available variables.'),
+        selectInput( 'questObj', label = 'Questionnaire', selected = 'two_page_questionnaire', choices = quests), # fixme
+        conditionalPanel(
+          condition = 'output.questIsValid',
+          p( 'Add variables to or delete from the list of questionnaire variables. Add by typing variable names or picking from the list.'),
+          uiOutput( 'qvarPicker')
+        )
       ),
       hr(),
-      actionButton( 'questNext', label = 'Continue')
+      conditionalPanel( 
+        condition = sprintf( '!input.questEnabled || input.questObj != "%s"', notSelOpt),
+        actionButton( 'questNext', label = 'Continue')
+      )
     )
   )
 )

@@ -6,8 +6,7 @@ output:
 
 # Installing
 After having installed this package in a regular manner (i.e., with `install.packages()`),
-additional non-CTAN packages are needed to finalize the installation, that is, 
-successfully run this app. 
+additional non-CTAN packages are needed to finalize the installation.
 They can be installed by means of the included script. Write this in an R terminal:
 
 ```
@@ -32,8 +31,30 @@ in an R terminal afterwards.
 
 
 # How to run this application
-Assuming the app is properly installed, and that you pointed R to the directory of this file, 
-write in an R terminal:
+
+The following assumes that the app is properly installed, 
+and that you pointed R to the directory of this file.
+
+First, load all necessary datasets. Example:
+
+```
+library(nowac)
+```
+
+You should now have a set of datasets available and can check that by:
+
+```
+ls()
+```
+
+You may also have to configure the app. 
+For this, edit the files *shiny/options.csv* and *shiny/questionnaires.csv* accordingly.
+The former contains the names of the R objects holding the available gene expression datasets 
+(and their descriptions), while the latter contains the names of the R objects holding the 
+available questionnaire data.
+
+That's it.
+Now write in an R terminal:
 
 ```
 source('pippeline.R')

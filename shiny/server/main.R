@@ -3,9 +3,7 @@ prereqsAreValid <- reactive( {
   input$author != '' && 
     input$descr != ''
 } )
-output$prereqsAreValid <- reactive( { 
-  prereqsAreValid()
-} )
+output$prereqsAreValid <- reactive( { prereqsAreValid() } )
 outputOptions( output, 'prereqsAreValid', suspendWhenHidden = FALSE)
 
 choicesAreValid <- reactive( { 
@@ -14,9 +12,7 @@ choicesAreValid <- reactive( {
     input$mat != notSelOpt && 
     input$ana != notSelOpt
 } )
-output$choicesAreValid <- reactive( { 
-  choicesAreValid()
-} )
+output$choicesAreValid <- reactive( { choicesAreValid() } )
 outputOptions( output, 'choicesAreValid', suspendWhenHidden = FALSE)
 
 sourceFiles <- reactive( {
@@ -27,14 +23,22 @@ sourceFiles <- reactive( {
   }
 } )
 
+# questionnaire variables
+questIsValid <- reactive( { input$questObj != notSelOpt} )
+output$questIsValid <- reactive( { questIsValid() } )
+outputOptions( output, 'questIsValid', suspendWhenHidden = FALSE)
+
+output$qvarPicker <- renderUI( {
+  availQVars <- colnames( get( input$questObj) )
+  selectizeInput( 'questVars', 'Variables', multiple = T, choices = availQVars, selected = availQVars)
+} )
+
 procIsAllowed <- reactive( { 
   prereqsAreValid() &&
     choicesAreValid() && 
     !is.null( sourceFiles() )
 } )
-output$procIsAllowed <- reactive( { 
-  procIsAllowed()
-} )
+output$procIsAllowed <- reactive( { procIsAllowed() } )
 outputOptions( output, 'procIsAllowed', suspendWhenHidden = FALSE)
 
 allInputIsValid <- reactive( {

@@ -99,7 +99,8 @@ writeScript <- function( pipeline,
     cmt( paste( '* Biological material:', input$mat) ),
     cmt( paste( '* Genomic analysis:', input$ana) ),
     cmt(),
-    cmt( paste( 'File name(s) of data source taken from file:', basics$optionsFile) ),
+    cmt( paste( 'Data source file names are read from file:', basics$optionsFile) ),
+    cmt( paste( 'Questionnaire object names are read from file:', basics$questsFile) ),
     '',
     sprintf( '##source("%s")', file.path( system.file( package = pkgInfo[ 1], mustWork=TRUE), 'R', 'NR_functions.R') ),
     # steps, incl. read and write
@@ -214,18 +215,27 @@ generatePipeline <- function( params) {
   generateCode <- function() {
     c(
       '## fixme: NR',
-      sprintf( '##data <- normalizeData(data,"%s")', input$nmeth)
+      sprintf( '##data <- normalizeData(data,"%s")', input$nmeth),
+      '# have now gene expressions matrix'
     )
   }
-  normStep <- createStep( 'Normalization', 'Normalization procedure from Vanesssa', input$normEnabled, generateCode)
+  normStep <- createStep( 'Normalization', 'Normalization procedure from Vanessa', input$normEnabled, generateCode)
   
   # step: questionnaires 
   generateCode <- function() {
     c(
-      '## fixme: UiT/NR'
+      sprintf( '## quest <- get("%s")', input$questObj), # fixme
+      '# determine sample ID matches',
+      '## m <- match( colnames( data), quest$labnr)',
+      '# remove now obsolete IDs',
+      '## quest$labnr <- NULL',
+      '# reduce variable set if necessary',
+      sprintf( '## qvars <- c(%s)', paste0( '"', paste( as.character(input$questVars), collapse = '","'), '"' ) ),
+      '# sew together matches',
+      '## data <- rbind( data, t( quest)[qvars,m] )'
     )
   }
-  questStep <- createStep( 'Questionnaires', 'Selecting variables from linked questionnaires', input$questEnabled, generateCode)
+  questStep <- createStep( 'Questionnaires', 'Selecting variables from associated questionnaires', input$questEnabled, generateCode)
   
   # now concatenate all steps
   list(

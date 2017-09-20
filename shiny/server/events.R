@@ -1,5 +1,6 @@
-# navigation buttons bindings and event handling
+# explicite events (in addition to reactive variables, see main.R)
 
+# navigation buttons bindings and event handling
 observeEvent( input$aboutNext, {
   updateNavlistPanel( session, 'steps', selected = 'name')
 } )
@@ -105,7 +106,7 @@ output$download <- downloadHandler(
       writeScript( pipeline, scriptFile)
       render( scriptFile, paste0( basics$docFormat, '_document'), docFile, quiet = TRUE)
     }, error = function( err){
-      showNotification( 'Could not produce data/documentation. (Error in script?) Error code #3.', type = 'error')  
+      showNotification( 'Could not produce data/documentation. (Error in generated pipeline?) Error code #3.', type = 'error')  
     } )
     # now create archive
     files <- c( scriptFile, docFile, dataFile)
