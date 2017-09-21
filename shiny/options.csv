@@ -1,7 +1,7 @@
-"Design","Location","Material","Analysis","Subfile","File1","File2","File3"
-"Nested matched case-control - prospective","Breast","Blood","mRNA","Run 1-3","f1","f2","f3"
-"Nested matched case-control - prospective","Lung","Blood","mRNA",,"f1",,
-"Nested matched case-control - prospective","Ovaria","Blood","mRNA",,"f1",,
-"Nested matched case-control - hospital diagnostic","Breast","Blood","mRNA","CC1","f1",,
-"Nested matched case-control - hospital diagnostic","Breast","Blood","mRNA","CC2","f1",,
-"Nested matched case-control - hospital diagnostic","Breast","Blood","mRNA","CC3","f1",,
+"Design","Location","Material","Analysis","Subfile","Obj1","Obj2","Obj3"
+"Nested matched case-control - prospective","Breast","Blood","mRNA","Run 1-3","o1","o2","o3"
+"Nested matched case-control - prospective","Lung","Blood","mRNA",,"o1",,
+"Nested matched case-control - prospective","Ovaria","Blood","mRNA",,"postdiagnostic_lobj",,
+"Nested matched case-control - hospital diagnostic","Breast","Blood","mRNA","CC1","o1",,
+"Nested matched case-control - hospital diagnostic","Breast","Blood","mRNA","CC2","o1",,
+"Nested matched case-control - hospital diagnostic","Breast","Blood","mRNA","CC3","o1",,

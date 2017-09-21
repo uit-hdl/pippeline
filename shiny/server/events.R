@@ -90,6 +90,7 @@ output$download <- downloadHandler(
     paste0( basics$appName, '-', format( ts, '%Y-%m-%d_%H-%M-%S'), '.zip')  # archive
   },
   content = function( arFile) {
+    showNotification( 'Processing. Please wait ..')  
     # make temporary directory
     tmpDir <- file.path( tempdir(), paste0( basics$appName, '-', as.numeric( as.POSIXct( ts) ) ) )
     dir.create( tmpDir)
@@ -98,14 +99,14 @@ output$download <- downloadHandler(
     dataFile <- file.path( tmpDir, 'data.RData')
     docFile <- file.path( tmpDir, paste0( 'documentation.', basics$docFormat) )  # documentation
     pipeline <- generatePipeline( list(
-      sourceFiles = sourceFiles(),
+      sourceObjs = sourceObjs(),
       targetFile = dataFile
     ) )
     # fill files with content
     tryCatch( {
       writeScript( pipeline, scriptFile)
       render( scriptFile, paste0( basics$docFormat, '_document'), docFile, quiet = TRUE)
-      showNotification( 'Archive successfully written.', type = 'message')  
+      showNotification( 'All files successfully written.', type = 'message')  
     }, error = function( err){
       showNotification( 'Could not produce data/documentation. (Error in generated pipeline?) Error code #3.', type = 'error')  
     } )

@@ -15,9 +15,9 @@ choicesAreValid <- reactive( {
 output$choicesAreValid <- reactive( { choicesAreValid() } )
 outputOptions( output, 'choicesAreValid', suspendWhenHidden = FALSE)
 
-sourceFiles <- reactive( {
+sourceObjs <- reactive( {
   if( choicesAreValid() ) {
-    getDataFiles()
+    getDataObjs()
   } else {
     NULL
   }
@@ -36,7 +36,7 @@ output$qvarPicker <- renderUI( {
 procIsAllowed <- reactive( { 
   prereqsAreValid() &&
     choicesAreValid() && 
-    !is.null( sourceFiles() )
+    !is.null( sourceObjs() )
 } )
 output$procIsAllowed <- reactive( { procIsAllowed() } )
 outputOptions( output, 'procIsAllowed', suspendWhenHidden = FALSE)

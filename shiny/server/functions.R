@@ -1,8 +1,8 @@
 # helper functions
 
-# Determine the filenames of the data sources.
-# @return A character vector with filenames
-getDataFiles <- function() {
+# Determine the name of the data objects.
+# @return A character vector with object names
+getDataObjs <- function() {
   row <- which( ( options[ , 'Design'] == input$dsg &
                     options[ , 'Location'] == input$loc &
                     options[ , 'Material'] == input$mat &
@@ -11,15 +11,15 @@ getDataFiles <- function() {
     showNotification( 'No data found. (Check file with available options?) Error code #1.', type = 'error')
     return( NULL)
   }
-  files <- as.vector( unname( unlist( options[ row, c( 'File1', 'File2', 'File3') ] ) ) )
-  files <- files[ files != '']
-  return( files) # fixme
-  areReadable = ( file.access( files, 4) > -1)
+  objs <- as.vector( unname( unlist( options[ row, c( 'Obj1', 'Obj2', 'Obj3') ] ) ) )
+  objs <- objs[ objs != '']
+  return( objs) # fixme
+  areReadable = ( file.access( objs, 4) > -1)
   if( sum( areReadable) != length( areReadable) ) {
     showNotification( 'Data source not readable. (Check file with available options?) Error code #2.', type = 'error')
     return( NULL)
   }
-} # function getDataFiles
+} # function getDataObjs
 
 # Format a code line as a comment.
 # @param string: Code line
@@ -116,17 +116,17 @@ writeScript <- function( pipeline,
 # @param list: parameters
 # @return list: pipeline attributes
 generatePipeline <- function( params) {
-  numberOfRuns <- length( params$sourceFiles)
+  numberOfRuns <- length( params$sourceObjs)
   idxSeq <- 1 : numberOfRuns
   # details for mandatory processing steps
   # step: reading
-  generateCode <- function( vecLength, idxSeq, file) {
+  generateCode <- function( vecLength, idxSeq, objs) {
     c(   # instructions
       sprintf( '##data <- vector(length=%d)', vecLength),
-      sprintf( '##data[%d] <- read.csv("%s")', idxSeq, file)
+      sprintf( '##data[%d] <- get("%s")', idxSeq, objs)
     )
   }
-  readStep <- createStep( 'Datasets', 'Reading in datasets into a list', TRUE, generateCode, list( numberOfRuns, idxSeq, params$sourceFiles[ idxSeq] ) )
+  readStep <- createStep( 'Datasets', 'Reading in datasets', TRUE, generateCode, list( numberOfRuns, idxSeq, params$sourceObjs[ idxSeq] ) )
   
   # step: combination
   generateCode <- function( idxSeq) {
