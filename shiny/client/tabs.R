@@ -59,8 +59,7 @@ outlierTab <- list(
       checkboxInput( 'outlierEnabled', 'Enabled', TRUE), # fixme
       conditionalPanel(
         condition = 'input.outlierEnabled',
-        p( 'Identify outliers as described in the vignette of nowaclean and save them like so:', code( 'save(for_removal, file="outliers.RData")'), '.'),
-        p( 'You can then import this file here. It is vital that the variable name is not changed.'),
+        p( 'Identify outliers as described in the vignette of nowaclean and save them like so:', code( 'saveRDS(outliers, file="outliers.rds")'), '. You can then import this file here.'),
         fileInput( 'outlierFile', 'RData file with outliers'),
         textAreaInput( inputId = 'outlierDescr', label = 'Outlier description (optional)', value = '')
       ),

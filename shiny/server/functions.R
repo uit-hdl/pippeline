@@ -180,12 +180,11 @@ generatePipeline <- function( params) {
     outlierFile <- input$outlierFile$datapath
     if( length( outlierFile) == 0 ||
         as.integer( file.access( outlierFile, mode = 4) ) < 0)
-      showNotification( 'Could not read outlier file. Error code #4.', type = 'error')  
+      showNotification( 'Could not read outliers file. Error code #4.', type = 'error')  
     c(
       cmt(),
       cmt( paste( 'Identification of outliers:', ifelse( input$outlierDescr != '', input$outlierDescr, 'Not described') ) ),
-      sprintf( 'load("%s")', outlierFile),
-      'for_removal',
+      sprintf( '## outliers <- readRDS("%s")', outlierFile),
       '## fixme: remove outliers'
     )
   }
