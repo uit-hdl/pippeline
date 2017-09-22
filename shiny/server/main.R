@@ -23,6 +23,19 @@ sourceObjs <- reactive( {
   }
 } )
 
+ctrlProbesExist <- reactive( { 
+  input$ctrlProbes != '' &&
+    exists( input$ctrlProbes)
+} )
+output$ctrlProbesExist <- reactive( { ctrlProbesExist() } )
+outputOptions( output, 'ctrlProbesExist', suspendWhenHidden = FALSE)
+output$ctrlProbesCheck <- renderUI( {
+  if( ctrlProbesExist() )
+    span( '')
+  else
+    span( '(Object not found)', class = 'fail')
+} )
+
 # questionnaire variables
 questIsValid <- reactive( { input$questObj != notSelOpt} )
 output$questIsValid <- reactive( { questIsValid() } )

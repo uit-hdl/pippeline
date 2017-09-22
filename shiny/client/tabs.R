@@ -83,13 +83,19 @@ corrTab <- list(
     list( 
       p( 'Here you can do a background correction by means of negative control probes.'),
       checkboxInput( 'corrEnabled', 'Enabled', TRUE), # fixme
-      # conditionalPanel(
-      #   condition = 'input.corrEnabled'
-      # ),
+      conditionalPanel(
+        condition = 'input.corrEnabled',
+        p( 'You need to enter the name of the R object holding the negative control probes.'),
+        textInput( 'ctrlProbes', label = 'Probes object', value = ''),
+        uiOutput( 'ctrlProbesCheck')
+      ),
       hr(),
-      actionButton( 'corrNext', label = 'Continue'),
-      span( 'or', class='or'),
-      actionLink( 'corrDown', 'download')
+      conditionalPanel( 
+        condition = '!input.corrEnabled || output.ctrlProbesExist',
+        actionButton( 'corrNext', label = 'Continue'),
+        span( 'or', class='or'),
+        actionLink( 'corrDown', 'download')
+      )
     )
   )
 )

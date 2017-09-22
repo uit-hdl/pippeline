@@ -4,3 +4,6 @@ span.or {
 img.logo {
   float: right;
 }
+.fail {
+  color: red;
+}
