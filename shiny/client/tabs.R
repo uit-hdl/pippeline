@@ -64,9 +64,12 @@ outlierTab <- list(
         textAreaInput( inputId = 'outlierDescr', label = 'Outlier description (optional)', value = '')
       ),
       hr(),
-      actionButton( 'outlierNext', label = 'Continue'),
-      span( 'or', class='or'),
-      actionLink( 'outlierDown', 'download')
+      conditionalPanel(
+        condition = '!input.outlierEnabled || output.outlFileExists',
+        actionButton( 'outlierNext', label = 'Continue'),
+        span( 'or', class='or'),
+        actionLink( 'outlierDown', 'download')
+      )
     )
   )
 )

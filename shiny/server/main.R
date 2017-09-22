@@ -36,6 +36,12 @@ output$ctrlProbesCheck <- renderUI( {
     span( '(Object not found)', class = 'fail')
 } )
 
+outlFileExists <- reactive( { 
+  !is.null( input$outlierFile)
+} )
+output$outlFileExists <- reactive( { outlFileExists() } )
+outputOptions( output, 'outlFileExists', suspendWhenHidden = FALSE)
+
 # questionnaire variables
 questIsValid <- reactive( { input$questObj != notSelOpt} )
 output$questIsValid <- reactive( { questIsValid() } )
