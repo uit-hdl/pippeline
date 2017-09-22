@@ -9,9 +9,10 @@ require(genefilter)
 
 
 #' Map probes to genes.
-#' @export
+#' 
 #' @param matrix where colnames(data)=sample IDs and rownames(data) = probe IDs
 #' @return matrix where colnames(data)=sample IDs and rownames(data) = gene IDs
+#' @export
 mapToGenes <- function(data) {
   # --- Map to gene symbol
   nuIDs <- rownames(data)
@@ -33,7 +34,7 @@ mapToGenes <- function(data) {
 
 
 #' Perform background correction and remove bad probes.
-#' @export
+#' 
 #' @param lumi object with gene expression matrix exprs(data) where
 #'        colnames(exprs(data)) = sample IDs ( = labnr)
 #'        rownames(exprs(data)) = probe IDs
@@ -43,6 +44,7 @@ mapToGenes <- function(data) {
 #' @return background-corrected lumi object where 
 #'         colnames(exprs(data)) = sample IDs ( = labnr)
 #'         rownames(exprs(data)) = probe IDs
+#' @export
 performBackgroundCorrection <- function(data, negCtrl) {
   
   ## --- Extract and transpose the expression matrix from the lumi object data
@@ -77,11 +79,12 @@ performBackgroundCorrection <- function(data, negCtrl) {
 
 
 #' Filtering based on on pValue and presentLimit.
-#' @export
+#' 
 #' @param lumi object where colnames(data)=sample IDs and rownames(data) = probe IDs
 #' @param p-value limit pValue
 #' @param presentLimit
 #' @return filtered lumi object where colnames(data)=sample IDs and rownames(data) = probe IDs
+#' @export
 filterData <- function(data, pValue, presentLimit) {
   presentcall <- detectionCall(data,Th=pValue)
   filterP <- which(presentcall>(presentLimit*ncol(data)))
@@ -92,10 +95,13 @@ filterData <- function(data, pValue, presentLimit) {
 
 
 #' Log2 transformation using a variance stabilizing technique* and quantile normalization.
-#' * Lin SM, Du P, Huber W, Kibbe WA. Model-based variance-stabilizing transformation for Illumina microarray data. Nucleic Acids Res. 2008;36(2):e11.
-#' @export
+#' 
+#' * Lin SM, Du P, Huber W, Kibbe WA. Model-based variance-stabilizing transformation for 
+#' Illumina microarray data. Nucleic Acids Res. 2008;36(2):e11.
+#' 
 #' @param lumi object where colnames(data)=sample IDs and rownames(data) = probe IDs
 #' @return normalized matrix where colnames(data)=sample IDs and rownames(data) = probe IDs
+#' @export
 normalizeData <- function(data.new) {
   vstdata <- lumiT(data.new,method="vst")
   Nvstdata <- lumiN(vstdata,method="quantile")
