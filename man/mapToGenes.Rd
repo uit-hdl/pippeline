@@ -7,7 +7,7 @@
 mapToGenes(data)
 }
 \arguments{
-\item{matrix}{where colnames(data)=sample IDs and rownames(data) = probe IDs}
+\item{data}{matrix where colnames(data)=sample IDs and rownames(data) = probe IDs}
 }
 \value{
 matrix where colnames(data)=sample IDs and rownames(data) = gene IDs

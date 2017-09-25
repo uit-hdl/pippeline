@@ -2,16 +2,17 @@
 % Please edit documentation in R/NR_functions.R
 \name{normalizeData}
 \alias{normalizeData}
-\title{Normalization procedure from Vanesssa.}
+\title{Log2 transformation using a variance stabilizing technique* and quantile normalization.}
 \usage{
 normalizeData(data.new)
 }
 \arguments{
-\item{lumi}{object where colnames(data)=sample IDs and rownames(data) = probe IDs}
+\item{data.new}{lumi object where colnames(data)=sample IDs and rownames(data) = probe IDs}
 }
 \value{
 normalized matrix where colnames(data)=sample IDs and rownames(data) = probe IDs
 }
 \description{
-Normalization procedure from Vanesssa.
+* Lin SM, Du P, Huber W, Kibbe WA. Model-based variance-stabilizing transformation for 
+Illumina microarray data. Nucleic Acids Res. 2008;36(2):e11.
 }

@@ -4,17 +4,21 @@
 \alias{performBackgroundCorrection}
 \title{Perform background correction and remove bad probes.}
 \usage{
-performBackgroundCorrection(data, exprs, negCtrl)
+performBackgroundCorrection(data, negCtrl)
 }
 \arguments{
-\item{lumi}{object where colnames(data)=sample IDs and rownames(data) = probe IDs}
+\item{data}{lumi object with gene expression matrix exprs(data) where
+colnames(exprs(data)) = sample IDs ( = labnr)
+rownames(exprs(data)) = probe IDs}
 
-\item{matrix}{where rownames(exprs)=sample IDs and colnames(exprs) = probe IDs}
-
-\item{matrix}{where rownames(exprs)=sample IDs and colnames(data) = negative control IDs}
+\item{negCtrl}{matrix where
+rownames(negCtrl) is a subset of colnames(exprs(data))
+each column in negCtrl contains expression values for a negative control probe}
 }
 \value{
-background corrected lumi object where colnames(data)=sample IDs and rownames(data) = gene IDs
+background-corrected lumi object where 
+        colnames(exprs(data)) = sample IDs ( = labnr)
+        rownames(exprs(data)) = probe IDs
 }
 \description{
 Perform background correction and remove bad probes.

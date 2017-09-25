@@ -7,9 +7,11 @@
 filterData(data, pValue, presentLimit)
 }
 \arguments{
-\item{lumi}{object where colnames(data)=sample IDs and rownames(data) = probe IDs}
+\item{data}{object where colnames(data)=sample IDs and rownames(data) = probe IDs}
 
-\item{p-value}{limit pValue}
+\item{pValue}{p-value}
+
+\item{presentLimit}{limit}
 }
 \value{
 filtered lumi object where colnames(data)=sample IDs and rownames(data) = probe IDs

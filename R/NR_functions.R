@@ -1,16 +1,6 @@
-require(arrayQualityMetrics)
-require(limma)
-require(lumi)
-require(nlme)
-require(illuminaHumanv3.db)
-require(illuminaHumanv4.db)
-require(lumiHumanIDMapping)
-require(genefilter)
-
-
 #' Map probes to genes.
 #' 
-#' @param matrix where colnames(data)=sample IDs and rownames(data) = probe IDs
+#' @param data matrix where colnames(data)=sample IDs and rownames(data) = probe IDs
 #' @return matrix where colnames(data)=sample IDs and rownames(data) = gene IDs
 #' @export
 mapToGenes <- function(data) {
@@ -35,10 +25,10 @@ mapToGenes <- function(data) {
 
 #' Perform background correction and remove bad probes.
 #' 
-#' @param lumi object with gene expression matrix exprs(data) where
+#' @param data lumi object with gene expression matrix exprs(data) where
 #'        colnames(exprs(data)) = sample IDs ( = labnr)
 #'        rownames(exprs(data)) = probe IDs
-#' @param matrix where
+#' @param negCtrl matrix where
 #'        rownames(negCtrl) is a subset of colnames(exprs(data))
 #'        each column in negCtrl contains expression values for a negative control probe
 #' @return background-corrected lumi object where 
@@ -80,9 +70,9 @@ performBackgroundCorrection <- function(data, negCtrl) {
 
 #' Filtering based on on pValue and presentLimit.
 #' 
-#' @param lumi object where colnames(data)=sample IDs and rownames(data) = probe IDs
-#' @param p-value limit pValue
-#' @param presentLimit
+#' @param data object where colnames(data)=sample IDs and rownames(data) = probe IDs
+#' @param pValue p-value
+#' @param presentLimit limit
 #' @return filtered lumi object where colnames(data)=sample IDs and rownames(data) = probe IDs
 #' @export
 filterData <- function(data, pValue, presentLimit) {
@@ -99,7 +89,7 @@ filterData <- function(data, pValue, presentLimit) {
 #' * Lin SM, Du P, Huber W, Kibbe WA. Model-based variance-stabilizing transformation for 
 #' Illumina microarray data. Nucleic Acids Res. 2008;36(2):e11.
 #' 
-#' @param lumi object where colnames(data)=sample IDs and rownames(data) = probe IDs
+#' @param data.new lumi object where colnames(data)=sample IDs and rownames(data) = probe IDs
 #' @return normalized matrix where colnames(data)=sample IDs and rownames(data) = probe IDs
 #' @export
 normalizeData <- function(data.new) {
