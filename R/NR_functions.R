@@ -29,7 +29,7 @@ mapToGenes <- function(data) {
 #'        colnames(exprs(data)) = sample IDs ( = labnr)
 #'        rownames(exprs(data)) = probe IDs
 #' @param negCtrl matrix where
-#'        rownames(negCtrl) is a subset of colnames(exprs(data))
+#'        rownames(negCtrl) is a superset of colnames(exprs(data))
 #'        each column in negCtrl contains expression values for a negative control probe
 #' @return background-corrected lumi object where 
 #'         colnames(exprs(data)) = sample IDs ( = labnr)
@@ -56,7 +56,7 @@ performBackgroundCorrection <- function(data, negCtrl) {
   
   # --- Get rid of bad probes
   probes <- nuID2IlluminaID(as.character(featureNames(data)), lib.mapping=NULL, species ="Human", idType='Probe')
-  probe.quality <- unlist(mget(as.character(probes), illuminaHumanv3PROBEQUALITY, ifnotfound=NA))
+  probe.quality <- unlist(BiocGenerics::mget(as.character(probes), illuminaHumanv3PROBEQUALITY, ifnotfound=NA))
   table(probe.quality, exclude=NULL) # check mapping and missing
   good.quality <- !((probe.quality == "Bad") | (probe.quality == "No match"))
   length(good.quality[good.quality==TRUE])
