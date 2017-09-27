@@ -134,8 +134,8 @@ generatePipeline <- function( params) {
   # step: reading
   generateCode <- function( lobj) {
     code <- c(   # instructions
-      sprintf( 'data <- list(length=%d)', numberOfRuns),
-      sprintf( 'data[[%d]] <- list(2)', idxSeq)
+      sprintf( 'data <- vector("list",length=%d)', numberOfRuns),
+      sprintf( 'data[[%d]] <- vector("list",length=2)', idxSeq)
     )
     if( exists( lobj) )
       code <- c(
@@ -238,7 +238,7 @@ generatePipeline <- function( params) {
       code <- c(
         '# preparing the negative control probes',
         sprintf( 'data[[%d]$negCtrl <- get("%s")', idxSeq, input$ctrlProbes),
-        sprintf( 'pIDs <- list(length=%d)', numberOfRuns),
+        sprintf( 'pIDs <- vector("list",length=%d)', numberOfRuns),
         sprintf( 'pIDs[[%1$d]] <- data[[%1$d]]$negCtrl$ProbeID', idxSeq),
         sprintf( 'data[[%1$d]]$negCtrl <- t(data[[%1$d]]$negCtrl[,-c(1,2)])', idxSeq),
         sprintf( 'colnames(data[[%1$d]]$negCtrl) <- pIDs[[%1$d]]', idxSeq),
