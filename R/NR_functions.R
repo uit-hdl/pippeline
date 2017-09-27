@@ -70,7 +70,7 @@ performBackgroundCorrection <- function(data, negCtrl) {
 
 #' Filtering based on on pValue and presentLimit.
 #' 
-#' @param data object where colnames(data)=sample IDs and rownames(data) = probe IDs
+#' @param data lumi object where colnames(data)=sample IDs and rownames(data) = probe IDs
 #' @param pValue p-value
 #' @param presentLimit limit
 #' @return filtered lumi object where colnames(data)=sample IDs and rownames(data) = probe IDs

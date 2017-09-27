@@ -173,7 +173,7 @@ questTab <- list(
         selectInput( 'questObj', label = 'Questionnaire', selected = 'two_page_questionnaire', choices = quests), # fixme
         conditionalPanel(
           condition = 'output.questIsValid',
-          p( 'Add variables to or delete from the list of questionnaire variables. Add by typing variable names or picking from the list.'),
+          p( 'Add variables to (by typing names or picking from the list) or delete from the list of questionnaire variables.'),
           uiOutput( 'qvarPicker')
         )
       ),
@@ -197,7 +197,7 @@ downloadTab <- list(
   conditionalPanel( 
     condition = 'output.downlIsAllowed',
     list( 
-      p( 'Here you can download an archive (a .zip file) containing the processed dataset (.RData format), documentation of all processing steps (.pdf file), and the source (.R file).'),
+      p( 'Here you can download an archive (a .zip file) containing the processed dataset (.RDS format), documentation of all processing steps (.pdf file), and the source (.R file).'),
       p( 'The datset consists of genes if not chosen otherwise.'),
       checkboxInput( 'wantProbes', 'Probes instead of genes'),
       downloadButton( 'download', 'Download archive')
