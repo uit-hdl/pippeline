@@ -99,14 +99,25 @@ writeScript <- function( pipeline,
     cmt( paste( '* Biological material:', input$mat) ),
     cmt( paste( '* Genomic analysis:', input$ana) ),
     cmt(),
-    cmt( paste( 'Data source file names are read from file:', basics$optionsFile) ),
-    cmt( paste( 'Questionnaire object names are read from file:', basics$questsFile) ),
+    cmt( paste0( 'Data source file names are read from file: ', basics$optionsFile, '.') ),
+    cmt(),
+    cmt( paste0( 'Questionnaire object names are read from file: ', basics$questsFile, '.') ),
     '',
-    sprintf( '##source("%s")', file.path( system.file( package = pkgInfo[ 1], mustWork=TRUE), 'R', 'NR_functions.R') ),
+    '# requirements',
+    sprintf( 'library(%s)', pkgInfo[ 1] ),
+    sprintf( 'library(arrayQualityMetrics)'),
+    sprintf( 'library(limma)'),
+    sprintf( 'library(lumi)'),
+    sprintf( 'library(nlme)'),
+    sprintf( 'library(illuminaHumanv3.db)'),
+    sprintf( 'library(illuminaHumanv4.db)'),
+    sprintf( 'library(lumiHumanIDMapping)'),
+    sprintf( 'library(genefilter)'),
+    sprintf( 'library(Biobase)'),
     # steps, incl. read and write
     documentSteps( pipeline),
     # footer
-    '',
+    cmt(),
     cmt( '***')
   )
   writeLines( doc, scriptFile)
@@ -118,26 +129,38 @@ writeScript <- function( pipeline,
 generatePipeline <- function( params) {
   numberOfRuns <- length( params$sourceObjs)
   idxSeq <- 1 : numberOfRuns
+
   # details for mandatory processing steps
   # step: reading
-  generateCode <- function( vecLength, idxSeq, objs) {
-    c(   # instructions
-      sprintf( '##data <- vector(length=%d)', vecLength),
-      sprintf( '##data[%d] <- get("%s")', idxSeq, objs)
+  generateCode <- function( lobj) {
+    code <- c(   # instructions
+      sprintf( 'data <- list(length=%d)', numberOfRuns),
+      sprintf( 'data[[%d]] <- list(2)', idxSeq)
     )
+    if( exists( lobj) )
+      code <- c(
+        code,
+        sprintf( 'data[[%d]]$lumi <- get("%s")', idxSeq, lobj)
+      )
+    else
+      code <- c(
+        code,
+        'stop("Dataset is non-existant. Error code #7.")'
+      )
+    code
   }
-  readStep <- createStep( 'Datasets', 'Reading in datasets', TRUE, generateCode, list( numberOfRuns, idxSeq, params$sourceObjs[ idxSeq] ) )
+  readStep <- createStep( 'Datasets', 'Reading in datasets', TRUE, generateCode, list( params$sourceObjs[ idxSeq] ) )
   
   # step: combination
-  generateCode <- function( idxSeq) {
+  generateCode <- function() {
     if( numberOfRuns > 1) {
-      args <- paste( sprintf( 'data[%d]', idxSeq), collapse = ',')
-      c( sprintf( '##data <- combine(%s)', args) )
+      args <- paste( sprintf( 'data[[%d]]', idxSeq), collapse = ',')
+      c( sprintf( 'data <- BiocGenerics::combine(%s)', args) )
     } else {
-      c( sprintf( '##data <- data[1]') )
+      c( sprintf( 'data <- data[[1]]') )
     }
   }
-  combStep <- createStep( 'Combination', 'Combining all runs.', TRUE, generateCode, list( idxSeq) )
+  combStep <- createStep( 'Combination', 'Combining all runs', TRUE, generateCode)
   
   # step: anonymization
   generateCode <- function() {
@@ -145,26 +168,35 @@ generatePipeline <- function( params) {
       '## fixme: NR'
     )
   }
-  anoStep <- createStep( 'Anonymization', 'Removal of all IDs and running numbers.', TRUE, generateCode)
+  anoStep <- createStep( 'Anonymization', 'Removing all IDs and running numbers', TRUE, generateCode)
 
   # step: storage
   generateCode <- function( file) {
     if( input$wantProbes)
-      ins <- c(
-        cmt( 'The target data file contains probes.')
+      code <- c(
+        cmt( 'Note: The target data file contains probes.')
       )
     else
-      ins <- c(
-        cmt( 'The target data file contains genes.'),
-        '## fixme: NR',
-        '##data <- mapToGenes(data)'
+      code <- c(
+        cmt( 'Note: The target data file contains genes.'),
+        'data <- pippeline::mapToGenes(data)'
       )
-    c(
-      ins,
-      sprintf( 'save(pValue, file="%s")', file) # fixme: data
+    code <- c(
+      code,
+      sprintf( 'saveRDS(data,file="%s")', file)
     )
+    code
   }
   writeStep <- createStep( 'Storage', 'Writing processed datasets.', TRUE, generateCode, list( params$targetFile) )
+  
+  # step: archiving
+  generateCode <- function() {
+    c(
+      cmt(),
+      cmt( 'Copying R script (this file), documentation, and generated data into archive.')
+    )
+  }
+  arStep <- createStep( 'Archiving', 'Collecting files', TRUE, generateCode)
   
   # details for non-mandatory processing steps
   # step: control transitions
@@ -173,39 +205,64 @@ generatePipeline <- function( params) {
       '## fixme: UiT'
     )
   }
-  exclStep <- createStep( 'Transitions', 'Exclusion of control-case transitions.', input$trans, generateCode)
+  exclStep <- createStep( 'Transitions', 'Exclusion of control-case transitions', input$trans, generateCode)
 
   # step: outliers
   generateCode <- function() {
+    code <- c(
+      cmt(),
+      cmt( paste( 'Description of outliers:', ifelse( input$outlierDescr != '', input$outlierDescr, 'Not available') ) )
+    )
     outlierFile <- input$outlierFile$datapath
     if( length( outlierFile) == 0 ||
-        as.integer( file.access( outlierFile, mode = 4) ) < 0)
-      showNotification( 'Could not read outliers file. Error code #4.', type = 'error')  
-    c(
-      cmt(),
-      cmt( paste( 'Identification of outliers:', ifelse( input$outlierDescr != '', input$outlierDescr, 'Not described') ) ),
-      sprintf( '## outliers <- readRDS("%s")', outlierFile),
-      '## fixme: remove outliers'
-    )
+        as.integer( file.access( outlierFile, mode = 4) ) < 0) {
+      code <- c(
+        code,
+        'stop( "Could not read outliers file. Error code #4.")'
+      )
+    } else {
+      code <- c(
+        code,
+        sprintf( '# original filename: %s (copied to temporary location)', input$outlierFile$name),
+        sprintf( 'outliers <- readRDS("%s")', outlierFile),
+        'exprs(data) <- exprs(data)[,-match(outliers,colnames(exprs(data)))]'
+      )
+    }
+    code
   }
-  outlStep <- createStep( 'Outliers', 'Removal of outliers.', input$outlierEnabled, generateCode)
+  outlStep <- createStep( 'Outliers', 'Removal of outliers', input$outlierEnabled, generateCode)
 
   # step: background correction
-  generateCode <- function( idxSeq) {
-    c(
-      '## fixme: NR',
-      sprintf( '##data[%d] <- performBackgroundCorrection(data[%1$d]$lumi, data[%1$d]$expr, data[%1$d]$negCtrl)', idxSeq)
+  generateCode <- function() {
+    if( exists( input$ctrlProbes) )
+      code <- c(
+        '# preparing the negative control probes',
+        sprintf( 'data[[%d]$negCtrl <- get("%s")', idxSeq, input$ctrlProbes),
+        sprintf( 'pIDs <- list(length=%d)', numberOfRuns),
+        sprintf( 'pIDs[[%1$d]] <- data[[%1$d]]$negCtrl$ProbeID', idxSeq),
+        sprintf( 'data[[%1$d]]$negCtrl <- t(data[[%1$d]]$negCtrl[,-c(1,2)])', idxSeq),
+        sprintf( 'colnames(data[[%1$d]]$negCtrl) <- pIDs[[%1$d]]', idxSeq),
+        'rm(pIDs)'
+      )
+    else
+      code <- c(
+        'stop("Negative control probes are non-existant. Error code #8.")'
+      )
+    code <- c(
+      code,
+      '# now correct',
+      sprintf( 'data[[%d]]$lumi <- pippeline::performBackgroundCorrection(data[[%1$d]]$lumi,data[[%1$d]]$negCtrl)', idxSeq)
     )
+    code
   }
-  bcorrStep <- createStep( 'Background correction', 'Perform background correction and remove bad probes', input$corrEnabled, generateCode, list( idxSeq) )
+  bcorrStep <- createStep( 'Background correction', 'Perform background correction and remove bad probes', input$corrEnabled, generateCode)
   
   # step: probe filtering
   generateCode <- function() {
     c(
-      '## fixme: NR',
       sprintf( 'pValue <- %1.2f', input$pval),
       sprintf( 'pLimit <- %1.2f', input$plimit),
-      '##data <- filterData(data,pValue,pLimit)'
+      'data <- pippeline::filterData(data,pValue,pLimit)'
     ) 
   }
   filtStep <- createStep( 'Probe filtering', 'Filtering based on on pValue and presentLimit', input$filtEnabled, generateCode)
@@ -213,26 +270,31 @@ generatePipeline <- function( params) {
   # step: normalization
   generateCode <- function() {
     c(
-      '## fixme: NR',
-      sprintf( '##data <- normalizeData(data,"%s")', input$nmeth),
+      sprintf( 'data <- pippeline::normalizeData(data,"%s")', input$nmeth),
       '# have now gene expressions matrix'
     )
   }
-  normStep <- createStep( 'Normalization', 'Log2 transformation and quantile normalization', input$normEnabled, generateCode)
+  normStep <- createStep( 'Normalization', 'log2 transformation and quantile normalization', input$normEnabled, generateCode)
   
   # step: questionnaires 
   generateCode <- function() {
-    c(
-      sprintf( '## quest <- get("%s")', input$questObj), # fixme
-      '# determine sample ID matches',
-      '## m <- match( colnames( data), quest$labnr)',
-      '# remove now obsolete IDs',
-      '## quest$labnr <- NULL',
-      '# reduce variable set if necessary',
-      sprintf( '## qvars <- c(%s)', paste0( '"', paste( as.character(input$questVars), collapse = '","'), '"' ) ),
-      '# sew together matches',
-      '## data <- rbind( data, t( quest)[qvars,m] )'
-    )
+    if( exists( input$questObj) ) {
+      c(
+        sprintf( 'quest <- get("%s")', input$questObj),
+        '# determine sample ID matches',
+        'm <- match(colnames(data), quest$labnr)',
+        '# remove now obsolete IDs',
+        'quest$labnr <- NULL',
+        '# reduce variable set if necessary',
+        sprintf( 'qvars <- c(%s)', paste0( '"', paste( as.character(input$questVars), collapse = '","'), '"' ) ),
+        '# sew together matches',
+        'data <- rbind(data,t(quest)[qvars,m])',
+        'rm(qvars,m,quest)'
+      )
+    } else
+      c(
+        'stop("Questionnaire object non-existant. Error code #10.")'
+      )
   }
   questStep <- createStep( 'Questionnaires', 'Selecting variables from associated questionnaires', input$questEnabled, generateCode)
   
@@ -247,7 +309,8 @@ generatePipeline <- function( params) {
     normStep,
     questStep,
     anoStep, # mandatory
-    writeStep # mandatory
+    writeStep, # mandatory
+    arStep # mandatory
   )
 } # function generatePipeline
 
