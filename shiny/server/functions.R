@@ -144,24 +144,24 @@ generatePipeline <- function( params) {
 
   # details for mandatory processing steps
   # step: reading
-  generateCode <- function( lobj) {
+  generateCode <- function( gExprs) {
     code <- c(   # instructions
       sprintf( 'data <- vector("list",length=%d)', numberOfRuns),
       sprintf( 'data[[%d]] <- vector("list",length=2)', idxSeq)
     )
-    if( exists( lobj) )
+    if( sum( sapply( gExprs, exists) ) == numberOfRuns)
       code <- c(
         code,
-        sprintf( 'data[[%d]]$lumi <- get("%s")', idxSeq, lobj)
+        sprintf( 'data[[%d]]$lumi <- get("%s")', idxSeq, gExprs)
       )
     else
       code <- c(
         code,
-        'stop("Dataset is non-existant. Error code #7.")'
+        'stop("Source dataset is non-existant. Error code #7.")'
       )
     code
   }
-  readStep <- createStep( 'Datasets', 'Reading in datasets', TRUE, generateCode, list( params$sourceObjs[ idxSeq] ) )
+  readStep <- createStep( 'Datasets', 'Reading in datasets', TRUE, generateCode, list( unlist( lapply( params$sourceObjs, '[', 'ge') ) ) )
   
   # step: combination
   generateCode <- function() {
@@ -245,11 +245,11 @@ generatePipeline <- function( params) {
   outlStep <- createStep( 'Outliers', 'Removal of outliers', input$outlierEnabled, generateCode)
 
   # step: background correction
-  generateCode <- function() {
-    if( exists( input$ctrlProbes) )
+  generateCode <- function( nCtrls) {
+    if( sum( sapply( nCtrls, exists) ) == numberOfRuns)
       code <- c(
         '# preparing the negative control probes',
-        sprintf( 'data[[%d]$negCtrl <- get("%s")', idxSeq, input$ctrlProbes),
+        sprintf( 'data[[%d]$negCtrl <- get("%s")', idxSeq, nCtrls),
         sprintf( 'pIDs <- vector("list",length=%d)', numberOfRuns),
         sprintf( 'pIDs[[%1$d]] <- data[[%1$d]]$negCtrl$ProbeID', idxSeq),
         sprintf( 'data[[%1$d]]$negCtrl <- t(data[[%1$d]]$negCtrl[,-c(1,2)])', idxSeq),
@@ -267,7 +267,7 @@ generatePipeline <- function( params) {
     )
     code
   }
-  bcorrStep <- createStep( 'Background correction', 'Perform background correction and remove bad probes', input$corrEnabled, generateCode)
+  bcorrStep <- createStep( 'Background correction', 'Perform background correction and remove bad probes', input$corrEnabled, generateCode, list( unlist( lapply( params$sourceObjs, '[', 'nc') )) )
   
   # step: probe filtering
   generateCode <- function() {
