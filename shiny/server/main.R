@@ -23,18 +23,11 @@ sourceObjs <- reactive( {
   }
 } )
 
-ctrlProbesExist <- reactive( { 
-  input$ctrlProbes != '' &&
-    exists( input$ctrlProbes)
+objsExist <- reactive( { 
+  !is.null( sourceObjs() )
 } )
-output$ctrlProbesExist <- reactive( { ctrlProbesExist() } )
-outputOptions( output, 'ctrlProbesExist', suspendWhenHidden = FALSE)
-output$ctrlProbesCheck <- renderUI( {
-  if( ctrlProbesExist() )
-    span( '')
-  else
-    span( '(Object not found)', class = 'fail')
-} )
+output$objsExist <- reactive( { objsExist() } )
+outputOptions( output, 'objsExist', suspendWhenHidden = FALSE)
 
 outlFileExists <- reactive( { 
   !is.null( input$outlierFile)

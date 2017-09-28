@@ -74,5 +74,3 @@ source('pippeline.R')
   1.16.0.2, therefore the docFormat has been set to "html" in 
   file globals.R. This may change with other versions; then the value
   "pdf" might be possible. This works in RStudio 1.0.136, though.
-* The package maintainer may consider removing the column "Subfile"
-  in the file "options.csv"; it is currently not in use.

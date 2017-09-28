@@ -1,24 +1,36 @@
 # helper functions
 
 # Determine the name of the data objects.
-# @return A character vector with object names
+# @return A character vector with object names, or NULL in case of errors
 getDataObjs <- function() {
-  row <- which( ( options[ , 'Design'] == input$dsg &
-                    options[ , 'Location'] == input$loc &
-                    options[ , 'Material'] == input$mat &
-                    options[ , 'Analysis'] == input$ana ) )
+  row <- which( options[ , 'Design'] == input$dsg &
+                  options[ , 'Location'] == input$loc &
+                  options[ , 'Material'] == input$mat &
+                  options[ , 'Analysis'] == input$ana )
   if( row < 1) {
-    showNotification( 'No data found. (Check file with available options?) Error code #1.', type = 'error')
+    showNotification( 'No matching or unique data found. (Check file with available options?) Error code #1.', type = 'error')
     return( NULL)
   }
-  objs <- as.vector( unname( unlist( options[ row, c( 'Obj1', 'Obj2', 'Obj3') ] ) ) )
-  objs <- objs[ objs != '']
-  return( objs) # fixme
-  areReadable = ( file.access( objs, 4) > -1)
-  if( sum( areReadable) != length( areReadable) ) {
-    showNotification( 'Data source not readable. (Check file with available options?) Error code #2.', type = 'error')
+  jObjs <- as.list( t( options[ row, c( 'Obj1', 'Obj2', 'Obj3') ] ) )  # joint objects and remove empty elements
+  jObjs <- jObjs[ jObjs != '']  # remove empty elements
+  jObjs <- lapply( jObjs, function( e){ 
+    l <- as.list( strsplit( e, ',')[[ 1]] )
+    names( l) <- c( 'ge', 'nc') # gene expressions and negative controls
+    l
+  } )
+  # check existance
+  allObjsExist <- TRUE
+  sapply( jObjs, function( e) { 
+    sapply( e, function( ee) { 
+      if( !exists( ee) ) {
+        showNotification( paste0( 'Object "', ee, '" does not exist. (Check file with available options?) Error code #2.'), type = 'error')
+        allObjsExist <<- FALSE
+      }
+    } )
+  } )
+  if( !allObjsExist)
     return( NULL)
-  }
+  jObjs
 } # function getDataObjs
 
 # Format a code line as a comment.

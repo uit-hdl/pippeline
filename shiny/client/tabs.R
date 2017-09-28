@@ -36,7 +36,7 @@ designTab <- list(
     checkboxInput( 'trans', label = 'Exclude control-case transitions', value = TRUE),
     hr(),
     conditionalPanel( 
-      condition = 'output.procIsAllowed',
+      condition = 'output.procIsAllowed && output.objsExist',
       actionButton( 'designNext', label = 'Continue'),
       span( 'or', class='or'),
       actionLink( 'designDown', 'download')
@@ -84,21 +84,12 @@ corrTab <- list(
   conditionalPanel( 
     condition = 'output.procIsAllowed',
     list( 
-      p( 'Here you can do a background correction by means of negative control probes.'),
+      p( paste0( 'Background correction is carried out by means of negative control probes as specified in the file "', basics$optionsFile, '".') ),
       checkboxInput( 'corrEnabled', 'Enabled', TRUE), # fixme
-      conditionalPanel(
-        condition = 'input.corrEnabled',
-        p( 'You need to enter the name of the R object holding the negative control probes.'),
-        textInput( 'ctrlProbes', label = 'Probes object', value = ''),
-        uiOutput( 'ctrlProbesCheck')
-      ),
       hr(),
-      conditionalPanel( 
-        condition = '!input.corrEnabled || output.ctrlProbesExist',
-        actionButton( 'corrNext', label = 'Continue'),
-        span( 'or', class='or'),
-        actionLink( 'corrDown', 'download')
-      )
+      actionButton( 'corrNext', label = 'Continue'),
+      span( 'or', class='or'),
+      actionLink( 'corrDown', 'download')
     )
   )
 )
