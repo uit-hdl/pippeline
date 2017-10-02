@@ -189,20 +189,9 @@ generatePipeline <- function( params) {
 
   # step: storage
   generateCode <- function( file) {
-    if( as.logical( input$wantProbes) )
-      code <- c(
-        cmt( 'Note: The target data file contains probes.')
-      )
-    else
-      code <- c(
-        cmt( 'Note: The target data file contains genes.'),
-        'data <- pippeline::mapToGenes(data)'
-      )
-    code <- c(
-      code,
+    c(
       sprintf( 'saveRDS(data,file="%s")', file)
     )
-    code
   }
   writeStep <- createStep( 'Storage', 'Writing processed datasets.', TRUE, generateCode, list( params$targetFile) )
   
@@ -293,6 +282,20 @@ generatePipeline <- function( params) {
   }
   normStep <- createStep( 'Normalization', 'log2 transformation and quantile normalization', input$normEnabled, generateCode)
   
+  # step: conversion
+  generateCode <- function() {
+    if( as.logical( input$wantGenes) )
+      c(
+        cmt( 'Note: The target data file contains genes.'),
+        'data <- pippeline::mapToGenes(data)'
+      )
+    else
+      c(
+        cmt( 'Note: The target data file contains probes.')
+      )
+  }
+  convStep <- createStep( 'Conversion', 'Optional mapping of probes to genes', TRUE, generateCode)
+  
   # step: questionnaires 
   generateCode <- function() {
     if( exists( input$questObj) ) {
@@ -322,6 +325,7 @@ generatePipeline <- function( params) {
     combStep, # mandatory
     filtStep,
     normStep,
+    convStep, # mandatory
     questStep,
     anoStep, # mandatory
     writeStep, # mandatory
