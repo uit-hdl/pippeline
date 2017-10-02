@@ -3,5 +3,5 @@
 "Nested matched case-control - prospective","Lung","Blood","mRNA","postdiagnostic_lobj,postdiagnostic_negative_controls",,
 "Nested matched case-control - prospective","Ovaria","Blood","mRNA","postdiagnostic_lobj,postdiagnostic_negative_controls",,
 "Nested matched case-control - hospital diagnostic","Breast","Blood","mRNA","postdiagnostic_lobj,postdiagnostic_negative_controls",,
-"Nested matched case-control - hospital diagnostic","Lung","Blood","mRNA","postdiagnostic_lobj,postdiagnostic_negative_controls",,
+"Nested matched case-control - hospital diagnostic","Lung","Blood","mRNA","postdiagnostic_lobj_clean,postdiagnostic_negative_controls_clean",,
 "Nested matched case-control - hospital diagnostic","Ovaria","Blood","mRNA","postdiagnostic_lobj,postdiagnostic_negative_controlss",,

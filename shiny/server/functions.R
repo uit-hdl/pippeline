@@ -169,7 +169,7 @@ generatePipeline <- function( params) {
       args <- paste( sprintf( 'data[[%d]]', idxSeq), collapse = ',')
       c( sprintf( 'data <- BiocGenerics::combine(%s)', args) )
     } else {
-      c( sprintf( 'data <- data[[1]]') )
+      c( sprintf( 'data <- data[[1]]$lumi') )
     }
   }
   combStep <- createStep( 'Combination', 'Combining all runs', TRUE, generateCode)
@@ -237,7 +237,7 @@ generatePipeline <- function( params) {
         code,
         sprintf( '# original filename: %s (copied to temporary location)', input$outlierFile$name),
         sprintf( 'outliers <- readRDS("%s")', outlierFile),
-        'exprs(data) <- exprs(data)[,-match(outliers,colnames(exprs(data)))]'
+        sprintf( 'exprs(data[[%1$d]]$lumi) <- exprs(data[[%1$d]]$lumi)[,-match(outliers,colnames(exprs(data[[%1$d]]$lumi)))]', idxSeq)
       )
     }
     code
@@ -249,7 +249,7 @@ generatePipeline <- function( params) {
     if( sum( sapply( nCtrls, exists) ) == numberOfRuns)
       code <- c(
         '# preparing the negative control probes',
-        sprintf( 'data[[%d]$negCtrl <- get("%s")', idxSeq, nCtrls),
+        sprintf( 'data[[%d]]$negCtrl <- get("%s")', idxSeq, nCtrls),
         sprintf( 'pIDs <- vector("list",length=%d)', numberOfRuns),
         sprintf( 'pIDs[[%1$d]] <- data[[%1$d]]$negCtrl$ProbeID', idxSeq),
         sprintf( 'data[[%1$d]]$negCtrl <- t(data[[%1$d]]$negCtrl[,-c(1,2)])', idxSeq),
