@@ -108,7 +108,7 @@ output$download <- downloadHandler(
       #fixme render( scriptFile, paste0( basics$docFormat, '_document'), docFile, quiet = TRUE)
       showNotification( 'All files successfully written.', type = 'message')
     }, error = function( err){
-      showNotification( 'Could not produce data/documentation. (Error in generated pipeline?) Error code #3.', type = 'error', duration = basics$msgDuration)
+      showNotification( 'Could not produce data/documentation. (Error while sourcing script.) Error code #3.', type = 'error', duration = basics$msgDuration)
     } )
     # now create archive
     files <- c( scriptFile, docFile, dataFile)

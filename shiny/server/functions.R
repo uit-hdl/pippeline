@@ -177,7 +177,10 @@ generatePipeline <- function( params) {
   # step: anonymization
   generateCode <- function() {
     c(
-      '## fixme: NR'
+      '# simply overwrite all sample/person IDs',
+      'colnames(data) <- 1:ncol(data)',
+      '# remove all other identification traces',
+      sprintf( 'data <- data[-match(c("%s"),rownames(data)),]', paste( as.character(basics$ids), collapse = '","') )
     )
   }
   anoStep <- createStep( 'Anonymization', 'Removing all IDs and running numbers', TRUE, generateCode)
@@ -295,10 +298,8 @@ generatePipeline <- function( params) {
         sprintf( 'quest <- get("%s")', input$questObj),
         '# determine sample ID matches',
         'm <- match(colnames(data), quest$labnr)',
-        '# remove now obsolete IDs',
-        'quest$labnr <- NULL',
         '# reduce variable set if necessary',
-        sprintf( 'qvars <- c(%s)', paste0( '"', paste( as.character(input$questVars), collapse = '","'), '"' ) ),
+        sprintf( 'qvars <- c("%s")', paste( as.character(input$questVars), collapse = '","') ),
         '# sew together matches',
         'data <- rbind(data,t(quest)[qvars,m])',
         'rm(qvars,m,quest)'
