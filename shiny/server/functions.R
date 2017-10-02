@@ -8,7 +8,7 @@ getDataObjs <- function() {
                   options[ , 'Material'] == input$mat &
                   options[ , 'Analysis'] == input$ana )
   if( row < 1) {
-    showNotification( 'No matching or unique data found. (Check file with available options?) Error code #1.', type = 'error')
+    showNotification( 'No matching or unique data found. (Check file "', basics$optionsFile,'"?) Error code #1.', type = 'error', duration = basics$msgDuration)
     return( NULL)
   }
   jObjs <- as.list( t( options[ row, c( 'Obj1', 'Obj2', 'Obj3') ] ) )  # joint objects and remove empty elements
@@ -23,7 +23,7 @@ getDataObjs <- function() {
   sapply( jObjs, function( e) { 
     sapply( e, function( ee) { 
       if( !exists( ee) ) {
-        showNotification( paste0( 'Object "', ee, '" does not exist. (Check file with available options?) Error code #2.'), type = 'error')
+        showNotification( paste0( 'Object "', ee, '" does not exist. (Check file "', basics$optionsFile,'" or load object.) Error code #2.'), type = 'error', duration = basics$msgDuration)
         allObjsExist <<- FALSE
       }
     } )

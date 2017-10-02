@@ -7,7 +7,8 @@ basics <- list(
   optionsFile = 'options.csv',
   questsFile = 'questionnaires.txt', # questionnaires
   # note: pandoc'ing with target PDF is buggy in R 3.2.3, rmarkdown 1.4, pandoc 1.16.0.2
-  docFormat = 'html'  # see documentation for rmarkdown::render()
+  docFormat = 'html',  # see documentation for rmarkdown::render()
+  msgDuration = NULL  # see documentation of shiny::showNotification()
 )
 
 # strings
@@ -19,7 +20,7 @@ options <- NULL
 tryCatch( {
   options <- read.csv( basics$optionsFile)
 }, error = function( err){
-  showNotification( paste0( 'Error while loading file ', basics$optionsFile, '. (Wrong format?) Error code #5.', type = 'error') )
+  showNotification( paste0( 'Error while loading file ', basics$optionsFile, '. (Wrong format?) Error code #5.', type = 'error', duration = basics$msgDuration) )
 } )
 dsgs <- c( notSelOpt, levels( options[ , 'Design'] ) )
 locs <- c( notSelOpt, levels( options[ , 'Location'] ) )
@@ -30,7 +31,7 @@ quests <- NULL
 tryCatch( {
   quests <- readLines( basics$questsFile)
 }, error = function( err){
-  showNotification( paste0( 'Error while loading file ', basics$questsFile, '. (Wrong format?) Error code #6.', type = 'error') )
+  showNotification( paste0( 'Error while loading file ', basics$questsFile, '. (Wrong format?) Error code #6.', type = 'error', duration = basics$msgDuration) )
 } )
 quests <- c( notSelOpt, quests)
 qvars <- NULL
