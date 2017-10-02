@@ -12,7 +12,7 @@ colnames(exprs(data)) = sample IDs ( = labnr)
 rownames(exprs(data)) = probe IDs}
 
 \item{negCtrl}{matrix where
-rownames(negCtrl) is a subset of colnames(exprs(data))
+rownames(negCtrl) is a superset of colnames(exprs(data))
 each column in negCtrl contains expression values for a negative control probe}
 }
 \value{
