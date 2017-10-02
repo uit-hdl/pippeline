@@ -180,10 +180,12 @@ generatePipeline <- function( params) {
       '# simply overwrite all sample/person IDs',
       'colnames(data) <- 1:ncol(data)',
       '# remove all other identification traces',
-      sprintf( 'data <- data[-match(c("%s"),rownames(data)),]', paste( as.character(basics$ids), collapse = '","') )
+      sprintf( 'm <- match(c("%s"),rownames(data))', paste( as.character(basics$ids), collapse = '","') ),
+      'm <- m[!is.na(m)]',
+      'data <- data[-m,]'
     )
   }
-  anoStep <- createStep( 'Anonymization', 'Removing all IDs and running numbers', TRUE, generateCode)
+  anoStep <- createStep( 'Anonymization', 'Overwriting all identifying labels and numbers', TRUE, generateCode)
 
   # step: storage
   generateCode <- function( file) {
