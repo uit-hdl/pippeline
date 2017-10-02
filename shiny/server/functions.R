@@ -187,7 +187,7 @@ generatePipeline <- function( params) {
 
   # step: storage
   generateCode <- function( file) {
-    if( input$wantProbes)
+    if( as.logical( input$wantProbes) )
       code <- c(
         cmt( 'Note: The target data file contains probes.')
       )
