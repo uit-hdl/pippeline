@@ -4,10 +4,12 @@
 \alias{normalizeData}
 \title{Log2 transformation using a variance stabilizing technique* and quantile normalization.}
 \usage{
-normalizeData(data.new)
+normalizeData(data.new, method = "vstQuantileNorm")
 }
 \arguments{
 \item{data.new}{lumi object where colnames(data)=sample IDs and rownames(data) = probe IDs}
+
+\item{method}{string describing the normalization method}
 }
 \value{
 normalized matrix where colnames(data)=sample IDs and rownames(data) = probe IDs

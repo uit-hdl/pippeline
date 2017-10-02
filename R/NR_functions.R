@@ -90,9 +90,12 @@ filterData <- function(data, pValue, presentLimit) {
 #' Illumina microarray data. Nucleic Acids Res. 2008;36(2):e11.
 #' 
 #' @param data.new lumi object where colnames(data)=sample IDs and rownames(data) = probe IDs
+#' @param method string describing the normalization method
 #' @return normalized matrix where colnames(data)=sample IDs and rownames(data) = probe IDs
 #' @export
-normalizeData <- function(data.new) {
+normalizeData <- function(data.new, method = 'vstQuantileNorm') {
+  if( method != 'vstQuantileNorm')
+    stop( 'Method not supported.')
   vstdata <- lumiT(data.new,method="vst")
   Nvstdata <- lumiN(vstdata,method="quantile")
   normdata <- exprs(Nvstdata)

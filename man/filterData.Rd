@@ -7,7 +7,7 @@
 filterData(data, pValue, presentLimit)
 }
 \arguments{
-\item{data}{object where colnames(data)=sample IDs and rownames(data) = probe IDs}
+\item{data}{lumi object where colnames(data)=sample IDs and rownames(data) = probe IDs}
 
 \item{pValue}{p-value}
 
