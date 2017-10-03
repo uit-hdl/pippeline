@@ -182,7 +182,8 @@ generatePipeline <- function( params) {
       '# remove all other identification traces',
       sprintf( 'm <- match(c("%s"),rownames(data))', paste( as.character(basics$ids), collapse = '","') ),
       'm <- m[!is.na(m)]',
-      'data <- data[-m,]'
+      'data <- data[-m,]',
+      'rm(m)'
     )
   }
   anoStep <- createStep( 'Anonymization', 'Overwriting all identifying labels and numbers', TRUE, generateCode)
@@ -231,12 +232,15 @@ generatePipeline <- function( params) {
         code,
         sprintf( '# original filename: %s (copied to temporary location)', input$outlierFile$name),
         sprintf( 'outliers <- readRDS("%s")', outlierFile),
-        sprintf( 'exprs(data[[%1$d]]$lumi) <- exprs(data[[%1$d]]$lumi)[,-match(outliers,colnames(exprs(data[[%1$d]]$lumi)))]', idxSeq)
+        sprintf( 'm <- match(outliers,colnames(exprs(data[[%d]]$lumi)))', idxSeq), # fixme
+        'm <- m[!is.na(m)]', # remove non-matching pairs
+        sprintf( 'data[[%1$d]]$lumi <- data[[%1$d]]$lumi[,-m]', idxSeq),
+        'rm(m)'
       )
     }
     code
   }
-  outlStep <- createStep( 'Outliers', 'Removal of outliers', input$outlierEnabled, generateCode)
+  outlStep <- createStep( 'Outliers', 'Removal of outliers', as.logical(input$outlierEnabled), generateCode)
 
   # step: background correction
   generateCode <- function( nCtrls) {
