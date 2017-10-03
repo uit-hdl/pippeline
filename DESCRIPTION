@@ -1,16 +1,26 @@
 Package: pippeline
 Title: Pipeline for processing high-dimensional multi-omics biobank datasets
-Version: 0.9
+Version: 1.0
 License: file LICENSE
 Maintainer: TBA TBA <tba@uit.no>
-Date: 2017-05-09
-Description: This package offers a graphical user interface for choosing datasets
-	     and statistically processing them in terms of removal of outliers,
-	     background correction, filtering, normalization, linking questionnaires,
-	     and other methods. It requires some non-CTAN packages; see the README for
-	     installation directions.
+Date: 2017-10-03
+Description: This package consists of statistical functions for background correction, filtering, 
+      and normalization of biobank data. It also contains an application offering a graphical user 
+      interface for choosing datasets and statistically processing them in terms of removal of outliers,
+	    background correction, filtering, normalization, linking questionnaires,
+	    and other methods. It requires some non-CTAN packages; see the README for
+	    installation directions.
 Depends: R (>= 3.2.3)
-Imports: shiny (>= 1.0.0),
+Imports: arrayQualityMetrics (>= 3.26.1),
+   limma (>= 3.26.9),
+   lumi (>= 2.22.1),
+   nlme (>= 3.1-131),
+   illuminaHumanv3.db (>= 1.26.0),
+   illuminaHumanv4.db (>= 1.26.0),
+   lumiHumanIDMapping (>= 1.10.0),
+   genefilter (>= 1.52.1),
+   Biobase (>= 2.30.0),
+Suggests: shiny (>= 1.0.0),
 	 shinyjs (>= 0.9),
 	 rmarkdown (>= 1.4)
 Author: Till Halbach <till.halbach@nr.no>
