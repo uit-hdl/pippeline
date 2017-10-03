@@ -183,7 +183,7 @@ generatePipeline <- function( params) {
       '# remove all other identification traces',
       sprintf( 'm <- match(c("%s"),rownames(data))', paste( as.character(basics$ids), collapse = '","') ),
       'm <- m[!is.na(m)]',
-      'data <- data[-m,]',
+      'if(length(m)) data <- data[-m,]',
       'rm(m)'
     )
   }
@@ -236,7 +236,7 @@ generatePipeline <- function( params) {
         sprintf( 'm <- vector("list",length=%d)', numberOfRuns),
         sprintf( 'm[[%1$d]] <- match(outliers,colnames(exprs(data[[%1$d]]$lumi)))', idxSeq),
         sprintf( 'm[[%1$d]] <- m[[%1$d]][!is.na(m[[%1$d]])]', idxSeq),  # remove non-matching pairs
-        sprintf( 'data[[%1$d]]$lumi <- data[[%1$d]]$lumi[,-m[[%1$d]]]', idxSeq),
+        sprintf( 'if(length(m[[%1$d]])) data[[%1$d]]$lumi <- data[[%1$d]]$lumi[,-m[[%1$d]]]', idxSeq),
         'rm(m,outliers)'
       )
     }
