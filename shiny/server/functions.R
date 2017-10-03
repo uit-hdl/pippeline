@@ -261,7 +261,7 @@ generatePipeline <- function( params) {
     )
     code
   }
-  bcorrStep <- createStep( 'Background correction', 'Perform background correction and remove bad probes', input$corrEnabled, generateCode, list( unlist( lapply( params$sourceObjs, '[', 'nc') )) )
+  bcorrStep <- createStep( 'Background correction', 'Perform background correction and remove bad probes', as.logical(input$corrEnabled), generateCode, list( unlist( lapply( params$sourceObjs, '[', 'nc') )) )
   
   # step: probe filtering
   generateCode <- function() {
@@ -271,7 +271,7 @@ generatePipeline <- function( params) {
       'data <- pippeline::filterData(data,pValue,pLimit)'
     ) 
   }
-  filtStep <- createStep( 'Probe filtering', 'Filtering based on on pValue and presentLimit', input$filtEnabled, generateCode)
+  filtStep <- createStep( 'Probe filtering', 'Filtering based on on pValue and presentLimit', as.logical(input$filtEnabled), generateCode)
   
   # step: normalization
   generateCode <- function() {
@@ -280,16 +280,24 @@ generatePipeline <- function( params) {
       '# have now gene expressions matrix'
     )
   }
-  normStep <- createStep( 'Normalization', 'log2 transformation and quantile normalization', input$normEnabled, generateCode)
+  normStep <- createStep( 'Normalization', 'log2 transformation and quantile normalization', as.logical(input$normEnabled), generateCode)
   
   # step: conversion
   generateCode <- function() {
-    if( as.logical( input$wantGenes) )
+    if( as.logical( input$wantGenes) ) {
+      code <- c(
+        cmt( 'Note: The target data file contains genes.')
+      )
+      if( !as.logical(input$normEnabled) )
+        code <- c(
+          code,
+          cmt( 'Also, as the normalization is currently disabled, consider that the mapping relies on taking the average of multiple probes. You may thus want to enable normalization.')
+        )
       c(
-        cmt( 'Note: The target data file contains genes.'),
+        code,
         'data <- pippeline::mapToGenes(data)'
       )
-    else
+    } else
       c(
         cmt( 'Note: The target data file contains probes.')
       )
@@ -314,7 +322,7 @@ generatePipeline <- function( params) {
         'stop("Questionnaire object non-existant. Error code #10.")'
       )
   }
-  questStep <- createStep( 'Questionnaires', 'Selecting variables from associated questionnaires', input$questEnabled, generateCode)
+  questStep <- createStep( 'Questionnaires', 'Selecting variables from associated questionnaires', as.logical(input$questEnabled), generateCode)
   
   # now concatenate all steps
   list(

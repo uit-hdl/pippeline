@@ -59,7 +59,7 @@ output$procIsAllowed <- reactive( { procIsAllowed() } )
 outputOptions( output, 'procIsAllowed', suspendWhenHidden = FALSE)
 
 allInputIsValid <- reactive( {
-  if( input$normEnabled)
+  if( as.logical(input$normEnabled) )
     input$nmeth != notSelOpt
   else
     TRUE
