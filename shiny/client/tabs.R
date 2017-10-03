@@ -10,8 +10,8 @@ aboutTab <- list(
 descrTab <- list( 
   h2( 'Description'),
   p( 'Please enter the information below.'),
-  textInput( inputId = 'author', label = 'Your name/initals', value = 'tha'), # fixme
-  textAreaInput( inputId = 'descr', label = 'Processing description', value = 'foo'), # fixme
+  textInput( inputId = 'author', label = 'Your name/initals'),
+  textAreaInput( inputId = 'descr', label = 'Processing description'),
   hr(),
   conditionalPanel( 
     condition = 'output.prereqsAreValid',
@@ -29,11 +29,11 @@ designTab <- list(
   conditionalPanel( 
     condition = 'output.prereqsAreValid',
     p( 'Please select a design and make your choices.'),
-    selectInput( 'dsg', label = 'Design', selected = 'Nested matched case-control - prospective', choices = dsgs), # fixme
-    selectInput( 'loc', label = 'Probe location', selected = 'Ovaria', choices = locs), # fixme
-    selectInput( 'mat', label = 'Biological material', selected = 'Blood', choices = mats), # fixme
-    selectInput( 'ana', label = 'Genomic analysis', selected = 'mRNA', choices = anas), # fixme
-    checkboxInput( 'trans', label = 'Exclude control-case transitions', value = TRUE),
+    selectInput( 'dsg', label = 'Design', choices = dsgs),
+    selectInput( 'loc', label = 'Probe location', choices = locs),
+    selectInput( 'mat', label = 'Biological material', choices = mats),
+    selectInput( 'ana', label = 'Genomic analysis', choices = anas),
+    checkboxInput( 'trans', label = 'Exclude control-case transitions'),
     hr(),
     conditionalPanel( 
       condition = 'output.procIsAllowed && output.objsExist',
@@ -56,7 +56,7 @@ outlierTab <- list(
     list( 
       p( 'Here you can delete outliers from the dataset.'),
       p( 'Outliers can be found by means of the ', a( 'nowaclean', href='https://github.com/3inar/nowaclean'), ' R package.'),
-      checkboxInput( 'outlierEnabled', 'Enabled', TRUE), # fixme
+      checkboxInput( 'outlierEnabled', 'Enabled'),
       conditionalPanel(
         condition = 'input.outlierEnabled',
         p( 'Identify outliers as described in the vignette of nowaclean and save them like so:', code( 'saveRDS(outliers, file="outliers.rds")'), '. You can then import this file here.'),
@@ -85,7 +85,7 @@ corrTab <- list(
     condition = 'output.procIsAllowed',
     list( 
       p( paste0( 'Background correction is carried out by means of negative control probes as specified in the file "', basics$optionsFile, '".') ),
-      checkboxInput( 'corrEnabled', 'Enabled', TRUE), # fixme
+      checkboxInput( 'corrEnabled', 'Enabled'),
       hr(),
       actionButton( 'corrNext', label = 'Continue'),
       span( 'or', class='or'),
@@ -105,7 +105,7 @@ filterTab <- list(
     condition = 'output.procIsAllowed',
     list( 
       p( 'Here you can filter the probes with regard to p-value and limit.'),
-      checkboxInput( 'filtEnabled', 'Enabled', TRUE), # fixme
+      checkboxInput( 'filtEnabled', 'Enabled'),
       conditionalPanel(
         condition = 'input.filtEnabled',
         sliderInput( 'pval', 'P-value', min = 0, max = 1, value = 0.05),
@@ -130,7 +130,7 @@ normTab <- list(
     condition = 'output.procIsAllowed',
     list( 
       p( 'Here you can normalize the current dataset.'),
-      checkboxInput( 'normEnabled', 'Enabled', T), # fixme
+      checkboxInput( 'normEnabled', 'Enabled'),
       conditionalPanel(
         condition = 'input.normEnabled',
         selectInput( 'nmeth', label = 'Method', choices = nmeths, selected = 'vstQuantileNorm')
@@ -157,11 +157,11 @@ questTab <- list(
     condition = 'output.procIsAllowed',
     list( 
       p( 'Here you can link questionnaires to the biobank datasets.'),
-      checkboxInput( 'questEnabled', 'Enabled', T), # fixme
+      checkboxInput( 'questEnabled', 'Enabled'),
       conditionalPanel(
         condition = 'input.questEnabled',
         p( 'Choose a questionnaire first, then select the available variables.'),
-        selectInput( 'questObj', label = 'Questionnaire', selected = 'two_page_questionnaire', choices = quests), # fixme
+        selectInput( 'questObj', label = 'Questionnaire', choices = quests),
         conditionalPanel(
           condition = 'output.questIsValid',
           p( 'Add variables to (by typing names or picking from the list) or delete from the list of questionnaire variables.'),
