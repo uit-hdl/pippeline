@@ -41,10 +41,11 @@ output$questIsValid <- reactive( { questIsValid() } )
 outputOptions( output, 'questIsValid', suspendWhenHidden = FALSE)
 
 output$qvarPicker <- renderUI( {
-  if( exists( input$questObj) )
+  if( exists( input$questObj) ) {
     availQVars <- colnames( get( input$questObj) )
-  else {
-    showNotification( paste0( 'No questionnaire available. (Check file "', basics$questsFile, '" or load object.) Error code #9.'), type = 'error', duration = basics$msgDuration)
+    removeNotification( 'quest')
+  } else {
+    showNotification( paste0( 'No questionnaire available. (Check file "', basics$questsFile, '" or load object.) Error code #9.'), type = 'error', duration = NULL, id = 'quest')
     availQVars <- c()
   }
   selectizeInput( 'questVars', 'Variables', multiple = T, choices = availQVars, selected = availQVars)

@@ -95,13 +95,13 @@ output$download <- downloadHandler(
     paste0( basics$appName, '-', format( ts, '%Y-%m-%d_%H-%M-%S'), '.zip')  # archive
   },
   content = function( arFile) {
-    showNotification( 'Processing. This may take some time. Please stand by ..')  
+    showNotification( 'Processing. This may take some time. Please stand by ..', duration = NULL, id = 'wait')  
     # make temporary directory
     tmpDir <- file.path( tempdir(), paste0( basics$appName, '-', as.numeric( as.POSIXct( ts) ) ) )
     dir.create( tmpDir)
     # point out 3 files to be zipped together
     scriptFile <- file.path( tmpDir, 'pipeline.R')
-    dataFile <- file.path( tmpDir, 'data.RData')
+    dataFile <- file.path( tmpDir, 'data.rds')
     docFile <- file.path( tmpDir, paste0( 'documentation.', basics$docFormat) )  # documentation
     pipeline <- generatePipeline( list(
       sourceObjs = sourceObjs(),
@@ -111,9 +111,11 @@ output$download <- downloadHandler(
     tryCatch( {
       writeScript( pipeline, scriptFile)
       render( scriptFile, paste0( basics$docFormat, '_document'), docFile, quiet = TRUE)
+      removeNotification( 'wait')
       showNotification( 'All files successfully written.', type = 'message')
     }, error = function( err){
-      showNotification( 'Could not produce data/documentation. (Error while sourcing script.) Error code #3.', type = 'error', duration = basics$msgDuration)
+      removeNotification( 'wait')
+      showNotification( 'Could not produce data/documentation. (Error while sourcing script.) Error code #3.', type = 'error', duration = NULL)
     } )
     # now create archive
     files <- c( scriptFile, docFile, dataFile)

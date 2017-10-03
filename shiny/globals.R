@@ -8,7 +8,7 @@ basics <- list(
   questsFile = 'questionnaires.txt', # questionnaires
   # note: pandoc'ing with target PDF is buggy in R 3.2.3, rmarkdown 1.4, pandoc 1.16.0.2
   docFormat = 'html',  # see documentation for rmarkdown::render()
-  msgDuration = NULL,  # see documentation of shiny::showNotification()
+  msgDuration = 7,  # see documentation of shiny::showNotification()
   ids = c(  # ID labels to remove before data are written
     'lpnr',
     'labnr',

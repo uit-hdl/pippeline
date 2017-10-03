@@ -23,13 +23,14 @@ getDataObjs <- function() {
   sapply( jObjs, function( e) { 
     sapply( e, function( ee) { 
       if( !exists( ee) ) {
-        showNotification( paste0( 'Object "', ee, '" does not exist. (Check file "', basics$optionsFile,'" or load object.) Error code #2.'), type = 'error', duration = basics$msgDuration)
+        showNotification( paste0( 'Object "', ee, '" does not exist. (Check file "', basics$optionsFile,'" or load object.) Error code #2.'), type = 'error', duration = NULL, id = 'data')
         allObjsExist <<- FALSE
       }
     } )
   } )
   if( !allObjsExist)
     return( NULL)
+  removeNotification( 'data')
   jObjs
 } # function getDataObjs
 
@@ -194,13 +195,13 @@ generatePipeline <- function( params) {
       sprintf( 'saveRDS(data,file="%s")', file)
     )
   }
-  writeStep <- createStep( 'Storage', 'Writing processed datasets.', TRUE, generateCode, list( params$targetFile) )
+  writeStep <- createStep( 'Storage', 'Writing processed datasets', TRUE, generateCode, list( params$targetFile) )
   
   # step: archiving
   generateCode <- function() {
     c(
       cmt(),
-      cmt( 'Copying R script (this file), documentation, and generated data into archive.')
+      cmt( 'Copying R script, documentation, and generated data into archive.')
     )
   }
   arStep <- createStep( 'Archiving', 'Collecting files', TRUE, generateCode)
@@ -303,7 +304,7 @@ generatePipeline <- function( params) {
   generateCode <- function() {
     if( as.logical( input$wantGenes) ) {
       code <- c(
-        cmt( 'Note: The target data file contains genes.')
+        '# Note: The target data file contains genes.'
       )
       if( !as.logical(input$normEnabled) )
         code <- c(
@@ -316,7 +317,7 @@ generatePipeline <- function( params) {
       )
     } else
       c(
-        cmt( 'Note: The target data file contains probes.')
+        '# Note: The target data file contains probes.'
       )
   }
   convStep <- createStep( 'Conversion', 'Optional mapping of probes to genes', TRUE, generateCode)
