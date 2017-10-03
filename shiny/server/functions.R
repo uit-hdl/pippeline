@@ -232,9 +232,10 @@ generatePipeline <- function( params) {
         code,
         sprintf( '# original filename: %s (copied to temporary location)', input$outlierFile$name),
         sprintf( 'outliers <- readRDS("%s")', outlierFile),
-        sprintf( 'm <- match(outliers,colnames(exprs(data[[%d]]$lumi)))', idxSeq), # fixme
-        'm <- m[!is.na(m)]', # remove non-matching pairs
-        sprintf( 'data[[%1$d]]$lumi <- data[[%1$d]]$lumi[,-m]', idxSeq),
+        sprintf( 'm <- vector("list",length=%d)', numberOfRuns),
+        sprintf( 'm[[%1$d]] <- match(outliers,colnames(exprs(data[[%1$d]]$lumi)))', idxSeq),
+        sprintf( 'm[[%1$d]] <- m[[%1$d]][!is.na(m[[%1$d]])]', idxSeq),  # remove non-matching pairs
+        sprintf( 'data[[%1$d]]$lumi <- data[[%1$d]]$lumi[,-m[[%1$d]]]', idxSeq),
         'rm(m)'
       )
     }
