@@ -64,7 +64,7 @@ observeEvent( input$downloadReq, {
 observeEvent( input$wantGenes, {
   if( as.logical(input$wantGenes) &&
       !as.logical(input$normEnabled) )
-  showNotification( 'Conversion implies taking the average of multiple probes. You may thus want to consider to enable normalization.', type = 'warning')
+  showNotification( 'Conversion to samples implies taking the average of multiple probes. You may thus want to consider to enable normalization.', type = 'warning')
 } )
 
 # quit
