@@ -90,7 +90,7 @@ output$download <- downloadHandler(
     paste0( basics$appName, '-', format( ts, '%Y-%m-%d_%H-%M-%S'), '.zip')  # archive
   },
   content = function( arFile) {
-    showNotification( 'Processing. Please wait ..')  
+    showNotification( 'Processing. This may take some time. Please stand by ..')  
     # make temporary directory
     tmpDir <- file.path( tempdir(), paste0( basics$appName, '-', as.numeric( as.POSIXct( ts) ) ) )
     dir.create( tmpDir)
