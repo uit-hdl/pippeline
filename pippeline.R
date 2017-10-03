@@ -4,7 +4,7 @@
 #' source('pippeline.R')
 
 # includes
-require(shiny)
+library(shiny)
 
 # run app in the given directory
 runApp( 'shiny')

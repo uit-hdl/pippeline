@@ -110,7 +110,7 @@ output$download <- downloadHandler(
     # fill files with content
     tryCatch( {
       writeScript( pipeline, scriptFile)
-      #fixme render( scriptFile, paste0( basics$docFormat, '_document'), docFile, quiet = TRUE)
+      render( scriptFile, paste0( basics$docFormat, '_document'), docFile, quiet = TRUE)
       showNotification( 'All files successfully written.', type = 'message')
     }, error = function( err){
       showNotification( 'Could not produce data/documentation. (Error while sourcing script.) Error code #3.', type = 'error', duration = basics$msgDuration)
@@ -118,7 +118,6 @@ output$download <- downloadHandler(
     # now create archive
     files <- c( scriptFile, docFile, dataFile)
     files <- files[ file.access( files, mode = 4) > -1]
-    #fixme zip( arFile, files, '-jq')  # only files, no directories
-    file.copy( scriptFile, '~/temporary/pipeline.R', overwrite = T)
+    zip( arFile, files, '-jq')  # only files, no directories
   }
 )

@@ -236,7 +236,7 @@ generatePipeline <- function( params) {
         sprintf( 'm[[%1$d]] <- match(outliers,colnames(exprs(data[[%1$d]]$lumi)))', idxSeq),
         sprintf( 'm[[%1$d]] <- m[[%1$d]][!is.na(m[[%1$d]])]', idxSeq),  # remove non-matching pairs
         sprintf( 'data[[%1$d]]$lumi <- data[[%1$d]]$lumi[,-m[[%1$d]]]', idxSeq),
-        'rm(m)'
+        'rm(m,outliers)'
       )
     }
     code

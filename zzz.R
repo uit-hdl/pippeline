@@ -1,6 +1,6 @@
 #' Starts the Shiny app called Pippeline.
 #'
-#' fixme: does it work??
+#' fixme: currently it does not work
 #' @examples
 #' `library(pippeline)`
 #' or alternatively (in the directory containing the DESCRIPTION file)
@@ -8,6 +8,6 @@
 #' `library(shinyjs)`
 #' `runApp( 'shiny')`
 .onLoad <- function( libname, pkgname) {
-  require(shiny)
+  library(shiny)
   runApp( system.file( package = pkgname, mustWork=TRUE) )
 }
