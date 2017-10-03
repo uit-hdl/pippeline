@@ -280,11 +280,23 @@ generatePipeline <- function( params) {
   # step: normalization
   generateCode <- function() {
     c(
-      sprintf( 'data <- pippeline::normalizeData(data,"%s")', input$nmeth),
-      '# have now gene expressions matrix'
+      sprintf( 'data <- pippeline::normalizeData(data,"%s")', input$nmeth)
     )
   }
   normStep <- createStep( 'Normalization', 'log2 transformation and quantile normalization', as.logical(input$normEnabled), generateCode)
+  
+  # step: extraction
+  generateCode <- function() {
+    if( as.logical( input$normEnabled) )
+      c(
+        '# have gene expressions matrix due to normalization: no need for extraction'
+      )
+    else
+      c(
+        'data <- exprs(data)'
+      )
+  }
+  extrStep <- createStep( 'Extraction', 'Extraction of gene expression matrix from lumi object', TRUE, generateCode)
   
   # step: conversion
   generateCode <- function() {
@@ -337,6 +349,7 @@ generatePipeline <- function( params) {
     combStep, # mandatory
     filtStep,
     normStep,
+    extrStep, # mandatory
     convStep, # mandatory
     questStep,
     anoStep, # mandatory
