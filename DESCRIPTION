@@ -4,12 +4,12 @@ Version: 1.0
 License: file LICENSE
 Maintainer: TBA TBA <tba@uit.no>
 Date: 2017-10-03
-Description: This package consists of statistical functions for background correction, filtering, 
-      and normalization of biobank data. It also contains an application offering a graphical user 
-      interface for choosing datasets and statistically processing them in terms of removal of outliers,
-	    background correction, filtering, normalization, linking questionnaires,
-	    and other methods. It requires some non-CTAN packages; see the README for
-	    installation directions.
+Description: This package consists of statistical functions for background correction, filtering,
+	and normalization of biobank data. It also contains an application offering a graphical
+	user interface for choosing datasets and statistically processing them in terms of
+	removal of outliers, background correction, filtering, normalization, linking questionnaires,
+      	and other methods. It requires some non-CTAN packages; see the README for
+      	installation directions.
 Depends: R (>= 3.2.3)
 Imports: arrayQualityMetrics (>= 3.26.1),
    limma (>= 3.26.9),
