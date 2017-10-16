@@ -188,7 +188,7 @@ downloadTab <- list(
   conditionalPanel( 
     condition = 'output.downlIsAllowed',
     list( 
-      p( 'Here you can download an archive (a .zip file) containing the processed dataset (.rds format), documentation of all processing steps (.pdf file), and the source (.R file).'),
+      p( paste0( 'Here you can download an archive (a .zip file) containing the processed dataset (.rds format), documentation of all processing steps (.', basics$docFormat,' file), and the source (.R file).') ),
       p( 'The datset consists of probes if not chosen otherwise.'),
       checkboxInput( 'wantGenes', 'Genes instead of probes'),
       downloadButton( 'download', 'Download archive')
