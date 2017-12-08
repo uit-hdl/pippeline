@@ -96,9 +96,20 @@ output$download <- downloadHandler(
   },
   content = function( arFile) {
     showNotification( 'Processing. This may take some time. Please stand by ..', duration = NULL, id = 'wait')  
+    
+    # make directory according to jobID (can be SLURM_JOBID)
+    jobid <- Sys.getenv("SLURM_JOB_ID")
+    jobDir <- file.path( '/project/tice/pippelinen', jobid, paste0( basics$appName, '-', as.numeric( as.POSIXct ( ts) ) ) )
+    #showNotification( 'JobDir: ', jobDir, type='message', duration=NULL)
+    #
+
     # make temporary directory
     tmpDir <- file.path( tempdir(), paste0( basics$appName, '-', as.numeric( as.POSIXct( ts) ) ) )
-    dir.create( tmpDir)
+    tmpDirOld <- tmpDir
+    tmpDir <- jobDir
+    #
+
+    dir.create( tmpDir, recursive=TRUE)
     # point out 3 files to be zipped together
     scriptFile <- file.path( tmpDir, 'pipeline.R')
     dataFile <- file.path( tmpDir, 'data.rds')
@@ -110,12 +121,17 @@ output$download <- downloadHandler(
     # fill files with content
     tryCatch( {
       writeScript( pipeline, scriptFile)
+      #
       render( scriptFile, paste0( basics$docFormat, '_document'), docFile, quiet = TRUE)
+      #render( scriptFile)
+      #showNotification('Successful render', scriptFile, type='message', duration = NULL)
+      #
       removeNotification( 'wait')
       showNotification( 'All files successfully written.', type = 'message')
     }, error = function( err){
       removeNotification( 'wait')
       showNotification( 'Could not produce data/documentation. (Error while sourcing script.) Error code #3.', type = 'error', duration = NULL)
+      #showNotification( 'Custom error: ', toString(err), type = 'error', duration = NULL)
     } )
     # now create archive
     files <- c( scriptFile, docFile, dataFile)

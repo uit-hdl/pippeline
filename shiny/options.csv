@@ -1,7 +1,12 @@
 "Design","Location","Material","Analysis","Obj1","Obj2","Obj3"
+
+"Uterus_hiscan(Ovarian_hiscan)(Oxana dataset)","Breast","Blood","mRNA","uterus_hiscan_lobj,uterus_hiscan_negative_controls",,
+"Uterus(Ovarian)(Oxana dataset)","Breast","Blood","mRNA","uterus_lobj,uterus_negative_controls",,
+"96-sample microarray dataset 2017-421","Breast","Blood","mRNA","gcf_2017_421_lobj,gcf_2017_421_negative_controls",,
 "Nested matched case-control - prospective","Breast","Blood","mRNA","postdiagnostic_lobj_clean,postdiagnostic_negative_controls_clean","postdiagnostic_lobj_clean,postdiagnostic_negative_controls_clean","postdiagnostic_lobj_clean,postdiagnostic_negative_controls_clean"
 "Nested matched case-control - prospective","Lung","Blood","mRNA","postdiagnostic_lobj_clean,postdiagnostic_negative_controls_clean",,
 "Nested matched case-control - prospective","Ovaria","Blood","mRNA","postdiagnostic_lobj_clean,postdiagnostic_negative_controls_clean",,
 "Nested matched case-control - hospital diagnostic","Breast","Blood","mRNA","postdiagnostic_lobj,postdiagnostic_negative_controls",,
 "Nested matched case-control - hospital diagnostic","Lung","Blood","mRNA","postdiagnostic_lobj_clean,postdiagnostic_negative_controls_clean",,
-"Nested matched case-control - hospital diagnostic","Ovaria","Blood","mRNA","postdiagnostic_lobj_clean,postdiagnostic_negative_controls_cleann",,
+"Nested matched case-control - hospital diagnostic","Ovaria","Blood","mRNA","postdiagnostic_lobj_clean,postdiagnostic_negative_controls_clean",,
+

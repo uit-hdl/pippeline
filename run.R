@@ -1,0 +1,5 @@
+library(nowac)
+#data()
+library(devtools)
+load_all("~/pippeline")
+source("pippeline.R")
