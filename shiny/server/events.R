@@ -99,15 +99,17 @@ output$download <- downloadHandler(
     
     # make directory according to jobID (can be SLURM_JOBID)
     jobid <- Sys.getenv("SLURM_JOB_ID")
-    jobDir <- file.path( '/project/tice/pippelinen', jobid, paste0( basics$appName, '-', as.numeric( as.POSIXct ( ts) ) ) )
+    jobDir <- file.path( '/project/tice/pippelinen', jobid, paste0( basics$appName, '-', format( ts, "%d%m%Y%H%M%OS3") ) )    
+
+    #jobDir <- file.path( '/project/tice/pippelinen', jobid, paste0( basics$appName, '-', as.numeric( as.POSIXct ( ts) ) ) )
     #showNotification( 'JobDir: ', jobDir, type='message', duration=NULL)
-    #
 
     # make temporary directory
-    tmpDir <- file.path( tempdir(), paste0( basics$appName, '-', as.numeric( as.POSIXct( ts) ) ) )
+    tmpDir <- file.path( tempdir(), paste0( basics$appName, '-', format( ts, "%d%m%Y%H%M%OS3") ) )
+   
+    #tmpDir <- file.path( tempdir(), paste0( basics$appName, '-', as.numeric( as.POSIXct( ts) ) ) )
     tmpDirOld <- tmpDir
     tmpDir <- jobDir
-    #
 
     dir.create( tmpDir, recursive=TRUE)
     # point out 3 files to be zipped together
@@ -131,7 +133,7 @@ output$download <- downloadHandler(
     }, error = function( err){
       removeNotification( 'wait')
       showNotification( 'Could not produce data/documentation. (Error while sourcing script.) Error code #3.', type = 'error', duration = NULL)
-      #showNotification( 'Custom error: ', toString(err), type = 'error', duration = NULL)
+      showNotification( 'Custom error: ', toString(err), type = 'error', duration = NULL)
     } )
     # now create archive
     files <- c( scriptFile, docFile, dataFile)
