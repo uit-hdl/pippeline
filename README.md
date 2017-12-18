@@ -66,7 +66,8 @@ changed. While the column values describe the dataset objects with (character)
 attributes like *Design* and *Material*, each entry for the up to three
 objects consists of two names, separated by a comma. The first name is
 interpreted as the name of the object holding the original dataset (a lumi
-object), the second is the (lumi) object with the negative controls.
+object), the second is the (lumi) object with the negative controls 
+([gene expressions, negative controls]).
 
 
 ## questionnaires.txt

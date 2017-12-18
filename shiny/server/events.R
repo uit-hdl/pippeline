@@ -60,10 +60,10 @@ observeEvent( input$questNext, {
 } )
 observeEvent( input$downloadReq, {
   updateNavlistPanel( session, 'steps', selected = 'name')
-} )
+  } )
 observeEvent( input$wantGenes, {
   if( as.logical(input$wantGenes) &&
-      !as.logical(input$normEnabled) )
+      !as.logical(input$normEnabled) ) 
   showNotification( 'Conversion to samples implies taking the average of multiple probes. You may thus want to consider to enable normalization.', type = 'warning')
 } )
 
