@@ -86,15 +86,11 @@ observeEvent( input$reallyQuit, {
 session$onSessionEnded( stopApp)
 
 # download (assembly, computation, documentation)
-output$download <- downloadHandler(
+observeEvent( input$download, {
   # setting the filename works currently only when run in an external browser window, 
-  # but not in Rstudio window/viewer pane
-  filename = function() {
-    # timestamp
+  # but not in Rstudio window/viewer pan
     ts <<- Sys.time()
     paste0( basics$appName, '-', format( ts, '%Y-%m-%d_%H-%M-%S'), '.zip')  # archive
-  },
-  content = function( arFile) {
     showNotification( 'Processing. This may take some time. Please stand by ..', duration = NULL, id = 'wait')  
     
     # make directory according to jobID (can be SLURM_JOBID)
@@ -138,6 +134,6 @@ output$download <- downloadHandler(
     # now create archive
     files <- c( scriptFile, docFile, dataFile)
     files <- files[ file.access( files, mode = 4) > -1]
-    zip( arFile, files, '-jq')  # only files, no directories
-  }
+    #zip( arFile, files, '-jq')  # only files, no directories
+    }
 )
