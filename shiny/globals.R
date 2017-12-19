@@ -44,4 +44,4 @@ qvars <- NULL
 nmeths <- c( notSelOpt, 'vstQuantileNorm')
 
 # JavaScript
-jscode <- 'shinyjs.closeWindow = function() { window.close() }'  # works only in RStudio, not external browser
+jscode <- "shinyjs.closeWindow = function() { window.close(); }"  # works only in RStudio, not external browser
