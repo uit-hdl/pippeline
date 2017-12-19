@@ -39,7 +39,7 @@ designTab <- list(
       condition = 'output.procIsAllowed && output.objsExist',
       actionButton( 'designNext', label = 'Continue'),
       span( 'or', class='or'),
-      actionLink( 'designDown', 'download')
+      actionLink( 'designDown', 'process')
     )
   )
 )
@@ -68,7 +68,7 @@ outlierTab <- list(
         condition = '!input.outlierEnabled || output.outlFileExists',
         actionButton( 'outlierNext', label = 'Continue'),
         span( 'or', class='or'),
-        actionLink( 'outlierDown', 'download')
+        actionLink( 'outlierDown', 'process')
       )
     )
   )
@@ -89,7 +89,7 @@ corrTab <- list(
       hr(),
       actionButton( 'corrNext', label = 'Continue'),
       span( 'or', class='or'),
-      actionLink( 'corrDown', 'download')
+      actionLink( 'corrDown', 'process')
     )
   )
 )
@@ -114,7 +114,7 @@ filterTab <- list(
       hr(),
       actionButton( 'filtNext', label = 'Continue'),
       span( 'or', class='or'),
-      actionLink( 'filtDown', 'download')
+      actionLink( 'filtDown', 'process')
     )
   )
 )
@@ -140,7 +140,7 @@ normTab <- list(
         condition = sprintf( '!input.normEnabled || input.nmeth != "%s"', notSelOpt),
         actionButton( 'normNext', label = 'Continue'),
         span( 'or', class='or'),
-        actionLink( 'normDown', 'download')
+        actionLink( 'normDown', 'process')
       )
     )
   )
@@ -178,20 +178,20 @@ questTab <- list(
 )
 
 downloadTab <- list(
-  h2( 'Download & quit'),
+  h2( 'Process & quit'),
   conditionalPanel( 
     condition = '!output.downlIsAllowed',
-    p( 'Download is not allowed.'),
+    p( 'Processing is not allowed.'),
     p( 'This could be due to incomplete or invalid input in any of the processing steps.'),
     actionButton( 'downloadReq', label = 'Go there') 
   ),
   conditionalPanel( 
     condition = 'output.downlIsAllowed',
     list( 
-      p( paste0( 'Here you can download an archive (a .zip file) containing the processed dataset (.rds format), documentation of all processing steps (.', basics$docFormat,' file), and the source (.R file).') ),
+      p( paste0( 'Here you can process dataset (.rds format), documentation of all processing steps (.', basics$docFormat,' file) and the source (.R file).') ),
       p( 'The datset consists of probes if not chosen otherwise.'),
       checkboxInput( 'wantGenes', 'Genes instead of probes'),
-      actionButton( 'download', 'Compute, assemble and download archive')
+      actionButton( 'download', 'Compute and assemble files')
     )
   ),
   hr(),

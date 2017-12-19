@@ -85,7 +85,7 @@ observeEvent( input$reallyQuit, {
 } )
 session$onSessionEnded( stopApp)
 
-# download (assembly, computation, documentation)
+# produce and save (assembly, computation, documentation)
 observeEvent( input$download, {
   # setting the filename works currently only when run in an external browser window, 
   # but not in Rstudio window/viewer pan
@@ -135,5 +135,6 @@ observeEvent( input$download, {
     files <- c( scriptFile, docFile, dataFile)
     files <- files[ file.access( files, mode = 4) > -1]
     #zip( arFile, files, '-jq')  # only files, no directories
+    showNotification( 'Files were successfully produced.', type = 'message', duration = NULL)
     }
 )
