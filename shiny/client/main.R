@@ -5,7 +5,7 @@ navlistPanel(
   ##selected = 'quest',
   tabPanel( 'About', value = 'about', aboutTab),  # list item, ID, tab content
   tabPanel( 'Description', value = 'name', descrTab),
-  tabPanel( 'Choices', value = 'design', designTab),
+  tabPanel( 'Dataset', value = 'design', designTab),
   tabPanel( 'Outliers', value = 'outliers', outlierTab),
   tabPanel( 'Correction', value = 'corr', corrTab),
   tabPanel( 'Filtering', value = 'filter', filterTab),

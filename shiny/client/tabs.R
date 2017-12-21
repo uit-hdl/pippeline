@@ -20,16 +20,17 @@ descrTab <- list(
 )
 
 designTab <- list( 
-  h2( 'Design & basic choices'),
+  h2( 'Dataset description & project design'),
   conditionalPanel( 
     condition = '!output.prereqsAreValid',
-    p( 'First you must provide some basic information.'),
+    p( 'First you must provide right dataset information.'),
     actionButton( 'designReq', label = 'Go there') 
   ),
   conditionalPanel( 
     condition = 'output.prereqsAreValid',
-    p( 'Please select a design and make your choices.'),
-    selectInput( 'dsg', label = 'Design', choices = dsgs),
+    p( 'Please state the experiment design, which specify the dataset.'),
+    p( 'These values will be used for choosing right dataset and report generation'),
+    selectInput( 'dsg', label = 'Experiment design', choices = dsgs),
     selectInput( 'loc', label = 'Probe location', choices = locs),
     selectInput( 'mat', label = 'Biological material', choices = mats),
     selectInput( 'ana', label = 'Genomic analysis', choices = anas),
