@@ -129,12 +129,12 @@ observeEvent( input$download, {
     }, error = function( err){
       removeNotification( 'wait')
       showNotification( 'Could not produce data/documentation. (Error while sourcing script.) Error code #3.', type = 'error', duration = NULL)
-      showNotification( 'Custom error: ', toString(err), type = 'error', duration = NULL)
+      showNotification( 'Error info: ', toString(err), type = 'error', duration = NULL)
     } )
     # now create archive
     files <- c( scriptFile, docFile, dataFile)
     files <- files[ file.access( files, mode = 4) > -1]
     #zip( arFile, files, '-jq')  # only files, no directories
-    showNotification( 'Files were successfully produced.', type = 'message', duration = NULL)
+    showNotification( 'Process ended.')
     }
 )

@@ -9,7 +9,8 @@ aboutTab <- list(
 
 descrTab <- list( 
   h2( 'Description'),
-  p( 'Please enter the information below.'),
+  p( 'Please enter the information below, i.e. your name and project/processing description.'),
+  p( 'This information will be used in the generated report for the project.')
   textInput( inputId = 'author', label = 'Your name/initals'),
   textAreaInput( inputId = 'descr', label = 'Processing description'),
   hr(),
@@ -29,7 +30,7 @@ designTab <- list(
   conditionalPanel( 
     condition = 'output.prereqsAreValid',
     p( 'Please state the experiment design, which specify the dataset.'),
-    p( 'These values will be used for choosing right dataset and report generation'),
+    p( 'These values will be used for choosing right dataset and report generation.'),
     selectInput( 'dsg', label = 'Experiment design', choices = dsgs),
     selectInput( 'loc', label = 'Probe location', choices = locs),
     selectInput( 'mat', label = 'Biological material', choices = mats),
@@ -86,6 +87,7 @@ corrTab <- list(
     condition = 'output.procIsAllowed',
     list( 
       p( paste0( 'Background correction is carried out by means of negative control probes as specified in the file "', basics$optionsFile, '".') ),
+      p( 'This procedure includes processing of lumi object and negative control probes files, using limma', code('nec'), 'function and removing of extracted bad probes.'),
       checkboxInput( 'corrEnabled', 'Enabled'),
       hr(),
       actionButton( 'corrNext', label = 'Continue'),
@@ -106,9 +108,11 @@ filterTab <- list(
     condition = 'output.procIsAllowed',
     list( 
       p( 'Here you can filter the probes with regard to p-value and limit.'),
+      p( 'This is done by lumi function', code('detectionCall'), 'with Th parameter as p-value and filtering this data by limit value.')
       checkboxInput( 'filtEnabled', 'Enabled'),
       conditionalPanel(
         condition = 'input.filtEnabled',
+        p( 'Default values are 0.05 for p-value and 0.7 for filtering limit.'),
         sliderInput( 'pval', 'P-value', min = 0, max = 1, value = 0.05),
         sliderInput( 'plimit', 'Filtering limit', min = 0, max = 1, value = 0.7)
       ),
@@ -131,6 +135,8 @@ normTab <- list(
     condition = 'output.procIsAllowed',
     list( 
       p( 'Here you can normalize the current dataset.'),
+      p( 'Currently only VST-quantile (VST transformation followed by quantile-normalization) method is available.')
+      p( 'ComBat (adjusts batch effects in datasets) method will be available soon.')
       checkboxInput( 'normEnabled', 'Enabled'),
       conditionalPanel(
         condition = 'input.normEnabled',
@@ -158,6 +164,7 @@ questTab <- list(
     condition = 'output.procIsAllowed',
     list( 
       p( 'Here you can link questionnaires to the biobank datasets.'),
+      p( 'Results will be combined with questionaire variables.'),
       checkboxInput( 'questEnabled', 'Enabled'),
       conditionalPanel(
         condition = 'input.questEnabled',
