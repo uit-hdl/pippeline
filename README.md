@@ -51,7 +51,7 @@ That's it.
 Now write in an R terminal:
 
 ```
-source('pippeline.R')
+source('run.R')
 ```
 
 

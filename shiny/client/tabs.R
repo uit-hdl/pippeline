@@ -10,7 +10,7 @@ aboutTab <- list(
 descrTab <- list( 
   h2( 'Description'),
   p( 'Please enter the information below, i.e. your name and project/processing description.'),
-  p( 'This information will be used in the generated report for the project.')
+  p( 'This information will be used in the generated report for the project.'),
   textInput( inputId = 'author', label = 'Your name/initals'),
   textAreaInput( inputId = 'descr', label = 'Processing description'),
   hr(),
@@ -108,7 +108,7 @@ filterTab <- list(
     condition = 'output.procIsAllowed',
     list( 
       p( 'Here you can filter the probes with regard to p-value and limit.'),
-      p( 'This is done by lumi function', code('detectionCall'), 'with Th parameter as p-value and filtering this data by limit value.')
+      p( 'This is done by lumi function', code('detectionCall'), 'with Th parameter as p-value and filtering this data by limit value.'),
       checkboxInput( 'filtEnabled', 'Enabled'),
       conditionalPanel(
         condition = 'input.filtEnabled',
@@ -135,11 +135,11 @@ normTab <- list(
     condition = 'output.procIsAllowed',
     list( 
       p( 'Here you can normalize the current dataset.'),
-      p( 'Currently only VST-quantile (VST transformation followed by quantile-normalization) method is available.')
-      p( 'ComBat (adjusts batch effects in datasets) method will be available soon.')
       checkboxInput( 'normEnabled', 'Enabled'),
       conditionalPanel(
         condition = 'input.normEnabled',
+        p( 'Currently only VST-quantile (VST transformation followed by quantile-normalization) method is available.'),
+        p( 'ComBat (adjusts batch effects in datasets) method will be available soon.'),
         selectInput( 'nmeth', label = 'Method', choices = nmeths, selected = 'vstQuantileNorm')
       ),
       hr(),

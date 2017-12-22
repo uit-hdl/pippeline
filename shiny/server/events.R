@@ -95,10 +95,8 @@ observeEvent( input$download, {
     
     # make directory according to jobID (can be SLURM_JOBID)
     jobid <- Sys.getenv("SLURM_JOB_ID")
-    jobDir <- file.path( '/project/tice/pippelinen', jobid, paste0( basics$appName, '-', format( ts, "%d%m%Y%H%M%OS3") ) )    
-
-    #jobDir <- file.path( '/project/tice/pippelinen', jobid, paste0( basics$appName, '-', as.numeric( as.POSIXct ( ts) ) ) )
-    #showNotification( 'JobDir: ', jobDir, type='message', duration=NULL)
+    jobDir <- gsub('//', '/', file.path( '/project/tice/pippelinen', jobid, paste0( basics$appName, '-', format( ts, "%d%m%Y-%H%M%OS3") ) ) )
+    #jobDir <- file.path( '/project/tice/pippelinen', jobid, paste0( basics$appName, '-', as.numeric( as.POSIXct ( ts) ) )
 
     # make temporary directory
     tmpDir <- file.path( tempdir(), paste0( basics$appName, '-', format( ts, "%d%m%Y%H%M%OS3") ) )
@@ -125,7 +123,7 @@ observeEvent( input$download, {
       #showNotification('Successful render', scriptFile, type='message', duration = NULL)
       #
       removeNotification( 'wait')
-      showNotification( 'All files successfully written.', type = 'message')
+      showNotification( 'All files successfully written.', type = 'message', duration = NULL)
     }, error = function( err){
       removeNotification( 'wait')
       showNotification( 'Could not produce data/documentation. (Error while sourcing script.) Error code #3.', type = 'error', duration = NULL)
