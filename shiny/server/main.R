@@ -80,7 +80,8 @@ ts <- NULL
 # updating dataset information
 output$info_var <- renderText( { 
     dinfo$dName = input$dsg
-    dinfo$numPairs=ifelse(input$dsg != notSelOpt, ncol(data(input$dsg)), "-") 
+    dinfo$numPairs=ifelse(input$dsg != notSelOpt, "ncol(obj)", "-")
+    #dinfo$numPairs=ifelse(input$dsg != notSelOpt, print (getDataObjs()), "-")
     dinfo$outlierR=ifelse(input$outlierEnabled, as.character("Enabled with file:", input$dsg), "Not enabled")
     dinfo$bCorr=ifelse(input$corrEnabled,"Enabled", "Not enabled")
     dinfo$filterP=ifelse(input$filtEnabled,input$pval, "Not enabled")
