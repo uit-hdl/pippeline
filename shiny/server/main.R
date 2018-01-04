@@ -80,13 +80,13 @@ ts <- NULL
 # updating dataset information
 output$info_var <- renderText( { 
     dinfo$dName = input$dsg
-    #dinfo$numPairs=getDataObjs()
-    dinfo$outlierR=ifelse(input$outlierEnabled,toString("Enabled with file:", input$dsg), "Not enabled")
+    dinfo$numPairs=ifelse(input$dsg != notSelOpt, ncol(data(input$dsg)), "-") 
+    dinfo$outlierR=ifelse(input$outlierEnabled, as.character("Enabled with file:", input$dsg), "Not enabled")
     dinfo$bCorr=ifelse(input$corrEnabled,"Enabled", "Not enabled")
-    dinfo$filterP=input$pval
-    dinfo$filterLimit=input$plimit
-    dinfo$normMethod=ifelse(input$normEnabled, as.character("Enabled -", input$nmeth), "Not enabled") 
-    #dinfo$questVars=input$questObj
+    dinfo$filterP=ifelse(input$filtEnabled,input$pval, "Not enabled")
+    dinfo$filterLimit=ifelse(input$filtEnabled,input$plimit, "Not enabled")
+    dinfo$normMethod=ifelse(input$normEnabled, "Enabled", "Not enabled") 
+    dinfo$questVars=ifelse(exists(input$questObj), as.character(input$questVars), "Not enabled")
 
     paste(#"<b>", 
       "Dataset: ", dinfo$dName, "<br>",
