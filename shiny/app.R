@@ -12,8 +12,19 @@ ui <- fluidPage(
   includeCSS( file.path( 'www', 'pippeline.css') ),
   # window title
   title = basics$appName,
-  # tabs
-  source( file.path( 'client', 'main.R'), local = TRUE)$value,
+
+  fluidRow(
+    column(9,
+      "", # tabs
+      source( file.path( 'client', 'main.R'), local = TRUE)$value
+    ),
+    column(3,
+      h3("Project info:"),
+      # helpText("..."),
+      htmlOutput("info_var") # textOutput
+    )
+  ),
+
   # logo
   img( src='logo-uit.svg', width = 200, height = 'auto', class='logo'),
   # javascript, for closing the window

@@ -5,5 +5,5 @@ options(bitmapType = "cairo")
 
 library(nowac)
 library(devtools)
-load_all("~/pippeline")
+load_all("../pippeline")
 source("pippeline.R")

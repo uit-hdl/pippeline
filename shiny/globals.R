@@ -45,3 +45,15 @@ nmeths <- c( notSelOpt, 'vstQuantileNorm')
 
 # JavaScript
 jscode <- "shinyjs.closeWindow = function() { window.close(); }"  # works only in RStudio, not external browser
+
+# Info summary list
+dinfo <- list(
+  dName=notSelOpt,
+  numPairs=notSelOpt,
+  outlierR=notSelOpt,
+  bCorr=notSelOpt,
+  filterP=notSelOpt,
+  filterLimit=notSelOpt,
+  normMethod=notSelOpt,
+  questVars=notSelOpt
+)

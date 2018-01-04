@@ -76,3 +76,27 @@ outputOptions( output, 'downlIsAllowed', suspendWhenHidden = FALSE)
 # normal variables
 # timestamp
 ts <- NULL
+
+# updating dataset information
+output$info_var <- renderText( { 
+    dinfo$dName = input$dsg
+    #dinfo$numPairs=getDataObjs()
+    dinfo$outlierR=ifelse(input$outlierEnabled,toString("Enabled with file:", input$dsg), "Not enabled")
+    dinfo$bCorr=ifelse(input$corrEnabled,"Enabled", "Not enabled")
+    dinfo$filterP=input$pval
+    dinfo$filterLimit=input$plimit
+    dinfo$normMethod=ifelse(input$normEnabled, as.character("Enabled -", input$nmeth), "Not enabled") 
+    #dinfo$questVars=input$questObj
+
+    paste(#"<b>", 
+      "Dataset: ", dinfo$dName, "<br>",
+      "Number of pairs: ", dinfo$numPairs, "<br>",
+      "Outlier removal: ", dinfo$outlierR, "<br>",
+      "Background correction: ", dinfo$bCorr, "<br>",
+      "P value:", dinfo$filterP, "<br>",
+      "Filtering limit: ", dinfo$filterLimit, "<br>",
+      "Normalization method: ", dinfo$normMethod, "<br>",
+      "Questionnaire variables:", dinfo$questVars
+      #, "<br>","</b>"
+      )
+} )

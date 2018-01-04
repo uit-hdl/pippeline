@@ -359,4 +359,3 @@ generatePipeline <- function( params) {
     #arStep # mandatory
   )
 } # function generatePipeline
-
