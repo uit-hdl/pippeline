@@ -11,6 +11,6 @@ navlistPanel(
   tabPanel( 'Filtering', value = 'filter', filterTab),
   tabPanel( 'Normalization', value = 'norm', normTab),
   tabPanel( 'Questionnaires', value = 'quest', questTab),
-  tabPanel( 'Process & quit', value = 'download', downloadTab),
+  tabPanel( 'Process & quit', value = 'process', processTab),
   id = 'steps'
 )

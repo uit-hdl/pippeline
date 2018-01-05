@@ -17,6 +17,8 @@ outputOptions( output, 'choicesAreValid', suspendWhenHidden = FALSE)
 
 sourceObjs <- reactive( {
   if( choicesAreValid() ) {
+    dinfo$numPairs$ge <- getDataObjs()[[1]]$ge
+    dinfo$numPairs$nc <- getDataObjs()[[1]]$nc
     getDataObjs()
   } else {
     NULL
@@ -66,12 +68,12 @@ allInputIsValid <- reactive( {
     TRUE
 } )
 
-output$downlIsAllowed <- reactive( { 
+output$procIsAllowed <- reactive( { 
   prereqsAreValid() && 
     procIsAllowed() &&
     allInputIsValid()
 } )
-outputOptions( output, 'downlIsAllowed', suspendWhenHidden = FALSE)
+outputOptions( output, 'procIsAllowed', suspendWhenHidden = FALSE)
 
 # normal variables
 # timestamp
@@ -80,8 +82,7 @@ ts <- NULL
 # updating dataset information
 output$info_var <- renderText( { 
     dinfo$dName = input$dsg
-    dinfo$numPairs=ifelse(input$dsg != notSelOpt, "ncol(obj)", "-")
-    #dinfo$numPairs=ifelse(input$dsg != notSelOpt, print (getDataObjs()), "-")
+    dinfo$numPairsInfo=ifelse(choicesAreValid(), "(geneExpr + negCtlr)/2", "-") #TODO: add dynamic eval
     dinfo$outlierR=ifelse(input$outlierEnabled, as.character("Enabled with file:", input$dsg), "Not enabled")
     dinfo$bCorr=ifelse(input$corrEnabled,"Enabled", "Not enabled")
     dinfo$filterP=ifelse(input$filtEnabled,input$pval, "Not enabled")
@@ -91,7 +92,7 @@ output$info_var <- renderText( {
 
     paste(#"<b>", 
       "Dataset: ", dinfo$dName, "<br>",
-      "Number of pairs: ", dinfo$numPairs, "<br>",
+      "Number of pairs((geneExpr + negCtlr)/2): ", dinfo$numPairsInfo, "<br>",
       "Outlier removal: ", dinfo$outlierR, "<br>",
       "Background correction: ", dinfo$bCorr, "<br>",
       "P value:", dinfo$filterP, "<br>",

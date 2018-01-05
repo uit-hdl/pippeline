@@ -197,15 +197,6 @@ generatePipeline <- function( params) {
   }
   writeStep <- createStep( 'Storage', 'Writing processed datasets', TRUE, generateCode, list( params$targetFile) )
   
-  # step: archiving
-  #generateCode <- function() {
-  #  c(
-  #    cmt(),
-  #    cmt( 'Copying R script, documentation, and generated data into archive.')
-  #  )
-  #}
-  #arStep <- createStep( 'Archiving', 'Collecting files', TRUE, generateCode)
-  
   # details for non-mandatory processing steps
   # step: control transitions
   generateCode <- function() {
@@ -356,6 +347,5 @@ generatePipeline <- function( params) {
     questStep,
     anoStep, # mandatory
     writeStep # mandatory
-    #arStep # mandatory
   )
 } # function generatePipeline

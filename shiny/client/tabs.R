@@ -185,21 +185,21 @@ questTab <- list(
   )
 )
 
-downloadTab <- list(
+processTab <- list(
   h2( 'Process & quit'),
   conditionalPanel( 
-    condition = '!output.downlIsAllowed',
+    condition = '!output.procIsAllowed',
     p( 'Processing is not allowed.'),
     p( 'This could be due to incomplete or invalid input in any of the processing steps.'),
-    actionButton( 'downloadReq', label = 'Go there') 
+    actionButton( 'processReq', label = 'Go there') 
   ),
   conditionalPanel( 
-    condition = 'output.downlIsAllowed',
+    condition = 'output.procIsAllowed',
     list( 
       p( paste0( 'Here you can process dataset (.rds format), documentation of all processing steps (.', basics$docFormat,' file) and the source (.R file).') ),
       p( 'The datset consists of probes if not chosen otherwise.'),
       checkboxInput( 'wantGenes', 'Genes instead of probes'),
-      actionButton( 'download', 'Compute and assemble files')
+      actionButton( 'process', 'Compute and assemble files')
     )
   ),
   hr(),

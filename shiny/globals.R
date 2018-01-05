@@ -49,7 +49,8 @@ jscode <- "shinyjs.closeWindow = function() { window.close(); }"  # works only i
 # Info summary list
 dinfo <- list(
   dName=notSelOpt,
-  numPairs=notSelOpt,
+  numPairs=list(ge=NULL,nc=NULL),
+  numPairsInfo=notSelOpt,
   outlierR=notSelOpt,
   bCorr=notSelOpt,
   filterP=notSelOpt,
