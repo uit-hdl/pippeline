@@ -19,6 +19,7 @@ sourceObjs <- reactive( {
   if( choicesAreValid() ) {
     dinfo$numPairs$ge <- getDataObjs()[[1]]$ge
     dinfo$numPairs$nc <- getDataObjs()[[1]]$nc
+    # print(ncol(get(dinfo$numPairs$ge))) # (geneExpr + negCtlr)/2
     getDataObjs()
   } else {
     NULL
