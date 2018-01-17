@@ -16,9 +16,17 @@ basics <- list(
   )
 )
 
+# tabs
+critTabsId <- c('outliers', 'corr', 'filter', 'norm', 'quest', 'process', 'divd')
+
 # strings
 procMsg <- 'First, you need to enter basic information and make your choices.'
 notSelOpt <- 'Not selected'
+notEnablOpt <- 'Not enabled'
+notProcMsg <- 'Dataset is not processed'
+
+# Slurm job id (can be SLURM_JOBID)
+jobID <- Sys.getenv("SLURM_JOB_ID")
 
 # determine options for basic choices
 options <- NULL
@@ -41,20 +49,58 @@ tryCatch( {
 quests <- c( notSelOpt, quests)
 qvars <- NULL
 
-nmeths <- c( notSelOpt, 'vstQuantileNorm')
+nmeths <- c(notSelOpt, 'vstQuantileNorm')
 
 # JavaScript
-jscode <- "shinyjs.closeWindow = function() { window.close(); }"  # works only in RStudio, not external browser
+jscode <- "
+shinyjs.closeWindow = function() { window.close(); }
 
-# Info summary list
-dinfo <- list(
-  dName=notSelOpt,
-  numPairs=list(ge=NULL,nc=NULL),
-  numPairsInfo=notSelOpt,
-  outlierR=notSelOpt,
-  bCorr=notSelOpt,
-  filterP=notSelOpt,
-  filterLimit=notSelOpt,
-  normMethod=notSelOpt,
-  questVars=notSelOpt
-)
+shinyjs.disableTab = function(name) {
+  var tab = $('.nav li a[data-value=' + name + ']');
+  tab.bind('click.tab', function(e) {
+    e.preventDefault();
+    return false;
+  });
+  tab.addClass('disabled');
+}
+
+shinyjs.enableTab = function(name) {
+  var tab = $('.nav li a[data-value=' + name + ']');
+  tab.unbind('click.tab');
+  tab.removeClass('disabled');
+}
+"
+
+# CSS
+css <- "
+.nav li a.disabled {
+  cursor: not-allowed !important;
+}
+
+.nav li a.full-disabled {
+  background-color: #E0E0E0 !important;
+  color: #333 !important;
+  cursor: not-allowed !important;
+  border-color: #E0E0E0 !important;
+}
+
+.divider {
+  width: 40px;
+  height: auto;
+  display: inline-block;
+}
+
+.row-btn-first {
+  margin-right: 40px;
+  display: inline-block;
+}
+
+.row-btn-second {
+  margin-right: 40px;
+  display: inline-block;
+}
+
+.row-btn-third {
+  display: inline-block;
+}
+"

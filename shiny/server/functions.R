@@ -349,3 +349,93 @@ generatePipeline <- function( params) {
     writeStep # mandatory
   )
 } # function generatePipeline
+
+
+performInterSteps <- function(tempDataFile, tempScriptFile){
+  showNotification('Processing for the next step...', duration = NULL, id = 'waitInter')
+
+  tryCatch({
+    file.remove(tempDataFile)
+    file.remove(tempScriptFile)
+  }, warning = function(wrn){
+    NULL
+    })
+   
+  pipeline <- generatePipeline(list(
+    sourceObjs = sourceObjs(),
+    targetFile = tempDataFile
+  ))
+
+  tryCatch({
+    writeScript(pipeline, tempScriptFile)
+    source(tempScriptFile)
+    removeNotification('waitInter')
+    file.remove(tempScriptFile)
+    #showNotification('Successfull step execution. Proceeding to the next step...', type = 'message', duration = 4)
+  }, error = function(err){
+    removeNotification('waitInter')
+    showNotification('Could not perform step. Error code #11.', type = 'error', duration = NULL)
+    showNotification('Error info: ', toString(err), type = 'error', duration = NULL)
+  })
+
+  rm(pipeline)
+}
+
+getTempDataset <- function(tempDataFile){
+  ds <- readRDS(tempDataFile)
+  return (ds)
+}
+
+interStepAndUpdate <- function(tmpDSVec){
+  performInterSteps(tmpDSVec[1], tmpDSVec[2])
+  ds <- getTempDataset(tmpDSVec[1])
+  # info update
+  pairsInfo <<- c(as.numeric(dim(ds)[1]), as.numeric(dim(ds)[2]))
+  return (pairsInfo)
+}
+
+resetCheckboxValues <- function(){
+  # reset all checkboxes
+  reset ('trans')
+  reset ('outlierEnabled')
+  reset ('corrEnabled')
+  reset ('filtEnabled')
+  reset ('normEnabled')
+  reset ('questEnabled')
+  reset ('wantGenes')
+}
+
+resetStepsAndInfo <- function(){
+  resetCheckboxValues()
+  # reset dataset info
+  updateSelectInput(session, "dsg", selected = notSelOpt)
+  updateSelectInput(session, "loc", selected = notSelOpt)
+  updateSelectInput(session, "mat", selected = notSelOpt)
+  updateSelectInput(session, "ana", selected = notSelOpt)
+
+  piplInfo$origInfoStr <<- notProcMsg
+  piplInfo$currFeatures <<- notProcMsg
+  piplInfo$currSamples <<- notProcMsg
+}
+
+# setWorkingTabs <- function(nextId){
+#   for (id in tabsId){
+#     if (id != nextId || !(id %in% nextId)) js$disableTab(id) 
+#     else js$enableTab(id)
+#   }
+# }
+
+setTabInitialState <- function(tbId){
+  for (id in tbId) {
+    js$disableTab(id)
+  }  
+}
+
+# comparing saved/unsaved info status
+# compareDashboard <- function(){
+#   NULL
+# }
+
+# saveDashboard <- function(){
+#   NULL
+# }

@@ -6,21 +6,33 @@ prereqsAreValid <- reactive( {
 output$prereqsAreValid <- reactive( { prereqsAreValid() } )
 outputOptions( output, 'prereqsAreValid', suspendWhenHidden = FALSE)
 
-choicesAreValid <- reactive( { 
-  input$dsg != notSelOpt && 
+choicesAreValid <- reactive( {
+  if (
+    input$dsg != notSelOpt && 
     input$loc != notSelOpt && 
     input$mat != notSelOpt && 
     input$ana != notSelOpt
+    )
+  {
+    # Ad hoc for resetting values for new dataset
+    # resetCheckboxValues() 
+
+    return (TRUE)
+  }
+  else return (FALSE)
 } )
 output$choicesAreValid <- reactive( { choicesAreValid() } )
 outputOptions( output, 'choicesAreValid', suspendWhenHidden = FALSE)
 
 sourceObjs <- reactive( {
-  if( choicesAreValid() ) {
-    dinfo$numPairs$ge <- getDataObjs()[[1]]$ge
-    dinfo$numPairs$nc <- getDataObjs()[[1]]$nc
-    # print(ncol(get(dinfo$numPairs$ge))) # (geneExpr + negCtlr)/2
-    getDataObjs()
+  if(choicesAreValid()){
+    tryCatch({
+      getDataObjs()
+      }, warning = function(wrn){
+      NULL
+      }, error = function(err){
+      NULL
+      })
   } else {
     NULL
   }
@@ -31,10 +43,22 @@ objsExist <- reactive( {
 } )
 output$objsExist <- reactive( { objsExist() } )
 outputOptions( output, 'objsExist', suspendWhenHidden = FALSE)
-
+ 
 outlFileExists <- reactive( { 
-  !is.null( input$outlierFile)
-} )
+  if (!is.null(input$outlierFile) && grepl('.rds', input$outlierFile$name)){
+    if (typeof(readRDS(input$outlierFile$datapath)) == 'character'){
+      return (TRUE) # vector of characters?
+    }
+    else {
+      showNotification(paste0('Loaded file "', input$outlierFile$name, '" should contain vector of characters. Error code #12.'), 
+        type = 'error', duration = 7)
+      return (FALSE)
+    }
+  }
+  else 
+    return (FALSE)
+})
+
 output$outlFileExists <- reactive( { outlFileExists() } )
 outputOptions( output, 'outlFileExists', suspendWhenHidden = FALSE)
 
@@ -51,7 +75,7 @@ output$qvarPicker <- renderUI( {
     showNotification( paste0( 'No questionnaire available. (Check file "', basics$questsFile, '" or load object.) Error code #9.'), type = 'error', duration = NULL, id = 'quest')
     availQVars <- c()
   }
-  selectizeInput( 'questVars', 'Variables', multiple = T, choices = availQVars, selected = availQVars)
+  selectizeInput( 'questVars', 'Variables', multiple = T, choices = availQVars, selected = availQVars[1:5])
 } )
 
 procIsAllowed <- reactive( { 
@@ -62,44 +86,85 @@ procIsAllowed <- reactive( {
 output$procIsAllowed <- reactive( { procIsAllowed() } )
 outputOptions( output, 'procIsAllowed', suspendWhenHidden = FALSE)
 
-allInputIsValid <- reactive( {
-  if( as.logical(input$normEnabled) )
-    input$nmeth != notSelOpt
-  else
-    TRUE
-} )
+####################
+# allInputIsValid <- reactive( {
+#   if( as.logical(input$normEnabled) )
+#     input$nmeth != notSelOpt
+#   else
+#     TRUE
+# } )
+####################
 
 output$procIsAllowed <- reactive( { 
-  prereqsAreValid() && 
-    procIsAllowed() &&
-    allInputIsValid()
-} )
+  prereqsAreValid() && procIsAllowed() # && allInputIsValid()
+})
 outputOptions( output, 'procIsAllowed', suspendWhenHidden = FALSE)
 
+# global variables for events
 # normal variables
-# timestamp
 ts <- NULL
+startTime <- NULL
+# paths
+procFolder <- NULL
+tmpFolder <- NULL
+tmpDataScript <- NULL
+# vars
+origPairs <- NULL
+
+# Info summary list
+piplInfo <- reactiveValues(data = list(
+  dNameStr="No dataset is chosen",
+  origInfoStr=notProcMsg,
+  outlierRemB=notEnablOpt,
+  bCorrB=notEnablOpt,
+  filterPStr=notEnablOpt,
+  filterLimitStr=notEnablOpt,
+  normMethodStr=notEnablOpt,
+  questVarsStr=notEnablOpt,
+  # reactive values for dynamic
+  currSamples=notProcMsg,
+  currFeatures=notProcMsg
+))
+
+# Reactive optionsInfo 
+optionsInfo <- reactiveValues(data = list( # TODO: backbtn issue (save states, fast info updates)
+outlRemovalEn=FALSE,
+backgrCorrEn=FALSE,
+pValEn=FALSE,
+filtLimEn=FALSE,
+normEn=FALSE,
+questEn=FALSE
+))
 
 # updating dataset information
-output$info_var <- renderText( { 
-    dinfo$dName = input$dsg
-    dinfo$numPairsInfo=ifelse(choicesAreValid(), "(geneExpr + negCtlr)/2", "-") #TODO: add dynamic eval
-    dinfo$outlierR=ifelse(input$outlierEnabled, as.character("Enabled with file:", input$dsg), "Not enabled")
-    dinfo$bCorr=ifelse(input$corrEnabled,"Enabled", "Not enabled")
-    dinfo$filterP=ifelse(input$filtEnabled,input$pval, "Not enabled")
-    dinfo$filterLimit=ifelse(input$filtEnabled,input$plimit, "Not enabled")
-    dinfo$normMethod=ifelse(input$normEnabled, "Enabled", "Not enabled") 
-    dinfo$questVars=ifelse(exists(input$questObj), as.character(input$questVars), "Not enabled")
+output$info_var <- renderText({ 
+    piplInfo$dNameStr=ifelse(choicesAreValid(), input$dsg, "No dataset is chosen")
+    piplInfo$origInfoStr=ifelse((input$designNext || input$designDown) && choicesAreValid(), paste(origPairs[2], "samples with", origPairs[1], "features"), 
+      "Dataset not processed")
+    piplInfo$outlierRemB=ifelse(input$outlierEnabled && outlFileExists(), "Enabled", notEnablOpt)
+    piplInfo$bCorrB=ifelse(input$corrEnabled,"Enabled", notEnablOpt)
+    piplInfo$filterPStr=ifelse(input$filtEnabled, input$pval, notEnablOpt)
+    piplInfo$filterLimitStr=ifelse(input$filtEnabled,input$plimit, notEnablOpt)
+    piplInfo$normMethodStr=ifelse((input$normEnabled && input$nmeth != notSelOpt), as.character(input$nmeth), notEnablOpt) 
+    piplInfo$questVarsStr=ifelse((input$questEnabled && input$questObj != notSelOpt && length(input$questVars) != 0), "Enabled", notEnablOpt)
 
-    paste(#"<b>", 
-      "Dataset: ", dinfo$dName, "<br>",
-      "Number of pairs((geneExpr + negCtlr)/2): ", dinfo$numPairsInfo, "<br>",
-      "Outlier removal: ", dinfo$outlierR, "<br>",
-      "Background correction: ", dinfo$bCorr, "<br>",
-      "P value:", dinfo$filterP, "<br>",
-      "Filtering limit: ", dinfo$filterLimit, "<br>",
-      "Normalization method: ", dinfo$normMethod, "<br>",
-      "Questionnaire variables:", dinfo$questVars
-      #, "<br>","</b>"
+    piplInfo$currFeatures=ifelse(piplInfo$currFeatures != notProcMsg && choicesAreValid(), piplInfo$currFeatures, notProcMsg)
+    piplInfo$currSamples=ifelse(piplInfo$currSamples != notProcMsg && choicesAreValid(), piplInfo$currSamples, notProcMsg)
+
+    paste(
+      "Dataset: ", piplInfo$dNameStr, "<br>",
+      piplInfo$origInfoStr, "<br>",
+      "<br>",
+      "Outlier removal: ", piplInfo$outlierRemB, "<br>",
+      "Background correction: ", piplInfo$bCorrB, "<br>",
+      "P value:", piplInfo$filterPStr, "<br>",
+      "Filtering limit: ", piplInfo$filterLimitStr, "<br>",
+      "Normalization method: ", piplInfo$normMethodStr, "<br>",
+      "Include questionnaire variables:", piplInfo$questVarsStr, "<br>",
+      "<br>",
+      "Dataset properties after processing ", "<br>",
+      "<b>", "Features: ", "</b>", piplInfo$currFeatures, "<br>",
+      "<b>", "Samples: ", "</b>", piplInfo$currSamples, "<br>"
+      # Number of pairs((geneExpr + negCtlr)/2)
       )
-} )
+})
