@@ -5,3 +5,4 @@
 *_orig
 outliers.rds
 false_outliers.rds
+.Rbuildignore

@@ -1,7 +1,8 @@
 # reactive variables
 prereqsAreValid <- reactive( {
   input$author != '' && 
-    input$descr != ''
+  input$descr != '' &&
+  input$projname != ''
 } )
 output$prereqsAreValid <- reactive( { prereqsAreValid() } )
 outputOptions( output, 'prereqsAreValid', suspendWhenHidden = FALSE)
@@ -45,12 +46,12 @@ output$objsExist <- reactive( { objsExist() } )
 outputOptions( output, 'objsExist', suspendWhenHidden = FALSE)
  
 outlFileExists <- reactive( { 
-  if (!is.null(input$outlierFile) && grepl('.rds', input$outlierFile$name)){
-    if (typeof(readRDS(input$outlierFile$datapath)) == 'character'){
+  if (input$outlierFile != notSelOpt){
+    if (typeof(readRDS(file.path(nowacleanFolder, input$outlierFile))) == 'character'){
       return (TRUE) # vector of characters?
     }
     else {
-      showNotification(paste0('Loaded file "', input$outlierFile$name, '" should contain vector of characters. Error code #12.'), 
+      showNotification(paste0('Loaded file "', input$outlierFile, '" should contain vector of characters. Error code #12.'), 
         type = 'error', duration = 7)
       return (FALSE)
     }
@@ -116,6 +117,7 @@ piplInfo <- reactiveValues(data = list(
   dNameStr="No dataset is chosen",
   origInfoStr=notProcMsg,
   outlierRemB=notEnablOpt,
+  exclCCB=notEnablOpt,
   bCorrB=notEnablOpt,
   filterPStr=notEnablOpt,
   filterLimitStr=notEnablOpt,
@@ -137,11 +139,12 @@ questEn=FALSE
 ))
 
 # updating dataset information
-output$info_var <- renderText({ 
+output$infoVar <- renderText({ 
     piplInfo$dNameStr=ifelse(choicesAreValid(), input$dsg, "No dataset is chosen")
     piplInfo$origInfoStr=ifelse((input$designNext || input$designDown) && choicesAreValid(), paste(origPairs[2], "samples with", origPairs[1], "features"), 
       "Dataset not processed")
     piplInfo$outlierRemB=ifelse(input$outlierEnabled && outlFileExists(), "Enabled", notEnablOpt)
+    piplInfo$exclCCB=ifelse(input$transEnabled, "Enabled", notEnablOpt)
     piplInfo$bCorrB=ifelse(input$corrEnabled,"Enabled", notEnablOpt)
     piplInfo$filterPStr=ifelse(input$filtEnabled, input$pval, notEnablOpt)
     piplInfo$filterLimitStr=ifelse(input$filtEnabled,input$plimit, notEnablOpt)
@@ -151,20 +154,25 @@ output$info_var <- renderText({
     piplInfo$currFeatures=ifelse(piplInfo$currFeatures != notProcMsg && choicesAreValid(), piplInfo$currFeatures, notProcMsg)
     piplInfo$currSamples=ifelse(piplInfo$currSamples != notProcMsg && choicesAreValid(), piplInfo$currSamples, notProcMsg)
 
-    paste(
+    paste0(
+      "<hr>",
+      "<b>", "Primary dataset information ", "</b>", "<br>",
       "Dataset: ", piplInfo$dNameStr, "<br>",
       piplInfo$origInfoStr, "<br>",
-      "<br>",
+      "<hr>",
+      "<b>", "Settings ", "</b>", "<br>", 
       "Outlier removal: ", piplInfo$outlierRemB, "<br>",
+      "Exclude control-case transitions: ", piplInfo$exclCCB, "<br>",
       "Background correction: ", piplInfo$bCorrB, "<br>",
-      "P value:", piplInfo$filterPStr, "<br>",
+      "P value: ", piplInfo$filterPStr, "<br>",
       "Filtering limit: ", piplInfo$filterLimitStr, "<br>",
       "Normalization method: ", piplInfo$normMethodStr, "<br>",
-      "Include questionnaire variables:", piplInfo$questVarsStr, "<br>",
-      "<br>",
-      "Dataset properties after processing ", "<br>",
-      "<b>", "Features: ", "</b>", piplInfo$currFeatures, "<br>",
-      "<b>", "Samples: ", "</b>", piplInfo$currSamples, "<br>"
+      "Include questionnaire variables: ", piplInfo$questVarsStr, "<br>",
+      "<hr>",
+      "<b>", "Dataset properties after processing ", "</b>", "<br>",
+      "<u>", "Samples", "</u>", ": ", piplInfo$currSamples, "<br>",
+      "<u>", "Features", "</u>", ": ", piplInfo$currFeatures, "<br>",
       # Number of pairs((geneExpr + negCtlr)/2)
+      "<hr>"
       )
 })

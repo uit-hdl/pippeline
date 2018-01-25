@@ -95,6 +95,7 @@ writeScript <- function( pipeline,
     cmt( '---'),
     cmt( paste0( 'title: "', basics$title, '"') ),
     cmt( paste0( 'author: "', input$author, '"') ),
+    cmt( paste0( 'project name: "', input$projname, '"') ),
     cmt( paste0( 'date: "', ts, '"') ),
     cmt( '---'),
     # header
@@ -196,44 +197,48 @@ generatePipeline <- function( params) {
     )
   }
   writeStep <- createStep( 'Storage', 'Writing processed datasets', TRUE, generateCode, list( params$targetFile) )
-  
-  # details for non-mandatory processing steps
-  # step: control transitions
-  generateCode <- function() {
-    c(
-      '## fixme: UiT'
-    )
-  }
-  exclStep <- createStep( 'Transitions', 'Exclusion of control-case transitions', input$trans, generateCode)
 
   # step: outliers
   generateCode <- function() {
     code <- c(
       cmt(),
-      cmt( paste( 'Description of outliers:', ifelse( input$outlierDescr != '', input$outlierDescr, 'Not available') ) )
+      cmt(paste('Description of outliers:', ifelse(input$outlierDescr != '', input$outlierDescr, 'Not available')))
     )
-    outlierFile <- input$outlierFile$datapath
-    if( length( outlierFile) == 0 ||
-        as.integer( file.access( outlierFile, mode = 4) ) < 0) {
+
+    outlierFile <- file.path(nowacleanFolder, input$outlierFile)
+    if(!file.exists(outlierFile) ||
+        as.integer(file.access(outlierFile, mode = 4)) < 0) {
       code <- c(
         code,
-        'stop( "Could not read outliers file. Error code #4.")'
+        'stop("Could not read outliers file. Error code #4.")'
       )
     } else {
       code <- c(
         code,
-        sprintf( '# original filename: %s (copied to temporary location)', input$outlierFile$name),
-        sprintf( 'outliers <- readRDS("%s")', outlierFile),
-        sprintf( 'm <- vector("list",length=%d)', numberOfRuns),
-        sprintf( 'm[[%1$d]] <- match(outliers,colnames(exprs(data[[%1$d]]$lumi)))', idxSeq),
-        sprintf( 'm[[%1$d]] <- m[[%1$d]][!is.na(m[[%1$d]])]', idxSeq),  # remove non-matching pairs
-        sprintf( 'if(length(m[[%1$d]])) data[[%1$d]]$lumi <- data[[%1$d]]$lumi[,-m[[%1$d]]]', idxSeq),
+        #sprintf( '# original filename: %s (copied to temporary location)', input$outlierFile),
+        sprintf('# filename: %s (using original file)', input$outlierFile),
+        sprintf('outliers <- readRDS("%s")', outlierFile),
+        sprintf('m <- vector("list",length=%d)', numberOfRuns),
+        sprintf('m[[%1$d]] <- match(outliers,colnames(exprs(data[[%1$d]]$lumi)))', idxSeq),
+        sprintf('m[[%1$d]] <- m[[%1$d]][!is.na(m[[%1$d]])]', idxSeq),  # remove non-matching pairs
+        sprintf('if(length(m[[%1$d]])) data[[%1$d]]$lumi <- data[[%1$d]]$lumi[,-m[[%1$d]]]', idxSeq),
         'rm(m,outliers)'
       )
     }
     code
   }
+
   outlStep <- createStep( 'Outliers', 'Removal of outliers', as.logical(input$outlierEnabled), generateCode)
+
+  # details for non-mandatory processing steps
+  # step: control transitions
+  generateCode <- function() {
+    c(
+      '## fixme: UiT' # TODO: get info from registry and check for updates?
+
+    )
+  }
+  exclStep <- createStep( 'Transitions', 'Exclusion of control-case transitions', input$transEnabled, generateCode)
 
   # step: background correction
   generateCode <- function( nCtrls) {
@@ -336,8 +341,8 @@ generatePipeline <- function( params) {
   # now concatenate all steps
   list(
     readStep, # mandatory
-    exclStep,
     outlStep,
+    exclStep,
     bcorrStep,
     combStep, # mandatory
     filtStep,
@@ -396,8 +401,10 @@ interStepAndUpdate <- function(tmpDSVec){
 
 resetCheckboxValues <- function(){
   # reset all checkboxes
-  reset ('trans')
+  reset ('transEnabled')
   reset ('outlierEnabled')
+  reset ('outlierFile')
+  reset ('outlierFileReport')
   reset ('corrEnabled')
   reset ('filtEnabled')
   reset ('normEnabled')
@@ -412,6 +419,9 @@ resetStepsAndInfo <- function(){
   updateSelectInput(session, "loc", selected = notSelOpt)
   updateSelectInput(session, "mat", selected = notSelOpt)
   updateSelectInput(session, "ana", selected = notSelOpt)
+  updateSelectInput(session, "outlierFile", selected = notSelOpt)
+  updateSelectInput(session, "outlierFileReport", selected = notSelOpt)
+  updateTextAreaInput(session, "outlierDescr", value = '')
 
   piplInfo$origInfoStr <<- notProcMsg
   piplInfo$currFeatures <<- notProcMsg

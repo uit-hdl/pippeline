@@ -9,9 +9,10 @@ aboutTab <- list(
 
 descrTab <- list( 
   h2('Description'),
-  p('Please enter the information below, i.e. your name and project/processing description.'),
+  p('Please enter the information below, i.e. your name, project and processing description.'),
   p('This information will be used in the generated report for the project.'),
   textInput( inputId = 'author', label = 'Your name/initals'),
+  textInput( inputId = 'projname', label = 'Project name'),
   textAreaInput( inputId = 'descr', label = 'Processing description'),
   hr(),
   conditionalPanel( 
@@ -35,7 +36,6 @@ designTab <- list(
     selectInput('loc', label = 'Probe location', choices = locs),
     selectInput('mat', label = 'Biological material', choices = mats),
     selectInput('ana', label = 'Genomic analysis', choices = anas),
-    checkboxInput('trans', label = 'Exclude control-case transitions'),
     hr(),
     conditionalPanel( 
       condition = 'output.procIsAllowed && output.objsExist',
@@ -58,23 +58,30 @@ outlierTab <- list(
     list( 
       p('Here you can delete outliers from the dataset.'),
       p('Outliers can be found by means of the ', a('nowaclean', href='https://github.com/3inar/nowaclean'), ' R package.'),
-      checkboxInput( 'outlierEnabled', 'Enabled'),
+      checkboxInput('outlierEnabled', label = 'Enabled'),
       conditionalPanel(
         condition = 'input.outlierEnabled',
-        p('Identify outliers as described in the vignette of nowaclean and save them like so:', code('saveRDS(outliers, file="outliers.rds")'), '. You can then import this file here.'),
-        fileInput('outlierFile', 'RData file with outliers', accept = c(".rds")),
-        textAreaInput(inputId = 'outlierDescr', label = 'Outlier description (optional)', value = '')
+        #p('Identify outliers as described in the vignette of nowaclean and save them like so:', code('saveRDS(outliers, file="outliers.rds")'), '. You can then import this file here.'),
+        p('Here you can choose outlier file from premade ones or save your own by sourcing "report_nowaclean.R" script or by providing outlier definition by your own with:', code('saveRDS(outliers, file="outliers.rds")'), 
+          '. Outliers object should be a vector of sample names. Place your file to pippeline/nowaclean_outliers folder. 
+          You can then choose this file here. Report will be available in generated folder for this pipeline run.'),
+        #fileInput('outlierFile', 'RData file with outliers', accept = c(".rds")),
+        selectInput('outlierFile', label = 'Outliers file ', choices = outls),
+        selectInput('outlierFileReport', label = 'Report (optional)', choices = rprts),
+
+        textAreaInput(inputId = 'outlierDescr', label = 'Outlier description (optional) ', value = '')
       ),
       hr(),
+      checkboxInput('transEnabled', label = 'Exclude control-case transitions (WIP)'),
       conditionalPanel(
         condition = '!(input.outlierEnabled && !output.outlFileExists)',
         div(class = 'row-btn-first', 
           conditionalPanel(
-            condition = 'input.outlierEnabled && output.outlFileExists',
+            condition = '(input.outlierEnabled && output.outlFileExists) || input.transEnabled',
             actionButton('outlierNext', label = 'Continue')
           ),
           conditionalPanel(
-            condition = '!input.outlierEnabled',
+            condition = '!input.outlierEnabled && !input.transEnabled',
             actionButton('outlierSkip', label = 'Skip')
           )
         ),
@@ -83,7 +90,7 @@ outlierTab <- list(
         # ),
         div(class = 'row-btn-third',
           conditionalPanel(
-            condition = '(input.outlierEnabled && output.outlFileExists) || !input.outlierEnabled',
+            condition = '(input.outlierEnabled && output.outlFileExists) || !input.outlierEnabled || input.transEnabled',
             actionButton('outlierDown', label = 'To final step')
           )
         )

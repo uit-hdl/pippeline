@@ -28,6 +28,9 @@ notProcMsg <- 'Dataset is not processed'
 # Slurm job id (can be SLURM_JOBID)
 jobID <- Sys.getenv("SLURM_JOB_ID")
 
+pipFolder <- '/project/tice/pippelinen'
+nowacleanFolder <- file.path(pipFolder, 'nowaclean_outliers')
+
 # determine options for basic choices
 options <- NULL
 tryCatch( {
@@ -40,16 +43,22 @@ locs <- c( notSelOpt, levels( options[ , 'Location'] ) )
 mats <- c( notSelOpt, levels( options[ , 'Material'] ) )
 anas <- c( notSelOpt, levels( options[ , 'Analysis'] ) )
 
+outls <- list.files(file.path(pipFolder,'nowaclean_outliers'), pattern='\\.rds$')
+outls <- c(notSelOpt, outls)
+
+rprts <- list.files(file.path(pipFolder,'nowaclean_outliers'), pattern='\\.html$')
+rprts <- c(notSelOpt, rprts)
+
 quests <- NULL
 tryCatch( {
   quests <- readLines( basics$questsFile)
 }, error = function( err){
   showNotification( paste0( 'Error while loading file ', basics$questsFile, '. (Wrong format?) Error code #6.', type = 'error', duration = basics$msgDuration) )
 } )
-quests <- c( notSelOpt, quests)
+quests <- c(notSelOpt, quests)
 qvars <- NULL
 
-nmeths <- c(notSelOpt, 'vstQuantileNorm')
+nmeths <- c(notSelOpt, 'vstQuantileNorm') # TODO: add comBat
 
 # JavaScript
 jscode <- "
@@ -68,39 +77,5 @@ shinyjs.enableTab = function(name) {
   var tab = $('.nav li a[data-value=' + name + ']');
   tab.unbind('click.tab');
   tab.removeClass('disabled');
-}
-"
-
-# CSS
-css <- "
-.nav li a.disabled {
-  cursor: not-allowed !important;
-}
-
-.nav li a.full-disabled {
-  background-color: #E0E0E0 !important;
-  color: #333 !important;
-  cursor: not-allowed !important;
-  border-color: #E0E0E0 !important;
-}
-
-.divider {
-  width: 40px;
-  height: auto;
-  display: inline-block;
-}
-
-.row-btn-first {
-  margin-right: 40px;
-  display: inline-block;
-}
-
-.row-btn-second {
-  margin-right: 40px;
-  display: inline-block;
-}
-
-.row-btn-third {
-  display: inline-block;
 }
 "

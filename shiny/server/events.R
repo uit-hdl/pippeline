@@ -12,7 +12,7 @@ observeEvent(input$aboutNext, {
 observeEvent(input$descrNext, {
   updateNavlistPanel(session, 'steps', selected = 'design')
   startTime <<- Sys.time()
-  tmpFolder <<- gsub('//', '/', file.path('/project/tice/pippelinen', tempdir()))
+  tmpFolder <<- gsub('//', '/', file.path(pipFolder, tempdir()))
   tmpDataScriptVec <<- c(file.path(tmpFolder, 'tmpData.rds'), file.path(tmpFolder, 'tmpPipeline.R'))
 
   tryCatch({
@@ -260,15 +260,15 @@ observeEvent(input$process, {
   # setting the filename works currently only when run in an external browser window, 
   # but not in Rstudio window/viewer pan
     ts <<- Sys.time()
-    showNotification( 'Processing. This may take some time. Please stand by ..', duration = NULL, id = 'wait')  
+    showNotification('Processing. This may take some time. Please stand by ..', duration = NULL, id = 'wait')  
     
-    procFolder <<- gsub('//', '/', file.path( '/project/tice/pippelinen', paste0(basics$appName, '-', format(startTime, "%d%m%Y-%H%M%OS3"))))
+    procFolder <<- gsub('//', '/', file.path(pipFolder, paste0(basics$appName, '-', input$projname, '-', format(startTime, "%d%m%Y-%H%M%OS3"))))
     dir.create(procFolder, recursive=TRUE)
 
     tmpDir <- procFolder
-    scriptFile <- file.path( tmpDir, 'pipeline.R')
-    dataFile <- file.path( tmpDir, 'data.rds')
-    docFile <- file.path( tmpDir, paste0( 'documentation.', basics$docFormat) )  # documentation
+    scriptFile <- file.path(tmpDir, 'pipeline.R')
+    dataFile <- file.path(tmpDir, 'data.rds')
+    docFile <- file.path(tmpDir, paste0( 'documentation.', basics$docFormat) )  # documentation
 
     pipeline <- generatePipeline(list(
       sourceObjs = sourceObjs(),
@@ -276,17 +276,24 @@ observeEvent(input$process, {
     ))
     # fill files with content
     tryCatch({
-      writeScript( pipeline, scriptFile)
-      render( scriptFile, paste0( basics$docFormat, '_document'), docFile, quiet = TRUE)
+      writeScript(pipeline, scriptFile)
+      render(scriptFile, paste0(basics$docFormat, '_document'), docFile, quiet = TRUE)
       #render( scriptFile)
       #showNotification('Successful render', scriptFile, type='message', duration = NULL)
-      removeNotification( 'wait')
-      showNotification( 'All files successfully written.', type = 'message', duration = 8)
+
+      # Copy outliers report
+      if (file.exists(file.path(nowacleanFolder, input$outlierFileReport)) && input$outlierFileReport != notSelOpt && input$outlierEnabled) {
+        reportFile <<- file.path(nowacleanFolder, input$outlierFileReport)
+        file.copy(reportFile, file.path(tmpDir, input$outlierFileReport))
+      }
+
+      removeNotification('wait')
+      showNotification('All files successfully written.', type = 'message', duration = 8)
       
     }, error = function(err){
-      removeNotification( 'wait')
-      showNotification( 'Could not produce data/documentation. (Error while sourcing script.) Error code #3.', type = 'error', duration = NULL)
-      showNotification( 'Error info: ', toString(err), type = 'error', duration = NULL)
+      removeNotification('wait')
+      showNotification('Could not produce data/documentation. (Error while sourcing script.) Error code #3.', type = 'error', duration = NULL)
+      showNotification('Error info: ', toString(err), type = 'error', duration = NULL)
     })
     
     # tryCatch({
@@ -295,6 +302,6 @@ observeEvent(input$process, {
     #   NULL
     # })
 
-    showNotification( 'Process ended.')
+    showNotification('Process ended.')
 })
 
