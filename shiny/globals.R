@@ -58,7 +58,7 @@ tryCatch( {
 quests <- c(notSelOpt, quests)
 qvars <- NULL
 
-nmeths <- c(notSelOpt, 'vstQuantileNorm') # TODO: add comBat
+nmeths <- c(notSelOpt, 'vstQuantileNorm') # TODO: ComBat
 
 # JavaScript
 jscode <- "

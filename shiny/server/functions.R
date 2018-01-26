@@ -118,11 +118,13 @@ writeScript <- function( pipeline,
     cmt( paste0( 'Questionnaire object names are read from file: ', basics$questsFile, '.') ),
     '',
     '# requirements',
+    # suppressMessages(library())
     sprintf( 'library(%s)', pkgInfo[ 1] ),
     sprintf( 'library(arrayQualityMetrics)'),
     sprintf( 'library(limma)'),
     sprintf( 'library(lumi)'),
     sprintf( 'library(nlme)'),
+    sprintf( 'library(sva)'),
     sprintf( 'library(illuminaHumanv3.db)'),
     sprintf( 'library(illuminaHumanv4.db)'),
     sprintf( 'library(lumiHumanIDMapping)'),
@@ -281,7 +283,7 @@ generatePipeline <- function( params) {
       sprintf( 'data <- pippeline::normalizeData(data,"%s")', input$nmeth)
     )
   }
-  normStep <- createStep( 'Normalization', 'log2 transformation and quantile normalization', as.logical(input$normEnabled), generateCode)
+  normStep <- createStep( 'Normalization', 'log2 transformation and quantile normalization or ComBat', as.logical(input$normEnabled), generateCode)
   
   # step: extraction
   generateCode <- function() {
@@ -386,9 +388,16 @@ performInterSteps <- function(tempDataFile, tempScriptFile){
   rm(pipeline)
 }
 
-getTempDataset <- function(tempDataFile){
-  ds <- readRDS(tempDataFile)
-  return (ds)
+getTempDataset <- function(tempDataFile) {
+  tryCatch( {
+    ds <- readRDS(tempDataFile)
+    return (ds)
+  }, error = function(err) {
+    showNotification('Could not produce data/documentation. (Error while sourcing script.) Error code #14.', type = 'error', duration = NULL)
+    showNotification('Error info: ', toString(err), type = 'error', duration = NULL)
+    return (NULL)
+  })
+  
 }
 
 interStepAndUpdate <- function(tmpDSVec){

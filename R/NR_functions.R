@@ -93,12 +93,16 @@ filterData <- function(data, pValue, presentLimit) {
 #' @param method string describing the normalization method
 #' @return normalized matrix where colnames(data)=sample IDs and rownames(data) = probe IDs
 #' @export
-normalizeData <- function(data.new, method = 'vstQuantileNorm') {
-  if( method != 'vstQuantileNorm')
-    stop( 'Method not supported.')
-  vstdata <- lumiT(data.new,method="vst")
-  Nvstdata <- lumiN(vstdata,method="quantile")
-  normdata <- exprs(Nvstdata)
-  
-  normdata
+normalizeData <- function(data.new, method = 'vstQuantileNorm', batchVar='Plate') {
+  if (method == 'vstQuantileNorm') {
+    vstdata <- lumiT(data.new, method="vst")
+    Nvstdata <- lumiN(vstdata, method="quantile")
+    normdata <- exprs(Nvstdata)
+  } else if (method == 'ComBat') {
+    stop('Method not supported.')
+    # Batching according to variable
+    # batch <- data.new[[batchVar]]
+    # normdata <- ComBat(dat=data.new, batch=batch)
+  }
+  return (normdata)
 }

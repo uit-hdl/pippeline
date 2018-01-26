@@ -111,16 +111,15 @@ work_data = get(paste0(params$experiment, "_lobj"))
 #' ## Removing blood type probes (38 probes related to genes in HLA)
 #+ remove-blood-type, eval=FALSE
 gene_expression <- work_data
-gene_expression <- removeBloodTypeProbes(gene_expression)
-gene_expression_wo_blood_type <- gene_expression
+gene_expression_wo_blood_type <- removeBloodTypeProbes(work_data)
 #'
 
 #' ## Finding "0" outliers
 #+ remove-zero-outliers, eval=FALSE
 zero_outl_obj <- 
-  mkOutlierObjList(colnames(gene_expression[, apply(gene_expression, 2, function(x) all(x==0))]), 
-                                  defDescr = 'Known "all-zero" outlier')
-#' 
+  mkOutlierObjList(colnames(gene_expression[, which(apply(gene_expression, 2, function(x) all(x==0)))]), 
+                   defDescr = 'Known "all-zero" outlier')
+#'
 
 #' ## Checking non-eligible samples
 #+ out-non-eligible-var, eval=FALSE
@@ -139,45 +138,45 @@ choiceTech <- readTF('Do you want to perform technical outliers search procedure
 if (choiceTech == T)
 {
   another_round <- T
-
+  
   while (another_round == T) {
-
+    
     # PCA #-------
     expression <- log2(t(exprs(gene_expression)))
     prc_all <- prcout(expression) # PCA outlier detection
     # plot(prc_all)
-
+    
     pca_outliers <- predict(prc_all, sdev=3)
     # pca_outliers
-
+    
     # boxplots #-------
     boxo <- boxout(expression)
     # plot(boxo)
-
+    
     boxplot_outliers <- predict(boxo, sdev=3)
     # boxplot_outliers
-
+    
     # MA-plot #-------
     maout <- mapout(expression)
     # plot(maout, nout=5, lineup=T)
-
+    
     mapoutliers <- predict(maout, sdev=3)
     # mapoutliers
-
+    
     # Sum all outliers and check frequency
     table(c(mapoutliers, boxplot_outliers, pca_outliers))
     cand_outliers_obj <- mkOutlierObjList(unique(c(mapoutliers, boxplot_outliers, pca_outliers)))
-
+    
     print ("Outlier candidates:")
     print (getOutlierNames(cand_outliers_obj))
-
+    
     # Expression densities for samples with outliers
     densities <- dens(expression)
     # plot(densities, main='Expression densities', highlight=getOutlierNames(cand_outliers_obj))
-
+    
     # Examine candidates for technical outliers
     # =========================================
-
+    
     tech_outl_obj <- list()
     # labInfo <- getLabInfo("uterus_hiscan")
     # Outliers candidates: "138115" "113785" "104917" "137771" "146176" "130922" "127496" "132675"
@@ -202,7 +201,7 @@ if (choiceTech == T)
         cat ('\n')
       }
     }
-
+    
     Sys.sleep(3)
     cat ('\n')
     print ("============Summary for round============")
@@ -212,25 +211,25 @@ if (choiceTech == T)
     print (getOutlierNames(tech_outl_obj))
     print ("============-----------------============")
     cat ('\n')
-
+    
     # Plot, save outliers, save cleaned data
     prc_all <- prcout(expression) # PCA outlier detection
     plot(prc_all, highlight=getOutlierNames(tech_outl_obj))
     # 5 Sum up "0", non-eligable and technical outliers
     for_removal_obj <- unique(c(for_removal_obj, tech_outl_obj, out_non_eligible_obj, zero_outl_obj))
-
+    
     print ("Found outlier names (tech, zero and non-eligible):")
     print (getOutlierNames(for_removal_obj))
-
+    
     print ("Dataset params before this round outlier removal: ")
     print (dim(gene_expression))
-
+    
     # Remove outliers
     gene_expression <- removeOutliers(getOutlierNames(for_removal_obj), gene_expression)
-
+    
     print ("Dataset params after this round outlier removal: ")
     print (dim(gene_expression))
-
+    
     another_round <- readTF("Do you want to perform another round of technical outlier removal? (yes/no): ")
   }
 }
@@ -303,7 +302,7 @@ for (i in 1:length(for_removal_obj)) {
 
 #+ render, include=FALSE, eval=FALSE
 library(rmarkdown)
-rmarkdown::render('report_nowaclean.R', output_file = paste0(path_report, '.html'), quiet = FALSE)
+rmarkdown::render('nowaclean-gen.R', output_file = paste0(path_report, '.html'), quiet = FALSE)
 #'
 
 #+ cleaning-proc, include=FALSE, eval=FALSE
@@ -311,4 +310,3 @@ rmarkdown::render('report_nowaclean.R', output_file = paste0(path_report, '.html
 # sessionInfo()
 rm(list=ls())
 #'
-
