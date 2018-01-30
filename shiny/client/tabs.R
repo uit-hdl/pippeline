@@ -66,31 +66,29 @@ outlierTab <- list(
           '. Outliers object should be a vector of sample names. Place your file to pippeline/nowaclean_outliers folder. 
           You can then choose this file here. Report will be available in generated folder for this pipeline run.'),
         #fileInput('outlierFile', 'RData file with outliers', accept = c(".rds")),
-        selectInput('outlierFile', label = 'Outliers file ', choices = outls),
-        selectInput('outlierFileReport', label = 'Report (optional)', choices = rprts),
-
+        selectInput('outlierFile', label = 'Outliers file', choices = outls),
+        selectInput('outlierFileReport', label = 'Outliers report (optional)', choices = outls_rprts),
         textAreaInput(inputId = 'outlierDescr', label = 'Outlier description (optional) ', value = '')
       ),
       hr(),
-      checkboxInput('transEnabled', label = 'Exclude control-case transitions (WIP)'),
+      checkboxInput('transEnabled', label = 'Exclude control-case transitions'),
       conditionalPanel(
-        condition = '!(input.outlierEnabled && !output.outlFileExists)',
+        condition = 'input.transEnabled',
+        selectInput('cctFile', label = 'Transitions to remove', choices = trns),
+        selectInput('transFileReport', label = 'Transitions report (optional)', choices = trns_rprts)
+      ),
+      hr(),
+      conditionalPanel(
+        condition = '!(input.outlierEnabled && !output.outlFileExists) && !(input.transEnabled && !output.cctFileExists)',
         div(class = 'row-btn-first', 
-          conditionalPanel(
-            condition = '(input.outlierEnabled && output.outlFileExists) || input.transEnabled',
-            actionButton('outlierNext', label = 'Continue')
-          ),
-          conditionalPanel(
-            condition = '!input.outlierEnabled && !input.transEnabled',
-            actionButton('outlierSkip', label = 'Skip')
-          )
+          actionButton('outlierNext', label = 'Continue')
         ),
         # div(class = 'row-btn-second',
         #   actionButton('outlierBack', label = 'Previous step')
         # ),
         div(class = 'row-btn-third',
           conditionalPanel(
-            condition = '(input.outlierEnabled && output.outlFileExists) || !input.outlierEnabled || input.transEnabled',
+            condition = '(input.outlierEnabled && output.outlFileExists) || !input.outlierEnabled || (input.transEnabled && output.cctFileExists)',
             actionButton('outlierDown', label = 'To final step')
           )
         )
@@ -114,14 +112,7 @@ corrTab <- list(
       checkboxInput('corrEnabled', 'Enabled'),
       hr(),
       div(class = 'row-btn-first', 
-        conditionalPanel(
-          condition = 'input.corrEnabled',
-          actionButton('corrNext', label = 'Continue')
-        ),
-        conditionalPanel(
-          condition = '!input.corrEnabled',
-          actionButton('corrSkip', label = 'Skip')
-        )
+        actionButton('corrNext', label = 'Continue')
       ),
       div(class = 'row-btn-second',
         actionButton('corrBack', label = 'Previous step')
@@ -137,7 +128,7 @@ filterTab <- list(
   h2('Probe filtering'),
   conditionalPanel( 
     condition = '!output.procIsAllowed',
-    p( procMsg),
+    p(procMsg),
     actionButton('filtReq', label = 'Go there') 
   ),
   conditionalPanel( 
@@ -153,6 +144,12 @@ filterTab <- list(
         sliderInput('plimit', 'Filtering limit', min = 0, max = 1, value = 0.7)
       ),
       hr(),
+      conditionalPanel(
+        condition = 'input.filtEnabled',
+        actionButton('filtApply', label = 'Apply'),
+        br(),
+        br()
+      ),
       div(class = 'row-btn-first',
         conditionalPanel(
           condition = 'input.filtEnabled',
@@ -173,6 +170,7 @@ filterTab <- list(
   )
 )
 
+
 normTab <- list(
   h2( 'Normalization'),
   conditionalPanel( 
@@ -189,20 +187,13 @@ normTab <- list(
         condition = 'input.normEnabled',
         p('Currently only VST-quantile (VST transformation followed by quantile-normalization) method is available.'),
         p('ComBat (adjusts batch effects in datasets) method will be available soon.'),
-        selectInput('nmeth', label = 'Method', choices = nmeths, selected = 'vstQuantileNorm')
+        selectInput('nmeth', label = 'Method', choices = nmeths, selected = notSelOpt)
       ),
       hr(),
       conditionalPanel(
         condition = sprintf('!input.normEnabled || (input.normEnabled && input.nmeth != "%s")', notSelOpt),
         div(class = 'row-btn-first',
-          conditionalPanel( 
-            condition = sprintf('input.normEnabled && input.nmeth != "%s"', notSelOpt),
-            actionButton('normNext', label = 'Continue')
-          ),
-          conditionalPanel( 
-            condition = '!input.normEnabled',
-            actionButton('normSkip', label = 'Skip')
-          )
+          actionButton('normNext', label = 'Continue')
         ),
         div(class = 'row-btn-second',
           actionButton('normBack', label = 'Previous step')
@@ -241,6 +232,12 @@ questTab <- list(
       hr(),
       conditionalPanel(
         condition = sprintf('!input.questEnabled || (input.questEnabled && input.questObj != "%s" && input.questVars)', notSelOpt),
+        conditionalPanel( 
+          condition = sprintf('input.questEnabled && input.questObj != "%s" && input.questVars', notSelOpt),
+          actionButton('questApply', label = 'Apply'),
+          br(),
+          br()
+        ),
         div(class = 'row-btn-first',
           conditionalPanel( 
             condition = sprintf('input.questEnabled && input.questObj != "%s"', notSelOpt),

@@ -30,6 +30,7 @@ jobID <- Sys.getenv("SLURM_JOB_ID")
 
 pipFolder <- '/project/tice/pippelinen'
 nowacleanFolder <- file.path(pipFolder, 'nowaclean_outliers')
+cctransFolder <- file.path(pipFolder, 'transition_information')
 
 # determine options for basic choices
 options <- NULL
@@ -43,11 +44,17 @@ locs <- c( notSelOpt, levels( options[ , 'Location'] ) )
 mats <- c( notSelOpt, levels( options[ , 'Material'] ) )
 anas <- c( notSelOpt, levels( options[ , 'Analysis'] ) )
 
-outls <- list.files(file.path(pipFolder,'nowaclean_outliers'), pattern='\\.rds$')
+outls <- list.files(nowacleanFolder, pattern='\\.rds$')
 outls <- c(notSelOpt, outls)
 
-rprts <- list.files(file.path(pipFolder,'nowaclean_outliers'), pattern='\\.html$')
-rprts <- c(notSelOpt, rprts)
+outls_rprts <- list.files(nowacleanFolder, pattern='\\.html$')
+outls_rprts <- c(notSelOpt, outls_rprts)
+
+trns <- list.files(cctransFolder, pattern='\\.rds$')
+trns <- c(notSelOpt, trns)
+
+trns_rprts <- list.files(cctransFolder, pattern='\\.html$')
+trns_rprts <- c(notSelOpt, trns_rprts)
 
 quests <- NULL
 tryCatch( {
@@ -58,7 +65,7 @@ tryCatch( {
 quests <- c(notSelOpt, quests)
 qvars <- NULL
 
-nmeths <- c(notSelOpt, 'vstQuantileNorm') # TODO: ComBat
+nmeths <- c(notSelOpt, 'vstQuantileNorm', 'ComBat')
 
 # JavaScript
 jscode <- "

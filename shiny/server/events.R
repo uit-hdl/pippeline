@@ -16,7 +16,7 @@ observeEvent(input$descrNext, {
   tmpDataScriptVec <<- c(file.path(tmpFolder, 'tmpData.rds'), file.path(tmpFolder, 'tmpPipeline.R'))
 
   tryCatch({
-    unlink(file.path(tmpFolder), recursive=TRUE)
+    unlink(tmpFolder, recursive=TRUE)
     showNotification('Cleaned old folder.', type = 'warning', duration = 4)
   }, warning = function(wrn){
     NULL
@@ -30,13 +30,121 @@ observeEvent(input$descrNext, {
   })
 })
 
-# Design tab observer for reset
+# General tab observer
 observeEvent(input$steps, {
   if (input$steps == 'design'){
-    resetCheckboxValues() 
+    resetStepsAndInfo() 
     showNotification("Resetting project options...", type='warning', duration=3)
   }
 })
+
+# Calculation using states
+#-------------------------
+# Outliers state
+
+observeEvent(input$outlierFile, {
+  if ((input$steps == 'outliers' && input$outlierFile != notSelOpt && outlFileExists() && input$outlierEnabled) || 
+    (input$steps == 'outliers' && input$outlierFile == notSelOpt && !input$outlierEnabled)) {
+
+    infoPairs <- interStepAndUpdate(tmpDataScriptVec)
+    piplInfo$currFeatures <<- infoPairs[1]
+    piplInfo$currSamples <<- infoPairs[2]
+  }
+})
+
+observeEvent(input$outlierEnabled, {
+  if ((input$steps == 'outliers' && !input$outlierEnabled) || 
+    (input$steps == 'outliers' && input$outlierFile != notSelOpt && outlFileExists() && input$outlierEnabled)) {
+    infoPairs <- interStepAndUpdate(tmpDataScriptVec)
+    piplInfo$currFeatures <<- infoPairs[1]
+    piplInfo$currSamples <<- infoPairs[2]
+  }
+})
+
+observeEvent(input$cctFile, {
+  if ((input$steps == 'outliers' && input$cctFile != notSelOpt && cctFileExists() && input$transEnabled) || 
+    (input$steps == 'outliers' && input$cctFile == notSelOpt && !input$transEnabled)) {
+
+    infoPairs <- interStepAndUpdate(tmpDataScriptVec)
+    piplInfo$currFeatures <<- infoPairs[1]
+    piplInfo$currSamples <<- infoPairs[2]
+  }
+})
+
+observeEvent(input$transEnabled, {
+  if ((input$steps == 'outliers' && !input$transEnabled) || 
+    (input$steps == 'outliers' && input$cctFile != notSelOpt && cctFileExists() && input$transEnabled)) {
+    infoPairs <- interStepAndUpdate(tmpDataScriptVec)
+    piplInfo$currFeatures <<- infoPairs[1]
+    piplInfo$currSamples <<- infoPairs[2]
+  }
+})
+
+
+# Background corr state
+
+observeEvent(input$corrEnabled, {
+  if (input$steps == 'corr') {
+    infoPairs <- interStepAndUpdate(tmpDataScriptVec)
+    piplInfo$currFeatures <<- infoPairs[1]
+    piplInfo$currSamples <<- infoPairs[2]
+  }
+})
+
+# Filtering state
+
+observeEvent(input$filtEnabled, {
+  if (input$steps == 'filter' && !input$filtEnabled) {
+    infoPairs <- interStepAndUpdate(tmpDataScriptVec)
+    piplInfo$currFeatures <<- infoPairs[1]
+    piplInfo$currSamples <<- infoPairs[2]
+  }
+})
+
+# Normalization state
+
+observeEvent(input$nmeth, {
+  if ((input$steps == 'norm' && input$nmeth != notSelOpt && input$normEnabled) || 
+    (input$steps == 'norm' && input$nmeth == notSelOpt && !input$normEnabled)) {
+    infoPairs <- interStepAndUpdate(tmpDataScriptVec)
+    piplInfo$currFeatures <<- infoPairs[1]
+    piplInfo$currSamples <<- infoPairs[2]
+  }
+})
+
+observeEvent(input$normEnabled, {
+  if ((input$steps == 'norm' && !input$normEnabled) || 
+    (input$steps == 'norm' && input$nmeth != notSelOpt && input$normEnabled)) {
+    infoPairs <- interStepAndUpdate(tmpDataScriptVec)
+    piplInfo$currFeatures <<- infoPairs[1]
+    piplInfo$currSamples <<- infoPairs[2]
+  }
+})
+
+# Questionarie state
+
+observeEvent(input$questEnabled, {
+  if (input$steps == 'quest' && !input$questEnabled && length(input$questVars)>0) {
+    infoPairs <- interStepAndUpdate(tmpDataScriptVec)
+    piplInfo$currFeatures <<- infoPairs[1]
+    piplInfo$currSamples <<- infoPairs[2]
+  }
+})
+
+# Processing state
+
+observeEvent(input$steps, {
+  if (input$steps == 'process') {
+    infoPairs <- interStepAndUpdate(tmpDataScriptVec)
+    piplInfo$currFeatures <<- infoPairs[1]
+    piplInfo$currSamples <<- infoPairs[2]
+
+    if (input$designDown) origPairs <<- infoPairs
+  }
+
+})
+
+#-------------------------
 
 # Design
 observeEvent(input$designReq, {
@@ -44,7 +152,6 @@ observeEvent(input$designReq, {
 })
 
 observeEvent(input$designNext, {
-  # info update
   infoPairs <- interStepAndUpdate(tmpDataScriptVec)
   piplInfo$currFeatures <<- infoPairs[1]
   piplInfo$currSamples <<- infoPairs[2]
@@ -54,12 +161,11 @@ observeEvent(input$designNext, {
 })
 
 observeEvent(input$designDown, {
-  # info update
-  infoPairs <- interStepAndUpdate(tmpDataScriptVec)
-  piplInfo$currFeatures <<- infoPairs[1]
-  piplInfo$currSamples <<- infoPairs[2]
-  origPairs <<- infoPairs
-  
+  # infoPairs <- interStepAndUpdate(tmpDataScriptVec)
+  # piplInfo$currFeatures <<- infoPairs[1]
+  # piplInfo$currSamples <<- infoPairs[2]
+  # origPairs <<- infoPairs
+
   updateNavlistPanel(session, 'steps', selected = 'process')
 })
 
@@ -68,29 +174,15 @@ observeEvent(input$outlierReq, {
   updateNavlistPanel(session, 'steps', selected = 'design')
 })
 
-observeEvent(input$outlierSkip, {
-  updateNavlistPanel(session, 'steps', selected = 'corr')
-})
-
 # observeEvent(input$outlierBack, {
 #   updateNavlistPanel(session, 'steps', selected = 'design')
 # })
 
 observeEvent(input$outlierNext,{
-  # info update
-  infoPairs <- interStepAndUpdate(tmpDataScriptVec)
-  piplInfo$currFeatures <<- infoPairs[1]
-  piplInfo$currSamples <<- infoPairs[2]
-
   updateNavlistPanel(session, 'steps', selected = 'corr')
 })
 
 observeEvent(input$outlierDown, {
-  # info update
-  infoPairs <- interStepAndUpdate(tmpDataScriptVec)
-  piplInfo$currFeatures <<- infoPairs[1]
-  piplInfo$currSamples <<- infoPairs[2]
-
   updateNavlistPanel(session, 'steps', selected = 'process')
 })
 
@@ -99,29 +191,15 @@ observeEvent(input$corrReq, {
   updateNavlistPanel(session, 'steps', selected = 'design')
 })
 
-observeEvent(input$corrSkip, {
-  updateNavlistPanel(session, 'steps', selected = 'filter')
-})
-
 observeEvent(input$corrBack, {
   updateNavlistPanel(session, 'steps', selected = 'outliers')
 })
 
 observeEvent(input$corrNext, {
-  # info update
-  infoPairs <- interStepAndUpdate(tmpDataScriptVec)
-  piplInfo$currFeatures <<- infoPairs[1]
-  piplInfo$currSamples <<- infoPairs[2]
-
   updateNavlistPanel(session, 'steps', selected = 'filter')
 })
 
 observeEvent(input$corrDown, {
-  # info update
-  infoPairs <- interStepAndUpdate(tmpDataScriptVec)
-  piplInfo$currFeatures <<- infoPairs[1]
-  piplInfo$currSamples <<- infoPairs[2]
-
   updateNavlistPanel(session, 'steps', selected = 'process')
 })
 
@@ -139,19 +217,20 @@ observeEvent(input$filtBack, {
 })
 
 observeEvent(input$filtNext, {
-  # info update
   infoPairs <- interStepAndUpdate(tmpDataScriptVec)
   piplInfo$currFeatures <<- infoPairs[1]
   piplInfo$currSamples <<- infoPairs[2]
 
   updateNavlistPanel(session, 'steps', selected = 'norm')
 })
-observeEvent(input$filtDown, {
-  # info update
+
+observeEvent(input$filtApply, {
   infoPairs <- interStepAndUpdate(tmpDataScriptVec)
   piplInfo$currFeatures <<- infoPairs[1]
   piplInfo$currSamples <<- infoPairs[2]
+})
 
+observeEvent(input$filtDown, {
   updateNavlistPanel(session, 'steps', selected = 'process')
 })
 
@@ -160,35 +239,20 @@ observeEvent(input$normReq, {
   updateNavlistPanel(session, 'steps', selected = 'design')
 })
 
-observeEvent(input$normSkip, {
-  updateNavlistPanel(session, 'steps', selected = 'quest')
-})
-
 observeEvent(input$normBack, {
   updateNavlistPanel(session, 'steps', selected = 'filter')
 })
 
 observeEvent(input$normNext, {
-  # info update
-  infoPairs <- interStepAndUpdate(tmpDataScriptVec)
-  piplInfo$currFeatures <<- infoPairs[1]
-  piplInfo$currSamples <<- infoPairs[2]
-
   updateNavlistPanel(session, 'steps', selected = 'quest')
 })
 
 observeEvent(input$normDown, {
-  # info update
-  infoPairs <- interStepAndUpdate(tmpDataScriptVec)
-  piplInfo$currFeatures <<- infoPairs[1]
-  piplInfo$currSamples <<- infoPairs[2]
-
   updateNavlistPanel(session, 'steps', selected = 'process')
 })
 
 # Questionaries
 observeEvent(input$questReq, {
-
   updateNavlistPanel(session, 'steps', selected = 'design')
 })
 
@@ -201,12 +265,13 @@ observeEvent(input$questBack, {
 })
 
 observeEvent(input$questNext, {
-  # info update
+  updateNavlistPanel(session, 'steps', selected = 'process')
+})
+
+observeEvent(input$questApply, {
   infoPairs <- interStepAndUpdate(tmpDataScriptVec)
   piplInfo$currFeatures <<- infoPairs[1]
   piplInfo$currSamples <<- infoPairs[2]
-
-  updateNavlistPanel(session, 'steps', selected = 'process')
 })
 
 # Process
@@ -219,7 +284,11 @@ observeEvent(input$processBack, {
 })
 
 observeEvent(input$newStart, {
-  resetStepsAndInfo()
+  updateSelectInput(session, "dsg", selected = notSelOpt)
+  updateSelectInput(session, "loc", selected = notSelOpt)
+  updateSelectInput(session, "mat", selected = notSelOpt)
+  updateSelectInput(session, "ana", selected = notSelOpt)
+  resetStepsAndInfo() 
   updateNavlistPanel(session, 'steps', selected = 'name')
 })
 
@@ -245,7 +314,7 @@ observeEvent( input$quit, {
 
 observeEvent(input$reallyQuit, {
   tryCatch({
-    unlink(file.path(tmpFolder), recursive=TRUE)
+    unlink(tmpFolder, recursive=TRUE)
   }, warning = function(wrn){
     NULL
   })
@@ -276,16 +345,22 @@ observeEvent(input$process, {
     ))
     # fill files with content
     tryCatch({
+      # Copy outliers report
+      if (file.exists(file.path(nowacleanFolder, input$outlierFileReport)) && input$outlierFileReport != notSelOpt && input$outlierEnabled) {
+        reportFile <- file.path(nowacleanFolder, input$outlierFileReport)
+        file.copy(reportFile, file.path(tmpDir, input$outlierFileReport))
+      }
+
+      # Copy transitions report
+      if (file.exists(file.path(cctransFolder, input$transFileReport)) && input$transFileReport != notSelOpt && input$transEnabled) {
+        reportFile <- file.path(cctransFolder, input$transFileReport)
+        file.copy(reportFile, file.path(tmpDir, input$transFileReport))
+      }
+
       writeScript(pipeline, scriptFile)
       render(scriptFile, paste0(basics$docFormat, '_document'), docFile, quiet = TRUE)
       #render( scriptFile)
       #showNotification('Successful render', scriptFile, type='message', duration = NULL)
-
-      # Copy outliers report
-      if (file.exists(file.path(nowacleanFolder, input$outlierFileReport)) && input$outlierFileReport != notSelOpt && input$outlierEnabled) {
-        reportFile <<- file.path(nowacleanFolder, input$outlierFileReport)
-        file.copy(reportFile, file.path(tmpDir, input$outlierFileReport))
-      }
 
       removeNotification('wait')
       showNotification('All files successfully written.', type = 'message', duration = 8)
@@ -297,7 +372,7 @@ observeEvent(input$process, {
     })
     
     # tryCatch({
-    #   unlink(file.path(tmpFolder), recursive=TRUE) 
+    #   unlink(tmpFolder, recursive=TRUE) 
     # }, warning = function(wrn){
     #   NULL
     # })

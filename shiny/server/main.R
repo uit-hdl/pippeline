@@ -44,11 +44,12 @@ objsExist <- reactive( {
 } )
 output$objsExist <- reactive( { objsExist() } )
 outputOptions( output, 'objsExist', suspendWhenHidden = FALSE)
- 
+
+# Outlier file reactive
 outlFileExists <- reactive( { 
   if (input$outlierFile != notSelOpt){
     if (typeof(readRDS(file.path(nowacleanFolder, input$outlierFile))) == 'character'){
-      return (TRUE) # vector of characters?
+      return (TRUE)
     }
     else {
       showNotification(paste0('Loaded file "', input$outlierFile, '" should contain vector of characters. Error code #12.'), 
@@ -62,6 +63,25 @@ outlFileExists <- reactive( {
 
 output$outlFileExists <- reactive( { outlFileExists() } )
 outputOptions( output, 'outlFileExists', suspendWhenHidden = FALSE)
+
+# Transitions file reactive
+cctFileExists <- reactive( { 
+  if (input$cctFile != notSelOpt){
+    if (typeof(readRDS(file.path(cctransFolder, input$cctFile))) == 'character'){
+      return (TRUE)
+    }
+    else {
+      showNotification(paste0('Loaded file "', input$cctFile, '" should contain vector of characters. Error code #12.1.'), 
+        type = 'error', duration = 7)
+      return (FALSE)
+    }
+  }
+  else 
+    return (FALSE)
+})
+
+output$cctFileExists <- reactive( { cctFileExists() } )
+outputOptions(output, 'cctFileExists', suspendWhenHidden = FALSE)
 
 # questionnaire variables
 questIsValid <- reactive( { input$questObj != notSelOpt} )
@@ -105,12 +125,11 @@ outputOptions( output, 'procIsAllowed', suspendWhenHidden = FALSE)
 # normal variables
 ts <- NULL
 startTime <- NULL
+origPairs <- NULL
 # paths
 procFolder <- NULL
 tmpFolder <- NULL
-tmpDataScript <- NULL
-# vars
-origPairs <- NULL
+tmpDataScriptVec <- NULL
 
 # Info summary list
 piplInfo <- reactiveValues(data = list(
@@ -128,23 +147,22 @@ piplInfo <- reactiveValues(data = list(
   currFeatures=notProcMsg
 ))
 
-# Reactive optionsInfo 
-optionsInfo <- reactiveValues(data = list( # TODO: backbtn issue (save states, fast info updates)
-outlRemovalEn=FALSE,
-backgrCorrEn=FALSE,
-pValEn=FALSE,
-filtLimEn=FALSE,
-normEn=FALSE,
-questEn=FALSE
-))
+# # Reactive optionsInfo 
+# optionsInfo <- reactiveValues(data = list( # backbtn issue (save states, fast info updates)
+# outlRemovalEn=FALSE,
+# backgrCorrEn=FALSE,
+# filt=FALSE,
+# normEn=FALSE,
+# questEn=FALSE
+# ))
 
-# updating dataset information
+# Updating dataset information
 output$infoVar <- renderText({ 
     piplInfo$dNameStr=ifelse(choicesAreValid(), input$dsg, "No dataset is chosen")
-    piplInfo$origInfoStr=ifelse((input$designNext || input$designDown) && choicesAreValid(), paste(origPairs[2], "samples with", origPairs[1], "features"), 
-      "Dataset not processed")
+    piplInfo$origInfoStr=ifelse((input$designNext || input$designDown) && choicesAreValid() && !is.null(origPairs), 
+      paste(origPairs[2], "samples with", origPairs[1], "features"), "Dataset not processed")
     piplInfo$outlierRemB=ifelse(input$outlierEnabled && outlFileExists(), "Enabled", notEnablOpt)
-    piplInfo$exclCCB=ifelse(input$transEnabled, "Enabled", notEnablOpt)
+    piplInfo$exclCCB=ifelse(input$transEnabled && cctFileExists(), "Enabled", notEnablOpt)
     piplInfo$bCorrB=ifelse(input$corrEnabled,"Enabled", notEnablOpt)
     piplInfo$filterPStr=ifelse(input$filtEnabled, input$pval, notEnablOpt)
     piplInfo$filterLimitStr=ifelse(input$filtEnabled,input$plimit, notEnablOpt)

@@ -195,7 +195,9 @@ generatePipeline <- function( params) {
   # step: storage
   generateCode <- function( file) {
     c(
-      sprintf( 'saveRDS(data,file="%s")', file)
+      sprintf( 'saveRDS(data,file="%s")', file),
+      cmt('# Cleaning environment'),
+      'rm(list=ls())'
     )
   }
   writeStep <- createStep( 'Storage', 'Writing processed datasets', TRUE, generateCode, list( params$targetFile) )
@@ -233,14 +235,26 @@ generatePipeline <- function( params) {
   outlStep <- createStep( 'Outliers', 'Removal of outliers', as.logical(input$outlierEnabled), generateCode)
 
   # details for non-mandatory processing steps
-  # step: control transitions
+  # step: control transitions  ## fixme: UiT
   generateCode <- function() {
-    c(
-      '## fixme: UiT' # TODO: get info from registry and check for updates?
-
-    )
+    cctFile <- file.path(cctransFolder, input$cctFile)
+    if(!file.exists(cctFile) ||
+        as.integer(file.access(cctFile, mode = 4)) < 0) {
+      c(
+        'stop("Could not read outliers file. Error code #4.")'
+      ) 
+    } else {
+      c(
+        sprintf('cctrans <- readRDS("%s")', cctFile),
+        sprintf('m <- vector("list",length=%d)', numberOfRuns),
+        sprintf('m[[%1$d]] <- match(cctrans,colnames(exprs(data[[%1$d]]$lumi)))', idxSeq),
+        sprintf('m[[%1$d]] <- m[[%1$d]][!is.na(m[[%1$d]])]', idxSeq),
+        sprintf('if(length(m[[%1$d]])) data[[%1$d]]$lumi <- data[[%1$d]]$lumi[,-m[[%1$d]]]', idxSeq),
+        'rm(m,cctrans)'
+      )
+    } 
   }
-  exclStep <- createStep( 'Transitions', 'Exclusion of control-case transitions', input$transEnabled, generateCode)
+  exclStep <- createStep( 'Transitions', 'Exclusion of control-case transitions', as.logical(input$transEnabled), generateCode)
 
   # step: background correction
   generateCode <- function( nCtrls) {
@@ -359,7 +373,7 @@ generatePipeline <- function( params) {
 
 
 performInterSteps <- function(tempDataFile, tempScriptFile){
-  showNotification('Processing for the next step...', duration = NULL, id = 'waitInter')
+  showNotification('Processing...Please wait a moment.', duration = NULL, id = 'waitInter')
 
   tryCatch({
     file.remove(tempDataFile)
@@ -378,7 +392,7 @@ performInterSteps <- function(tempDataFile, tempScriptFile){
     source(tempScriptFile)
     removeNotification('waitInter')
     file.remove(tempScriptFile)
-    #showNotification('Successfull step execution. Proceeding to the next step...', type = 'message', duration = 4)
+    #showNotification('Successfull step execution', type = 'message', duration = 4)
   }, error = function(err){
     removeNotification('waitInter')
     showNotification('Could not perform step. Error code #11.', type = 'error', duration = NULL)
@@ -403,9 +417,7 @@ getTempDataset <- function(tempDataFile) {
 interStepAndUpdate <- function(tmpDSVec){
   performInterSteps(tmpDSVec[1], tmpDSVec[2])
   ds <- getTempDataset(tmpDSVec[1])
-  # info update
-  pairsInfo <<- c(as.numeric(dim(ds)[1]), as.numeric(dim(ds)[2]))
-  return (pairsInfo)
+  return (c(as.numeric(dim(ds)[1]), as.numeric(dim(ds)[2])))
 }
 
 resetCheckboxValues <- function(){
@@ -414,6 +426,9 @@ resetCheckboxValues <- function(){
   reset ('outlierEnabled')
   reset ('outlierFile')
   reset ('outlierFileReport')
+  reset ('transEnabled')
+  reset ('cctFile')
+  reset ('transFileReport')
   reset ('corrEnabled')
   reset ('filtEnabled')
   reset ('normEnabled')
@@ -422,19 +437,28 @@ resetCheckboxValues <- function(){
 }
 
 resetStepsAndInfo <- function(){
+  # reset all checkboxes
   resetCheckboxValues()
+
   # reset dataset info
-  updateSelectInput(session, "dsg", selected = notSelOpt)
-  updateSelectInput(session, "loc", selected = notSelOpt)
-  updateSelectInput(session, "mat", selected = notSelOpt)
-  updateSelectInput(session, "ana", selected = notSelOpt)
+  # updateSelectInput(session, "dsg", selected = notSelOpt)
+  # updateSelectInput(session, "loc", selected = notSelOpt)
+  # updateSelectInput(session, "mat", selected = notSelOpt)
+  # updateSelectInput(session, "ana", selected = notSelOpt)
+
+  # reset outliers
   updateSelectInput(session, "outlierFile", selected = notSelOpt)
   updateSelectInput(session, "outlierFileReport", selected = notSelOpt)
   updateTextAreaInput(session, "outlierDescr", value = '')
 
+  updateSelectInput(session, "cctFile", selected = notSelOpt)
+  updateSelectInput(session, "transFileReport", selected = notSelOpt)
+
+  # reset reactive values
   piplInfo$origInfoStr <<- notProcMsg
   piplInfo$currFeatures <<- notProcMsg
   piplInfo$currSamples <<- notProcMsg
+  origPairs <<- NULL
 }
 
 # setWorkingTabs <- function(nextId){
@@ -449,12 +473,3 @@ setTabInitialState <- function(tbId){
     js$disableTab(id)
   }  
 }
-
-# comparing saved/unsaved info status
-# compareDashboard <- function(){
-#   NULL
-# }
-
-# saveDashboard <- function(){
-#   NULL
-# }

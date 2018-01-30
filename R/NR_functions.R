@@ -19,7 +19,7 @@ mapToGenes <- function(data) {
   for (j in 1:length(uGeneNames))
     exprs[j,] <- colMeans(exprs0[mappingInfo[,3]==uGeneNames[j], ,drop=F])
   
-  exprs
+  return (exprs)
 }
 
 
@@ -64,7 +64,7 @@ performBackgroundCorrection <- function(data, negCtrl) {
   
   rm(exprs, totalData, data.nec)
   
-  data	
+  return (data)
 }
 
 
@@ -79,8 +79,7 @@ filterData <- function(data, pValue, presentLimit) {
   presentcall <- detectionCall(data,Th=pValue)
   filterP <- which(presentcall>(presentLimit*ncol(data)))
   data.new <- data[filterP,]
-  
-  data.new
+  return (data.new)
 }
 
 
@@ -95,14 +94,18 @@ filterData <- function(data, pValue, presentLimit) {
 #' @export
 normalizeData <- function(data.new, method = 'vstQuantileNorm', batchVar='Plate') {
   if (method == 'vstQuantileNorm') {
-    vstdata <- lumiT(data.new, method="vst")
-    Nvstdata <- lumiN(vstdata, method="quantile")
+    vstdata <- lumiT(data.new, method="vst", verbose=FALSE)
+    Nvstdata <- lumiN(vstdata, method="quantile", verbose=FALSE)
     normdata <- exprs(Nvstdata)
   } else if (method == 'ComBat') {
-    stop('Method not supported.')
+    # stop('Method not supported.')
     # Batching according to variable
     # batch <- data.new[[batchVar]]
+    # View(batch)
     # normdata <- ComBat(dat=data.new, batch=batch)
+    vstdata <- lumiT(data.new, method="vst", verbose=FALSE)
+    Nvstdata <- lumiN(vstdata, method="quantile", verbose=FALSE)
+    normdata <- exprs(Nvstdata)
   }
   return (normdata)
 }
