@@ -30,13 +30,14 @@ observeEvent(input$descrNext, {
   })
 })
 
-# General tab observer
+# General tab observers
 observeEvent(input$steps, {
   if (input$steps == 'design'){
     resetStepsAndInfo() 
     showNotification("Resetting project options...", type='warning', duration=3)
   }
 })
+
 
 # Calculation using states
 #-------------------------
@@ -104,21 +105,41 @@ observeEvent(input$filtEnabled, {
 # Normalization state
 
 observeEvent(input$nmeth, {
-  if ((input$steps == 'norm' && input$nmeth != notSelOpt && input$normEnabled) || 
-    (input$steps == 'norm' && input$nmeth == notSelOpt && !input$normEnabled)) {
+  if ((input$steps == 'norm' && input$nmeth == notSelOpt && !input$normEnabled) ||
+    (input$steps == 'norm' && input$nmeth == "vstQuantileNorm" && input$normEnabled)){
+    infoPairs <- interStepAndUpdate(tmpDataScriptVec)
+    piplInfo$currFeatures <<- infoPairs[1]
+    piplInfo$currSamples <<- infoPairs[2]
+  }
+  if (input$steps == 'norm' && input$nmeth == 'ComBat') {
+    btchtab <<- c(notSelOpt, getPkgDataSetNames('nowac'))
+    updateSelectInput(session, "batchTab", choices = btchtab, selected = notSelOpt)
+  }
+})
+
+observeEvent(input$normEnabled, {
+  updateSelectInput(session, "nmeth", selected = notSelOpt)
+  if (input$steps == 'norm' && !input$normEnabled) {
     infoPairs <- interStepAndUpdate(tmpDataScriptVec)
     piplInfo$currFeatures <<- infoPairs[1]
     piplInfo$currSamples <<- infoPairs[2]
   }
 })
 
-observeEvent(input$normEnabled, {
+observeEvent(input$batchVar, {
   if ((input$steps == 'norm' && !input$normEnabled) || 
-    (input$steps == 'norm' && input$nmeth != notSelOpt && input$normEnabled)) {
+    (input$steps == 'norm' && input$nmeth == "ComBat" && input$normEnabled && input$batchTab != notSelOpt && input$batchVar != notSelOpt)){
     infoPairs <- interStepAndUpdate(tmpDataScriptVec)
     piplInfo$currFeatures <<- infoPairs[1]
     piplInfo$currSamples <<- infoPairs[2]
   }
+})
+
+# populating batch variable
+observeEvent(input$batchTab, {
+  if (input$batchTab != notSelOpt) btchvar <<- c(btchvar, getDSColNames(input$batchTab))
+  else btchvar <<- c(notSelOpt)
+  updateSelectInput(session, "batchVar", choices = btchvar, selected = notSelOpt)
 })
 
 # Questionarie state

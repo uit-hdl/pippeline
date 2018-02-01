@@ -175,7 +175,7 @@ normTab <- list(
   h2( 'Normalization'),
   conditionalPanel( 
     condition = '!output.procIsAllowed',
-    p( procMsg),
+    p(procMsg),
     actionButton('normReq', label = 'Go there') 
   ),
   conditionalPanel( 
@@ -185,13 +185,23 @@ normTab <- list(
       checkboxInput( 'normEnabled', 'Enabled'),
       conditionalPanel(
         condition = 'input.normEnabled',
-        p('Currently only VST-quantile (VST transformation followed by quantile-normalization) method is available.'),
-        p('ComBat (adjusts batch effects in datasets) method will be available soon.'),
-        selectInput('nmeth', label = 'Method', choices = nmeths, selected = notSelOpt)
+        p('VST-quantile method(VST transformation followed by quantile-normalization).'),
+        p('ComBat (adjusts batch effects in datasets).'),
+        selectInput('nmeth', label = 'Method', choices = nmeths, selected = notSelOpt),
+        conditionalPanel(
+          condition = 'input.nmeth == "ComBat"',
+          selectInput('batchTab', label = 'Table for batching', choices = btchtab),
+          conditionalPanel(
+            condition = sprintf('input.batchTab != "%s"', notSelOpt),
+            selectInput('batchVar', label = 'Batch variable (Note: using <Plate> variable is recommended)', choices = btchvar)
+          )
+        )
       ),
       hr(),
       conditionalPanel(
-        condition = sprintf('!input.normEnabled || (input.normEnabled && input.nmeth != "%s")', notSelOpt),
+        condition = sprintf('!input.normEnabled || 
+          (input.normEnabled && input.nmeth == "vstQuantileNorm") ||
+          (input.normEnabled && input.nmeth == "ComBat" && input.batchTab != "%s" && input.batchVar != "%s")', notSelOpt, notSelOpt),
         div(class = 'row-btn-first',
           actionButton('normNext', label = 'Continue')
         ),

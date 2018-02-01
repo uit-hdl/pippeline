@@ -235,13 +235,13 @@ generatePipeline <- function( params) {
   outlStep <- createStep( 'Outliers', 'Removal of outliers', as.logical(input$outlierEnabled), generateCode)
 
   # details for non-mandatory processing steps
-  # step: control transitions  ## fixme: UiT
+  # step: control transitions
   generateCode <- function() {
     cctFile <- file.path(cctransFolder, input$cctFile)
     if(!file.exists(cctFile) ||
         as.integer(file.access(cctFile, mode = 4)) < 0) {
       c(
-        'stop("Could not read outliers file. Error code #4.")'
+        'stop("Could not read outliers file. Error code #4.1.")'
       ) 
     } else {
       c(
@@ -293,9 +293,21 @@ generatePipeline <- function( params) {
   
   # step: normalization
   generateCode <- function() {
-    c(
-      sprintf( 'data <- pippeline::normalizeData(data,"%s")', input$nmeth)
-    )
+    if (input$nmeth == 'vstQuantileNorm') {
+      code <- c(
+        #'#+ norm-vst, echo=FALSE, message=FALSE',
+        'data <- pippeline::normalizeDataVstQ(data)'
+        #cmt()
+      )
+    }
+    if (input$nmeth == 'ComBat') {
+      code <- c(
+        #'#+ norm-cmbt, echo=FALSE, message=FALSE',
+        sprintf('data <- pippeline::normalizeDataComBat(data, "%s", "%s")', input$batchTab, input$batchVar)
+        #cmt()
+      )
+    }
+    code
   }
   normStep <- createStep( 'Normalization', 'log2 transformation and quantile normalization or ComBat', as.logical(input$normEnabled), generateCode)
   
@@ -389,9 +401,10 @@ performInterSteps <- function(tempDataFile, tempScriptFile){
 
   tryCatch({
     writeScript(pipeline, tempScriptFile)
-    source(tempScriptFile)
+    # Hide cat messages from libs (check source params(echo, verbose))
+    invisible(capture.output(source(tempScriptFile)))
     removeNotification('waitInter')
-    file.remove(tempScriptFile)
+    # file.remove(tempScriptFile) # TODO: uncomment
     #showNotification('Successfull step execution', type = 'message', duration = 4)
   }, error = function(err){
     removeNotification('waitInter')
@@ -454,6 +467,9 @@ resetStepsAndInfo <- function(){
   updateSelectInput(session, "cctFile", selected = notSelOpt)
   updateSelectInput(session, "transFileReport", selected = notSelOpt)
 
+  updateSelectInput(session, "batchTab", selected = notSelOpt)
+  updateSelectInput(session, "batchVar", selected = notSelOpt)
+
   # reset reactive values
   piplInfo$origInfoStr <<- notProcMsg
   piplInfo$currFeatures <<- notProcMsg
@@ -472,4 +488,24 @@ setTabInitialState <- function(tbId){
   for (id in tbId) {
     js$disableTab(id)
   }  
+}
+
+# Using for pkg='nowac'
+getPkgDataSetNames <- function(pkg, prefix='') {
+  result <- c()
+  ds_vector <- c(data(package=pkg))
+  df_info <- as.data.frame(ds_vector$results)
+  raw_ds_names <- as.character(df_info$Item)
+  splitted_ds_names <- strsplit(raw_ds_names, ' ')
+  for (i in splitted_ds_names){
+    result <- c(result, i[1])
+  }
+  return (result)
+}
+
+getDSColNames <- function(dataset) {
+  result <- c()
+  ds <- get(dataset)
+  result <- colnames(ds)
+  return (result)
 }

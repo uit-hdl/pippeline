@@ -87,25 +87,42 @@ filterData <- function(data, pValue, presentLimit) {
 #' 
 #' * Lin SM, Du P, Huber W, Kibbe WA. Model-based variance-stabilizing transformation for 
 #' Illumina microarray data. Nucleic Acids Res. 2008;36(2):e11.
+#'
+#' Check also: http://journals.plos.org/plosone/article/file?id=10.1371/journal.pone.0156594&type=printable
 #' 
 #' @param data.new lumi object where colnames(data)=sample IDs and rownames(data) = probe IDs
-#' @param method string describing the normalization method
 #' @return normalized matrix where colnames(data)=sample IDs and rownames(data) = probe IDs
 #' @export
-normalizeData <- function(data.new, method = 'vstQuantileNorm', batchVar='Plate') {
-  if (method == 'vstQuantileNorm') {
-    vstdata <- lumiT(data.new, method="vst", verbose=FALSE)
-    Nvstdata <- lumiN(vstdata, method="quantile", verbose=FALSE)
-    normdata <- exprs(Nvstdata)
-  } else if (method == 'ComBat') {
-    # stop('Method not supported.')
-    # Batching according to variable
-    # batch <- data.new[[batchVar]]
-    # View(batch)
-    # normdata <- ComBat(dat=data.new, batch=batch)
-    vstdata <- lumiT(data.new, method="vst", verbose=FALSE)
-    Nvstdata <- lumiN(vstdata, method="quantile", verbose=FALSE)
-    normdata <- exprs(Nvstdata)
-  }
+normalizeDataVstQ <- function(data.new) {
+  vstdata <- lumiT(data.new, method="vst", verbose=FALSE)
+  Nvstdata <- lumiN(vstdata, method="quantile", verbose=FALSE)
+  normdata <- exprs(Nvstdata)
   return (normdata)
+}
+
+#'
+#' @param data.new lumi object where colnames(data)=sample IDs and rownames(data) = probe IDs
+#' @param bTabName name of the table, which is used for extracting batch variable
+#' @param batchVar batch variable, i.e. vector formed from dataset, which gives batch parameter for ComBat
+#' @return normalized matrix where colnames(data)=sample IDs and rownames(data) = probe IDs
+#' @export
+normalizeDataComBat <- function(data.new, bTabName, batchVar) {
+  # stop('Method not supported.')
+  tryCatch({
+  batchVarsTable <- get(bTabName)
+  bTab <- as.data.frame(batchVarsTable, row.names = batchVarsTable[['Sample_ID']]) 
+  modcombat <- model.matrix(sampleID~1, data=data.new) # Add adjustment variables (just intersection for now)
+  # modcombat <- as.data.frame(modcombat) 
+
+  # Correct number of samples in batch table
+  bTab <- bTab[which(rownames(modcombat) %in% rownames(bTab)), ]
+
+  # Batching according to variable
+  batch <- bTab[[batchVar]]
+  normdata <- ComBat(dat=exprs(data.new), batch=batch, mod=modcombat)
+  return (normdata)
+  }, error = function() {
+    message("Normalizing with ComBat failed. Returning original data. Try other batch")
+    return(data.new)
+  })
 }

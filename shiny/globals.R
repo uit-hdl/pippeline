@@ -56,6 +56,10 @@ trns <- c(notSelOpt, trns)
 trns_rprts <- list.files(cctransFolder, pattern='\\.html$')
 trns_rprts <- c(notSelOpt, trns_rprts)
 
+# Batching
+btchtab <- c(notSelOpt)
+btchvar <- c(notSelOpt)
+
 quests <- NULL
 tryCatch( {
   quests <- readLines( basics$questsFile)

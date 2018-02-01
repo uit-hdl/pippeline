@@ -15,9 +15,6 @@ choicesAreValid <- reactive( {
     input$ana != notSelOpt
     )
   {
-    # Ad hoc for resetting values for new dataset
-    # resetCheckboxValues() 
-
     return (TRUE)
   }
   else return (FALSE)
