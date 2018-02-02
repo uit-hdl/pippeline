@@ -39,9 +39,11 @@ designTab <- list(
     hr(),
     conditionalPanel( 
       condition = 'output.procIsAllowed && output.objsExist',
-      actionButton('designNext', label = 'Continue'),
-      div(class='divider'),
-      actionButton('designDown', 'To final step')
+      div(class='row-btn',
+        actionButton('designNext', label = 'Continue'),
+        div(class='divider'),
+        actionButton('designDown', 'To final step')
+      )
     )
   )
 )
@@ -50,7 +52,7 @@ outlierTab <- list(
   h2('Outlier removal'),
   conditionalPanel( 
     condition = '!output.procIsAllowed',
-    p( procMsg),
+    p(procMsg),
     actionButton('outlierReq', label = 'Go there') 
   ),
   conditionalPanel( 
@@ -78,20 +80,13 @@ outlierTab <- list(
         selectInput('transFileReport', label = 'Transitions report (optional)', choices = trns_rprts)
       ),
       hr(),
-      conditionalPanel(
-        condition = '!(input.outlierEnabled && !output.outlFileExists) && !(input.transEnabled && !output.cctFileExists)',
-        div(class = 'row-btn-first', 
-          actionButton('outlierNext', label = 'Continue')
-        ),
-        # div(class = 'row-btn-second',
-        #   actionButton('outlierBack', label = 'Previous step')
-        # ),
-        div(class = 'row-btn-third',
-          conditionalPanel(
-            condition = '(input.outlierEnabled && output.outlFileExists) || !input.outlierEnabled || (input.transEnabled && output.cctFileExists)',
-            actionButton('outlierDown', label = 'To final step')
-          )
-        )
+      div(class = 'row-btn', 
+        actionButton('outlierApply', label = 'Apply'),
+        actionButton('outlierNext', label = 'Continue'),
+        div(class='divider'),
+        # actionButton('outlierBack', label = 'Previous step'),
+        actionButton('outlierSkip', label = 'Skip'),
+        actionButton('outlierDown', label = 'To final step')
       )
     )
   )
@@ -111,14 +106,14 @@ corrTab <- list(
       p('This procedure includes processing of lumi object and negative control probes files, using limma', code('nec'), 'function and removing of extracted bad probes.'),
       checkboxInput('corrEnabled', 'Enabled'),
       hr(),
-      div(class = 'row-btn-first', 
-        actionButton('corrNext', label = 'Continue')
-      ),
-      div(class = 'row-btn-second',
-        actionButton('corrBack', label = 'Previous step')
-      ),
-      div(class = 'row-btn-third',
-        actionButton('corrDown', label = 'To final step')
+      div(class = 'row-btn', 
+        actionButton('corrApply', label = 'Apply'),
+        actionButton('corrNext', label = 'Continue'),
+        div(class='divider'),
+        actionButton('corrBack', label = 'Previous step'),
+        div(class='divider'),
+        actionButton('corrDown', label = 'To final step'),
+        actionButton('corrSkip', label = 'Skip')
       )
     )
   )
@@ -144,27 +139,14 @@ filterTab <- list(
         sliderInput('plimit', 'Filtering limit', min = 0, max = 1, value = 0.7)
       ),
       hr(),
-      conditionalPanel(
-        condition = 'input.filtEnabled',
+      div(class = 'row-btn', 
         actionButton('filtApply', label = 'Apply'),
-        br(),
-        br()
-      ),
-      div(class = 'row-btn-first',
-        conditionalPanel(
-          condition = 'input.filtEnabled',
-          actionButton('filtNext', label = 'Continue')
-        ),
-        conditionalPanel(
-          condition = '!input.filtEnabled',
-          actionButton('filtSkip', label = 'Skip')  
-        )
-      ),
-      div(class = 'row-btn-second',
-        actionButton('filtBack', label = 'Previous step')
-      ),
-      div(class = 'row-btn-third',
-        actionButton('filtDown', label = 'To final step')
+        actionButton('filtNext', label = 'Continue'),
+        div(class='divider'),
+        actionButton('filtBack', label = 'Previous step'),
+        div(class='divider'),
+        actionButton('filtDown', label = 'To final step'),
+        actionButton('filtSkip', label = 'Skip')
       )
     )
   )
@@ -198,19 +180,14 @@ normTab <- list(
         )
       ),
       hr(),
-      conditionalPanel(
-        condition = sprintf('!input.normEnabled || 
-          (input.normEnabled && input.nmeth == "vstQuantileNorm") ||
-          (input.normEnabled && input.nmeth == "ComBat" && input.batchTab != "%s" && input.batchVar != "%s")', notSelOpt, notSelOpt),
-        div(class = 'row-btn-first',
-          actionButton('normNext', label = 'Continue')
-        ),
-        div(class = 'row-btn-second',
-          actionButton('normBack', label = 'Previous step')
-        ),
-        div(class = 'row-btn-third',
-          actionButton('normDown', label = 'To final step')
-        )
+      div(class = 'row-btn', 
+        actionButton('normApply', label = 'Apply'),
+        actionButton('normNext', label = 'Continue'),
+        div(class='divider'),
+        actionButton('normBack', label = 'Previous step'),
+        div(class='divider'),
+        actionButton('normDown', label = 'To final step'),
+        actionButton('normSkip', label = 'Skip')
       )
     )
   )
@@ -240,27 +217,13 @@ questTab <- list(
         )
       ),
       hr(),
-      conditionalPanel(
-        condition = sprintf('!input.questEnabled || (input.questEnabled && input.questObj != "%s" && input.questVars)', notSelOpt),
-        conditionalPanel( 
-          condition = sprintf('input.questEnabled && input.questObj != "%s" && input.questVars', notSelOpt),
-          actionButton('questApply', label = 'Apply'),
-          br(),
-          br()
-        ),
-        div(class = 'row-btn-first',
-          conditionalPanel( 
-            condition = sprintf('input.questEnabled && input.questObj != "%s"', notSelOpt),
-            actionButton('questNext', label = 'Continue to final step')
-          ),
-          conditionalPanel(
-            condition = '!input.questEnabled',
-            actionButton('questSkip', label = 'Skip to final step')
-          )
-        ),
-        div(class = 'row-btn-second',
-          actionButton('questBack', label = 'Previous step')
-        )
+      div(class = 'row-btn', 
+        actionButton('questApply', label = 'Apply'),
+        actionButton('questNext', label = 'Continue'),
+        div(class='divider'),
+        actionButton('questBack', label = 'Previous step'),
+        div(class='divider'),
+        actionButton('questSkip', label = 'Skip')
       )
     )
   )
@@ -283,11 +246,13 @@ processTab <- list(
       p('All prosessing options, stated in "Project info" panel, will be applied.'),
       checkboxInput('wantGenes', 'Genes instead of probes'),
       hr(),
-      actionButton('process', label = 'Process and assemble files'),
-      div(class='divider'),
-      actionButton ('processBack', label = 'Previous step'),
-      div(class='divider'),
-      actionButton ('newStart', label = 'Start new')
+      div(class = 'row-btn', 
+        actionButton('process', label = 'Process and assemble files'),
+        div(class='divider'),
+        actionButton ('processBack', label = 'Previous step'),
+        div(class='divider'),
+        actionButton ('newStart', label = 'Start new')
+      )
     )
   ),
   hr(),

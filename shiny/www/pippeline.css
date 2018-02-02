@@ -25,16 +25,6 @@ img.logo {
   display: inline-block;
 }
 
-.row-btn-first {
-  margin-right: 40px;
-  display: inline-block;
-}
-
-.row-btn-second {
-  margin-right: 40px;
-  display: inline-block;
-}
-
-.row-btn-third {
+.row-btn {
   display: inline-block;
 }

@@ -126,3 +126,10 @@ normalizeDataComBat <- function(data.new, bTabName, batchVar) {
     return(data.new)
   })
 }
+
+# # Normalizing with both methods as in article: http://journals.plos.org/plosone/article/file?id=10.1371/journal.pone.0156594&type=printable
+# normalizeVstQCmB<- function(data.new, bTabName, batchVar) {
+#   data.vstqN <- normalizeDataVstQ(data.new)
+#   data.vstqcmbtN <- normalizeDataComBat(data.vstqN, bTabName, batchVar)
+#   return (data.vstqcmbtN)
+# }

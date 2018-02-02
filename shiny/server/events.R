@@ -3,6 +3,9 @@
 # Initial tab status: block critical tabs
 setTabInitialState(critTabsId)
 
+# Initial button show/hide status
+setBtnInitState()
+
 # Navigation buttons bindings and event handling
 
 observeEvent(input$aboutNext, {
@@ -30,144 +33,19 @@ observeEvent(input$descrNext, {
   })
 })
 
-# General tab observers
+# General tab observers - default transition events
 observeEvent(input$steps, {
-  if (input$steps == 'design'){
+  if (input$steps == 'design') {
     resetStepsAndInfo() 
     showNotification("Resetting project options...", type='warning', duration=3)
   }
 })
 
-
-# Calculation using states
-#-------------------------
-# Outliers state
-
-observeEvent(input$outlierFile, {
-  if ((input$steps == 'outliers' && input$outlierFile != notSelOpt && outlFileExists() && input$outlierEnabled) || 
-    (input$steps == 'outliers' && input$outlierFile == notSelOpt && !input$outlierEnabled)) {
-
-    infoPairs <- interStepAndUpdate(tmpDataScriptVec)
-    piplInfo$currFeatures <<- infoPairs[1]
-    piplInfo$currSamples <<- infoPairs[2]
-  }
-})
-
-observeEvent(input$outlierEnabled, {
-  if ((input$steps == 'outliers' && !input$outlierEnabled) || 
-    (input$steps == 'outliers' && input$outlierFile != notSelOpt && outlFileExists() && input$outlierEnabled)) {
-    infoPairs <- interStepAndUpdate(tmpDataScriptVec)
-    piplInfo$currFeatures <<- infoPairs[1]
-    piplInfo$currSamples <<- infoPairs[2]
-  }
-})
-
-observeEvent(input$cctFile, {
-  if ((input$steps == 'outliers' && input$cctFile != notSelOpt && cctFileExists() && input$transEnabled) || 
-    (input$steps == 'outliers' && input$cctFile == notSelOpt && !input$transEnabled)) {
-
-    infoPairs <- interStepAndUpdate(tmpDataScriptVec)
-    piplInfo$currFeatures <<- infoPairs[1]
-    piplInfo$currSamples <<- infoPairs[2]
-  }
-})
-
-observeEvent(input$transEnabled, {
-  if ((input$steps == 'outliers' && !input$transEnabled) || 
-    (input$steps == 'outliers' && input$cctFile != notSelOpt && cctFileExists() && input$transEnabled)) {
-    infoPairs <- interStepAndUpdate(tmpDataScriptVec)
-    piplInfo$currFeatures <<- infoPairs[1]
-    piplInfo$currSamples <<- infoPairs[2]
-  }
-})
-
-
-# Background corr state
-
-observeEvent(input$corrEnabled, {
-  if (input$steps == 'corr') {
-    infoPairs <- interStepAndUpdate(tmpDataScriptVec)
-    piplInfo$currFeatures <<- infoPairs[1]
-    piplInfo$currSamples <<- infoPairs[2]
-  }
-})
-
-# Filtering state
-
-observeEvent(input$filtEnabled, {
-  if (input$steps == 'filter' && !input$filtEnabled) {
-    infoPairs <- interStepAndUpdate(tmpDataScriptVec)
-    piplInfo$currFeatures <<- infoPairs[1]
-    piplInfo$currSamples <<- infoPairs[2]
-  }
-})
-
-# Normalization state
-
-observeEvent(input$nmeth, {
-  if ((input$steps == 'norm' && input$nmeth == notSelOpt && !input$normEnabled) ||
-    (input$steps == 'norm' && input$nmeth == "vstQuantileNorm" && input$normEnabled)){
-    infoPairs <- interStepAndUpdate(tmpDataScriptVec)
-    piplInfo$currFeatures <<- infoPairs[1]
-    piplInfo$currSamples <<- infoPairs[2]
-  }
-  if (input$steps == 'norm' && input$nmeth == 'ComBat') {
-    btchtab <<- c(notSelOpt, getPkgDataSetNames('nowac'))
-    updateSelectInput(session, "batchTab", choices = btchtab, selected = notSelOpt)
-  }
-})
-
-observeEvent(input$normEnabled, {
-  updateSelectInput(session, "nmeth", selected = notSelOpt)
-  if (input$steps == 'norm' && !input$normEnabled) {
-    infoPairs <- interStepAndUpdate(tmpDataScriptVec)
-    piplInfo$currFeatures <<- infoPairs[1]
-    piplInfo$currSamples <<- infoPairs[2]
-  }
-})
-
-observeEvent(input$batchVar, {
-  if ((input$steps == 'norm' && !input$normEnabled) || 
-    (input$steps == 'norm' && input$nmeth == "ComBat" && input$normEnabled && input$batchTab != notSelOpt && input$batchVar != notSelOpt)){
-    infoPairs <- interStepAndUpdate(tmpDataScriptVec)
-    piplInfo$currFeatures <<- infoPairs[1]
-    piplInfo$currSamples <<- infoPairs[2]
-  }
-})
-
-# populating batch variable
-observeEvent(input$batchTab, {
-  if (input$batchTab != notSelOpt) btchvar <<- c(btchvar, getDSColNames(input$batchTab))
-  else btchvar <<- c(notSelOpt)
-  updateSelectInput(session, "batchVar", choices = btchvar, selected = notSelOpt)
-})
-
-# Questionarie state
-
-observeEvent(input$questEnabled, {
-  if (input$steps == 'quest' && !input$questEnabled && length(input$questVars)>0) {
-    infoPairs <- interStepAndUpdate(tmpDataScriptVec)
-    piplInfo$currFeatures <<- infoPairs[1]
-    piplInfo$currSamples <<- infoPairs[2]
-  }
-})
-
-# Processing state
-
-observeEvent(input$steps, {
-  if (input$steps == 'process') {
-    infoPairs <- interStepAndUpdate(tmpDataScriptVec)
-    piplInfo$currFeatures <<- infoPairs[1]
-    piplInfo$currSamples <<- infoPairs[2]
-
-    if (input$designDown) origPairs <<- infoPairs
-  }
-
-})
-
+# Calculation using buttons and events
 #-------------------------
 
-# Design
+# DESIGN events
+
 observeEvent(input$designReq, {
   updateNavlistPanel(session, 'steps', selected = 'name')
 })
@@ -186,11 +64,76 @@ observeEvent(input$designDown, {
   # piplInfo$currFeatures <<- infoPairs[1]
   # piplInfo$currSamples <<- infoPairs[2]
   # origPairs <<- infoPairs
-
   updateNavlistPanel(session, 'steps', selected = 'process')
 })
 
-# Outlier
+
+# OUTLIER events
+
+# <Apply> observe event
+observeEvent(input$outlierApply, {
+
+  applyAction <- function() {
+    # Perform anaisys
+    infoPairs <- interStepAndUpdate(tmpDataScriptVec)
+    piplInfo$currFeatures <<- infoPairs[1]
+    piplInfo$currSamples <<- infoPairs[2]
+    # Show "continue/tofinal" buttons
+    shinyjs::show("outlierNext")
+    shinyjs::show("outlierDown")
+    shinyjs::hide("outlierSkip")
+    shinyjs::hide("outlierApply")
+  }
+
+  outlierStatus <- (input$outlierEnabled && input$outlierFile != notSelOpt && outlFileExists()) || !input$outlierEnabled
+  transStatus <- (input$transEnabled && input$cctFile != notSelOpt && cctFileExists()) || !input$transEnabled 
+  if (outlierStatus && transStatus) applyAction()
+})
+
+# <Skip> observe event
+observeEvent(input$outlierSkip, {
+  # Reset current tab
+  reset ('outlierEnabled')
+  reset ('outlierFile')
+  reset ('outlierFileReport')
+  reset ('transEnabled')
+  reset ('cctFile')
+  reset ('transFileReport')
+  shinyjs::show("outlierNext")
+  shinyjs::hide("outlierApply")
+  updateTextAreaInput(session, "outlierDescr", value = '')
+
+  # Move to the next tab
+  updateNavlistPanel(session, 'steps', selected = 'corr')
+})
+
+# <Continue> observe event
+observeEvent(input$outlierNext, {
+  # Move to the next tab
+  updateNavlistPanel(session, 'steps', selected = 'corr')
+})
+
+# <To final> observe event
+observeEvent(input$outlierDown, {
+  # Move to the last tab
+  updateNavlistPanel(session, 'steps', selected = 'process')
+})
+
+# <Changes on page> observe event
+observeEvent({
+  input$outlierEnabled
+  input$outlierFile
+  input$transEnabled
+  input$cctFile
+  }, {
+    # Show "apply/skip" buttons
+    shinyjs::hide("outlierNext")
+    shinyjs::hide("outlierDown")
+    # shinyjs::show("outlierSkip")
+    shinyjs::show("outlierApply")
+  }
+)
+
 observeEvent(input$outlierReq, {
   updateNavlistPanel(session, 'steps', selected = 'design')
 })
@@ -199,15 +142,62 @@ observeEvent(input$outlierReq, {
 #   updateNavlistPanel(session, 'steps', selected = 'design')
 # })
 
-observeEvent(input$outlierNext,{
-  updateNavlistPanel(session, 'steps', selected = 'corr')
+
+# BackgrCorr events
+
+# <Apply> observe event
+observeEvent(input$corrApply, {
+
+  applyAction <- function() {
+    # Perform anaisys
+    infoPairs <- interStepAndUpdate(tmpDataScriptVec)
+    piplInfo$currFeatures <<- infoPairs[1]
+    piplInfo$currSamples <<- infoPairs[2]
+    # Show "continue/tofinal" buttons
+    shinyjs::show("corrNext")
+    shinyjs::show("corrDown")
+    shinyjs::hide("corrSkip")
+    shinyjs::hide("corrApply")
+  }
+
+  corrStatus <- input$corrEnabled || !input$corrEnabled
+  if (corrStatus) applyAction()
 })
 
-observeEvent(input$outlierDown, {
+# <Skip> observe event
+observeEvent(input$corrSkip, {
+  # Reset current tab
+  reset ('corrEnabled')
+  shinyjs::show("corrNext")
+  shinyjs::hide("corrApply")
+  # Move to the next tab
+  updateNavlistPanel(session, 'steps', selected = 'filter')
+})
+
+# <Continue> observe event
+observeEvent(input$corrNext, {
+  # Move to the next tab
+  updateNavlistPanel(session, 'steps', selected = 'filter')
+})
+
+# <To final> observe event
+observeEvent(input$corrDown, {
+  # Move to the last tab
   updateNavlistPanel(session, 'steps', selected = 'process')
 })
 
-# Background correction
+# <Changes on page> observe event
+observeEvent({
+  input$corrEnabled
+  }, {
+    # Show "apply/skip" buttons
+    shinyjs::hide("corrNext")
+    shinyjs::hide("corrDown")
+    # shinyjs::show("corrSkip")
+    shinyjs::show("corrApply")
+  }
+)
+
 observeEvent(input$corrReq, {
   updateNavlistPanel(session, 'steps', selected = 'design')
 })
@@ -216,46 +206,154 @@ observeEvent(input$corrBack, {
   updateNavlistPanel(session, 'steps', selected = 'outliers')
 })
 
-observeEvent(input$corrNext, {
-  updateNavlistPanel(session, 'steps', selected = 'filter')
+
+# Filter events
+
+# <Apply> observe event
+observeEvent(input$filtApply, {
+
+  applyAction <- function() {
+    # Perform anaisys
+    infoPairs <- interStepAndUpdate(tmpDataScriptVec)
+    piplInfo$currFeatures <<- infoPairs[1]
+    piplInfo$currSamples <<- infoPairs[2]
+    # Show "continue/tofinal" buttons
+    shinyjs::show("filtNext")
+    shinyjs::show("filtDown")
+    shinyjs::hide("filtSkip")
+    shinyjs::hide("filtApply")
+  }
+
+  filtStatus <- input$filtEnabled || !input$filtEnabled
+  if (filtStatus) applyAction()
 })
 
-observeEvent(input$corrDown, {
+# <Skip> observe event
+observeEvent(input$filtSkip, {
+  # Reset current tab
+  reset ('filtEnabled')
+  shinyjs::show("filtNext")
+  shinyjs::hide("filtApply")
+  # Move to the next tab
+  updateNavlistPanel(session, 'steps', selected = 'norm')
+})
+
+# <Continue> observe event
+observeEvent(input$filtNext, {
+  # Move to the next tab
+  updateNavlistPanel(session, 'steps', selected = 'norm')
+})
+
+# <To final> observe event
+observeEvent(input$filtDown, {
+  # Move to the last tab
   updateNavlistPanel(session, 'steps', selected = 'process')
 })
 
-# Filtering
+# <Changes on page> observe event
+observeEvent({
+  input$filtEnabled
+  input$pval
+  input$plimit
+  }, {
+    # Show "apply/skip" buttons
+    shinyjs::hide("filtNext")
+    shinyjs::hide("filtDown")
+    # shinyjs::show("filtSkip")
+    shinyjs::show("filtApply")
+  }
+)
+
 observeEvent(input$filtReq, {
   updateNavlistPanel(session, 'steps', selected = 'design')
-})
-
-observeEvent(input$filtSkip, {
-  updateNavlistPanel(session, 'steps', selected = 'norm')
 })
 
 observeEvent(input$filtBack, {
   updateNavlistPanel(session, 'steps', selected = 'corr')
 })
 
-observeEvent(input$filtNext, {
-  infoPairs <- interStepAndUpdate(tmpDataScriptVec)
-  piplInfo$currFeatures <<- infoPairs[1]
-  piplInfo$currSamples <<- infoPairs[2]
 
-  updateNavlistPanel(session, 'steps', selected = 'norm')
+# NORMALIZATION events
+
+# <Apply> observe event
+observeEvent(input$normApply, {
+
+  applyAction <- function() {
+    # Perform anaisys
+    infoPairs <- interStepAndUpdate(tmpDataScriptVec)
+    piplInfo$currFeatures <<- infoPairs[1]
+    piplInfo$currSamples <<- infoPairs[2]
+    # Show "continue/tofinal" buttons
+    shinyjs::show("normNext")
+    shinyjs::show("normDown")
+    shinyjs::hide("normSkip")
+    shinyjs::hide("normApply")
+  }
+
+  # normStatus <- FALSE
+  # if (input$nmeth == 'vstQuantileNorm') normStatus <- (input$normEnabled && input$nmeth != notSelOpt) || !input$normEnabled
+  # if (input$nmeth == 'ComBat') normStatus <- 
+  #   (input$normEnabled && input$nmeth != notSelOpt && input$batchTab != notSelOpt && input$batchVar != notSelOpt) || !input$normEnabled
+  # if (normStatus) applyAction()
+  if (methodIsValid()) applyAction()
 })
 
-observeEvent(input$filtApply, {
-  infoPairs <- interStepAndUpdate(tmpDataScriptVec)
-  piplInfo$currFeatures <<- infoPairs[1]
-  piplInfo$currSamples <<- infoPairs[2]
+# <Skip> observe event
+observeEvent(input$normSkip, {
+  # Reset current tab
+  reset ('normEnabled')
+  reset ('nmeth')
+  reset ('batchTab')
+  reset ('batchVar')
+  shinyjs::show("normNext")
+  shinyjs::hide("normApply")
+
+  # Move to the next tab
+  updateNavlistPanel(session, 'steps', selected = 'quest')
 })
 
-observeEvent(input$filtDown, {
+# <Continue> observe event
+observeEvent(input$normNext, {
+  # Move to the next tab
+  updateNavlistPanel(session, 'steps', selected = 'quest')
+})
+
+# <To final> observe event
+observeEvent(input$normDown, {
+  # Move to the last tab
   updateNavlistPanel(session, 'steps', selected = 'process')
 })
 
-# Normalization
+# <Changes on page> observe event
+observeEvent({
+  input$normEnabled
+  input$nmeth
+  input$batchTab
+  input$batchVar
+  }, {
+    # Show "apply/skip" buttons
+    shinyjs::hide("normNext")
+    shinyjs::hide("normDown")
+    # shinyjs::show("normSkip")
+    shinyjs::show("normApply")
+  }
+)
+
+# Populating batchTab
+observeEvent(input$nmeth, {
+  if (input$steps == 'norm' && input$nmeth == 'ComBat') {
+    btchtab <<- c(notSelOpt, getPkgDataSetNames('nowac'))
+    updateSelectInput(session, "batchTab", choices = btchtab, selected = notSelOpt)
+  }
+})
+
+# Populating batchVar
+observeEvent(input$batchTab, {
+  if (input$batchTab != notSelOpt) btchvar <<- c(btchvar, getDSColNames(input$batchTab))
+  else btchvar <<- c(notSelOpt)
+  updateSelectInput(session, "batchVar", choices = btchvar, selected = notSelOpt)
+})
+
 observeEvent(input$normReq, {
   updateNavlistPanel(session, 'steps', selected = 'design')
 })
@@ -264,38 +362,80 @@ observeEvent(input$normBack, {
   updateNavlistPanel(session, 'steps', selected = 'filter')
 })
 
-observeEvent(input$normNext, {
-  updateNavlistPanel(session, 'steps', selected = 'quest')
+
+# Questionairee events
+
+# <Apply> observe event
+observeEvent(input$questApply, {
+
+  applyAction <- function() {
+    # Perform anaisys
+    infoPairs <- interStepAndUpdate(tmpDataScriptVec)
+    piplInfo$currFeatures <<- infoPairs[1]
+    piplInfo$currSamples <<- infoPairs[2]
+    # Show "continue/tofinal" buttons
+    shinyjs::show("questNext")
+    shinyjs::hide("questSkip")
+    shinyjs::hide("questApply")
+  }
+
+  questStatus <- (input$questEnabled && input$questObj != notSelOpt && length(input$questVars)>0) || !input$questEnabled
+  if (questStatus) applyAction()
 })
 
-observeEvent(input$normDown, {
+# <Skip> observe event
+observeEvent(input$questSkip, {
+  # Reset current tab
+  reset ('questEnabled')
+  reset ('questObj')
+  reset ('questVars')
+
+  shinyjs::show("questNext")
+  shinyjs::hide("questApply")
+
+  # Move to the next tab
   updateNavlistPanel(session, 'steps', selected = 'process')
 })
 
-# Questionaries
+# <Continue> observe event
+observeEvent(input$questNext, {
+  # Move to the next tab
+  updateNavlistPanel(session, 'steps', selected = 'process')
+})
+
+# <Changes on page> observe event
+observeEvent({
+  input$questEnabled
+  input$questObj
+  input$questVars
+  }, {
+    # Show "apply/skip" buttons
+    shinyjs::hide("questNext")
+    # shinyjs::show("questSkip")
+    shinyjs::show("questApply")
+  }
+)
+
 observeEvent(input$questReq, {
   updateNavlistPanel(session, 'steps', selected = 'design')
-})
-
-observeEvent(input$questSkip, {
-  updateNavlistPanel(session, 'steps', selected = 'process')
 })
 
 observeEvent(input$questBack, {
   updateNavlistPanel(session, 'steps', selected = 'norm')
 })
 
-observeEvent(input$questNext, {
-  updateNavlistPanel(session, 'steps', selected = 'process')
-})
+# # Processing state
 
-observeEvent(input$questApply, {
-  infoPairs <- interStepAndUpdate(tmpDataScriptVec)
-  piplInfo$currFeatures <<- infoPairs[1]
-  piplInfo$currSamples <<- infoPairs[2]
-})
+# observeEvent(input$steps, {
+#   if (input$steps == 'process') {
+#     infoPairs <- interStepAndUpdate(tmpDataScriptVec)
+#     piplInfo$currFeatures <<- infoPairs[1]
+#     piplInfo$currSamples <<- infoPairs[2]
+#     if (input$designDown) origPairs <<- infoPairs
+#   }
+# }
+# #-------------------------
 
-# Process
 observeEvent(input$processReq, {
   updateNavlistPanel(session, 'steps', selected = 'name')
 })
@@ -309,6 +449,7 @@ observeEvent(input$newStart, {
   updateSelectInput(session, "loc", selected = notSelOpt)
   updateSelectInput(session, "mat", selected = notSelOpt)
   updateSelectInput(session, "ana", selected = notSelOpt)
+
   resetStepsAndInfo() 
   updateNavlistPanel(session, 'steps', selected = 'name')
 })

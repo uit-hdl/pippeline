@@ -1,4 +1,4 @@
-# helper functions
+# Helper functions
 
 # Determine the name of the data objects.
 # @return A character vector with object names, or NULL in case of errors
@@ -241,7 +241,7 @@ generatePipeline <- function( params) {
     if(!file.exists(cctFile) ||
         as.integer(file.access(cctFile, mode = 4)) < 0) {
       c(
-        'stop("Could not read outliers file. Error code #4.1.")'
+        'stop("Could not read transitions file. Error code #4_1.")'
       ) 
     } else {
       c(
@@ -404,7 +404,7 @@ performInterSteps <- function(tempDataFile, tempScriptFile){
     # Hide cat messages from libs (check source params(echo, verbose))
     invisible(capture.output(source(tempScriptFile)))
     removeNotification('waitInter')
-    # file.remove(tempScriptFile) # TODO: uncomment
+    file.remove(tempScriptFile)
     #showNotification('Successfull step execution', type = 'message', duration = 4)
   }, error = function(err){
     removeNotification('waitInter')
@@ -433,9 +433,36 @@ interStepAndUpdate <- function(tmpDSVec){
   return (c(as.numeric(dim(ds)[1]), as.numeric(dim(ds)[2])))
 }
 
-resetCheckboxValues <- function(){
+setBtnInitState <- function()
+{
+  shinyjs::hide("outlierDown")
+  shinyjs::hide("outlierApply")
+  shinyjs::hide("corrDown")
+  shinyjs::hide("corrApply")
+  shinyjs::hide("filtDown")
+  shinyjs::hide("filtApply")
+  shinyjs::hide("normDown")
+  shinyjs::hide("normApply")
+  shinyjs::hide("questApply")
+  
+  shinyjs::show("outlierNext")
+  shinyjs::show("outlierSkip")
+  shinyjs::show("corrNext")
+  shinyjs::show("corrSkip")
+  shinyjs::show("corrBack")
+  shinyjs::show("filtNext")
+  shinyjs::show("filtSkip")
+  shinyjs::show("filtBack")
+  shinyjs::show("normNext")
+  shinyjs::show("normSkip")
+  shinyjs::show("normBack")
+  shinyjs::show("questNext")
+  shinyjs::show("questSkip")
+  shinyjs::show("questBack")
+}
+
+resetChosenValues <- function(){
   # reset all checkboxes
-  reset ('transEnabled')
   reset ('outlierEnabled')
   reset ('outlierFile')
   reset ('outlierFileReport')
@@ -445,30 +472,18 @@ resetCheckboxValues <- function(){
   reset ('corrEnabled')
   reset ('filtEnabled')
   reset ('normEnabled')
+  reset ('batchTab')
+  reset ('batchVar')
   reset ('questEnabled')
   reset ('wantGenes')
 }
 
 resetStepsAndInfo <- function(){
-  # reset all checkboxes
-  resetCheckboxValues()
+  # reset choices and btns
+  resetChosenValues()
+  setBtnInitState()
 
-  # reset dataset info
-  # updateSelectInput(session, "dsg", selected = notSelOpt)
-  # updateSelectInput(session, "loc", selected = notSelOpt)
-  # updateSelectInput(session, "mat", selected = notSelOpt)
-  # updateSelectInput(session, "ana", selected = notSelOpt)
-
-  # reset outliers
-  updateSelectInput(session, "outlierFile", selected = notSelOpt)
-  updateSelectInput(session, "outlierFileReport", selected = notSelOpt)
   updateTextAreaInput(session, "outlierDescr", value = '')
-
-  updateSelectInput(session, "cctFile", selected = notSelOpt)
-  updateSelectInput(session, "transFileReport", selected = notSelOpt)
-
-  updateSelectInput(session, "batchTab", selected = notSelOpt)
-  updateSelectInput(session, "batchVar", selected = notSelOpt)
 
   # reset reactive values
   piplInfo$origInfoStr <<- notProcMsg

@@ -80,6 +80,17 @@ cctFileExists <- reactive( {
 output$cctFileExists <- reactive( { cctFileExists() } )
 outputOptions(output, 'cctFileExists', suspendWhenHidden = FALSE)
 
+# method valid reactive
+methodIsValid <- reactive( { 
+  if ((input$normEnabled && input$nmeth == 'vstQuantileNorm') || 
+    (input$normEnabled && input$nmeth == 'ComBat' && input$batchTab != notSelOpt && input$batchVar != notSelOpt)) 
+    return (TRUE)
+  else return (FALSE)
+})
+
+output$methodIsValid <- reactive( { methodIsValid() } )
+outputOptions(output, 'methodIsValid', suspendWhenHidden = FALSE)
+
 # questionnaire variables
 questIsValid <- reactive( { input$questObj != notSelOpt} )
 output$questIsValid <- reactive( { questIsValid() } )
@@ -90,7 +101,7 @@ output$qvarPicker <- renderUI( {
     availQVars <- colnames( get( input$questObj) )
     removeNotification( 'quest')
   } else {
-    showNotification( paste0( 'No questionnaire available. (Check file "', basics$questsFile, '" or load object.) Error code #9.'), type = 'error', duration = NULL, id = 'quest')
+    showNotification( paste0( 'No questionnaire available. (Check file "', basics$questsFile, '" or load object.) Error code #9.'), type = 'error', duration = 2, id = 'quest')
     availQVars <- c()
   }
   selectizeInput( 'questVars', 'Variables', multiple = T, choices = availQVars, selected = availQVars[1:5])
@@ -162,8 +173,8 @@ output$infoVar <- renderText({
     piplInfo$exclCCB=ifelse(input$transEnabled && cctFileExists(), "Enabled", notEnablOpt)
     piplInfo$bCorrB=ifelse(input$corrEnabled,"Enabled", notEnablOpt)
     piplInfo$filterPStr=ifelse(input$filtEnabled, input$pval, notEnablOpt)
-    piplInfo$filterLimitStr=ifelse(input$filtEnabled,input$plimit, notEnablOpt)
-    piplInfo$normMethodStr=ifelse((input$normEnabled && input$nmeth != notSelOpt), as.character(input$nmeth), notEnablOpt) 
+    piplInfo$filterLimitStr=ifelse(input$filtEnabled, input$plimit, notEnablOpt)
+    piplInfo$normMethodStr=ifelse(methodIsValid(), as.character(input$nmeth), notEnablOpt) 
     piplInfo$questVarsStr=ifelse((input$questEnabled && input$questObj != notSelOpt && length(input$questVars) != 0), "Enabled", notEnablOpt)
 
     piplInfo$currFeatures=ifelse(piplInfo$currFeatures != notProcMsg && choicesAreValid(), piplInfo$currFeatures, notProcMsg)
