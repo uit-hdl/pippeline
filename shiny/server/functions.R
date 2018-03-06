@@ -357,6 +357,12 @@ generatePipeline <- function( params) {
         sprintf( 'qvars <- c("%s")', paste( as.character(input$questVars), collapse = '","') ),
         '# sew together matches',
         'data <- rbind(data,t(quest)[qvars,m])',
+        '# ad-hoc for naming with 1 quest variable',
+        'if (length(qvars) == 1){',
+          'names <- c(rownames(data), qvars)',
+          'rownames(data) <- names',
+          'rm(names)',
+        '}',
         'rm(qvars,m,quest)'
       )
     } else
