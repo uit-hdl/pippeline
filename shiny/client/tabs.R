@@ -131,7 +131,7 @@ filterTab <- list(
     list( 
       p('Here you can filter the probes with regard to p-value and limit.'),
       p('This is done by lumi function', code('detectionCall'), 'with Th parameter as p-value and filtering this data by limit value.'),
-      checkboxInput( 'filtEnabled', 'Enabled'),
+      checkboxInput('filtEnabled', 'Enabled'),
       conditionalPanel(
         condition = 'input.filtEnabled',
         p('Default values are 0.05 for p-value and 0.7 for filtering limit.'),

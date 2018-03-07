@@ -196,8 +196,8 @@ generatePipeline <- function( params) {
   generateCode <- function( file) {
     c(
       sprintf( 'saveRDS(data,file="%s")', file),
-      cmt('# Cleaning environment'),
-      'rm(list=ls())'
+      cmt('# Cleaning environment')
+      #'rm(list=ls())'
     )
   }
   writeStep <- createStep( 'Storage', 'Writing processed datasets', TRUE, generateCode, list( params$targetFile) )
@@ -284,9 +284,10 @@ generatePipeline <- function( params) {
   # step: probe filtering
   generateCode <- function() {
     c(
-      sprintf( 'pValue <- %1.2f', input$pval),
-      sprintf( 'pLimit <- %1.2f', input$plimit),
-      'data <- pippeline::filterData(data,pValue,pLimit)'
+      sprintf('pValue <- %1.2f', input$pval),
+      sprintf('pLimit <- %1.2f', input$plimit),
+      'data <- pippeline::filterData(data,pValue,pLimit)',
+      'rm(pValue, pLimit)'
     ) 
   }
   filtStep <- createStep( 'Probe filtering', 'Filtering based on on pValue and presentLimit', as.logical(input$filtEnabled), generateCode)
@@ -348,22 +349,26 @@ generatePipeline <- function( params) {
   
   # step: questionnaires 
   generateCode <- function() {
-    if( exists( input$questObj) ) {
+    if(exists(input$questObj) ) {
       c(
-        sprintf( 'quest <- get("%s")', input$questObj),
+        sprintf('quest <- get("%s")', input$questObj),
         '# determine sample ID matches',
         'm <- match(colnames(data), quest$labnr)',
         '# reduce variable set if necessary',
-        sprintf( 'qvars <- c("%s")', paste( as.character(input$questVars), collapse = '","') ),
-        '# sew together matches',
-        'data <- rbind(data,t(quest)[qvars,m])',
-        '# ad-hoc for naming with 1 quest variable',
-        'if (length(qvars) == 1){',
-          'names <- c(rownames(data), qvars)',
-          'rownames(data) <- names',
-          'rm(names)',
+        sprintf('qvars <- c("%s")', paste(as.character(input$questVars), collapse = '","')),
+        '# ad-hoc for column naming',
+        'questmatr <- as.matrix(quest)',
+        'if (length(qvars) > 1) {',
+          'extrquest <- as.matrix(t(questmatr)[qvars,m])',
+        '} else {',
+          'extrquest <- as.matrix(t(t(questmatr)[qvars,m]))',
+          'rownames(extrquest) <- qvars',
         '}',
-        'rm(qvars,m,quest)'
+        '',
+        '# sew together matches',
+        'data <- rbind(data,extrquest)',
+        'questData <- as.data.frame(extrquest)',
+        'rm(qvars,m,quest,questmatr,extrquest)'
       )
     } else
       c(
