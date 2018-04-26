@@ -110,7 +110,9 @@ normalizeDataComBat <- function(data.new, bTabName, batchVar) {
   # stop('Method not supported.')
   tryCatch({
   batchVarsTable <- get(bTabName)
-  bTab <- as.data.frame(batchVarsTable, row.names = batchVarsTable[['Sample_ID']]) 
+  batchVarsTable <- batchVarsTable[complete.cases(batchVarsTable), ]
+
+  bTab <- as.data.frame(batchVarsTable, row.names = as.character(batchVarsTable[['Sample_ID']]))
   modcombat <- model.matrix(sampleID~1, data=data.new) # Add adjustment variables (just intersection for now)
   # modcombat <- as.data.frame(modcombat) 
 
