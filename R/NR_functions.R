@@ -56,7 +56,7 @@ performBackgroundCorrection <- function(data, negCtrl) {
   
   # --- Get rid of bad probes
   probes <- nuID2IlluminaID(as.character(featureNames(data)), lib.mapping=NULL, species ="Human", idType='Probe')
-  probe.quality <- unlist(BiocGenerics::mget(as.character(probes), illuminaHumanv3PROBEQUALITY, ifnotfound=NA))
+  probe.quality <- unlist(BiocGenerics::mget(as.character(probes), illuminaHumanv3PROBEQUALITY, ifnotfound=NA)) # TODO: check V4
   table(probe.quality, exclude=NULL) # check mapping and missing
   good.quality <- !((probe.quality == "Bad") | (probe.quality == "No match"))
   length(good.quality[good.quality==TRUE])

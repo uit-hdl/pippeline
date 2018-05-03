@@ -12,13 +12,10 @@ params$ts <- format(Sys.time(), "%d%m%Y-%H%M%OS3")
 #' # Edit those parameters for the script
 #+ params-set-up, eval=FALSE
 params$path <- "/project/tice/pippelinen/nowaclean_outliers"
-params$experiment <- "postdiagnostic"
-params$script <- "1_nowaclean-gen.R"
-params$overviewVars <- c("RIN", "260/280_RNA", "260/230_RNA", "Ng/ul_RNA") # Check names of overview dataframe!
-# c("RIN", "260/280_RNA", "260/230_RNA", "ng/µl_RNA")
+params$experiment <- "uterus_hiscan"
 
 # Not eligible outlier from Hege report
-params$nonElSamples <- c()
+params$nonElSamples <- c("115981","107930","114763","108020","115524","111847") 
 #'
 
 #' ***
@@ -64,7 +61,7 @@ getLabInfo <- function(experiment){
 getLabInfoBySample <- function(sID, experiment, sameAsThreshhold){
   labinfo <- getLabInfo(experiment)
   result <- labinfo[labinfo$Sample_ID == as.character(sID), ]
-  if (sameAsThreshhold) result <- result[, params$overviewVars]
+  if (sameAsThreshhold) result <- result[, c("RIN", "260/280_RNA", "260/230_RNA", "ng/µl_RNA")]
   return (result)
 }
 
@@ -124,11 +121,6 @@ zero_outl_obj <-
                    defDescr = 'Known "all-zero" outlier')
 #'
 
-#' ## Finding probes with negative values (prevents log2 transformation for futher analysis)
-#+ remove-negative-probes, eval=FALSE
-gene_expression <- gene_expression[, which(apply(gene_expression, 2, function(x) !any(x<0)))]
-#'
-
 #' ## Checking non-eligible samples
 #+ out-non-eligible-var, eval=FALSE
 out_non_eligible_obj <- 
@@ -186,13 +178,13 @@ if (choiceTech == T)
     # =========================================
     
     tech_outl_obj <- list()
-    # labInfo <- getLabInfo(params$experiment)
+    # labInfo <- getLabInfo("uterus_hiscan")
     # Outliers candidates: "138115" "113785" "104917" "137771" "146176" "130922" "127496" "132675"
     for (i in 1:length(cand_outliers_obj)){
       cat ('\n')
       print ("------------------")
       print (paste("Sample:", cand_outliers_obj[[i]]$sample, " - Thresholds: "))
-      print (getLabInfoBySample(cand_outliers_obj[[i]]$sample, params$experiment, T))
+      print (getLabInfoBySample(cand_outliers_obj[[i]]$sample, "uterus_hiscan", T))
       print ("Lab thresholds:")
       print (lab_thresholds)
       print ("------------------")
@@ -291,27 +283,26 @@ saveRDS(getOutlierNames(for_removal_obj), file=paste0(path_outl, ".rds"))
 #'
 
 #+ report-print, echo=FALSE, comment=''
-if (length(for_removal_obj) != 0){
-  print (paste0("Final dimension of the dataset: ", as.character(dim(gene_expression)[1]), ' x ' ,as.character(dim(gene_expression)[2])))
-  print ("All found outliers:")
-  for (i in 1:length(for_removal_obj)) {
-    print (paste0("Sample: ", for_removal_obj[[i]]$sample))  
-    cat (paste0("Description: ",for_removal_obj[[i]]$descr, '\n'))  
-    if (!is.null(for_removal_obj[[i]]$plot)) {
-      plot(1:i) # Ad-hoc showing plot
-      replayPlot(for_removal_obj[[i]]$plot)
-      cat('\n')
-    } else {
-      cat ('No plot is available')
-      cat (paste0('\n','\n'))
-    }
+
+print (paste0("Final dimension of the dataset: ", as.character(dim(gene_expression)[1]), ' x ' ,as.character(dim(gene_expression)[2])))
+print ("All found outliers:")
+for (i in 1:length(for_removal_obj)) {
+  print (paste0("Sample: ", for_removal_obj[[i]]$sample))  
+  cat (paste0("Description: ",for_removal_obj[[i]]$descr, '\n'))  
+  if (!is.null(for_removal_obj[[i]]$plot)) {
+    plot(1:i) # Ad-hoc showing plot
+    replayPlot(for_removal_obj[[i]]$plot)
+    cat('\n')
+  } else {
+    cat ('No plot is available')
+    cat (paste0('\n','\n'))
   }
 }
 #' 
 
 #+ render, include=FALSE, eval=FALSE
 library(rmarkdown)
-rmarkdown::render(params$script, output_file = paste0(path_report, '.html'), quiet = FALSE)
+rmarkdown::render('nowaclean-gen.R', output_file = paste0(path_report, '.html'), quiet = FALSE)
 #'
 
 #+ cleaning-proc, include=FALSE, eval=FALSE
