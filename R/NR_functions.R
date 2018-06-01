@@ -103,16 +103,17 @@ normalizeDataVstQ <- function(data.new) {
 #'
 #' @param data.new lumi object where colnames(data)=sample IDs and rownames(data) = probe IDs
 #' @param bTabName name of the table, which is used for extracting batch variable
+#' @param sampleID name of column in data.new dataframe, which represents sample ID number
 #' @param batchVar batch variable, i.e. vector formed from dataset, which gives batch parameter for ComBat
 #' @return normalized matrix where colnames(data)=sample IDs and rownames(data) = probe IDs
 #' @export
-normalizeDataComBat <- function(data.new, bTabName, batchVar) {
+normalizeDataComBat <- function(data.new, bTabName, sampleID, batchVar) {
   # stop('Method not supported.')
   tryCatch({
   batchVarsTable <- get(bTabName)
   batchVarsTable <- batchVarsTable[complete.cases(batchVarsTable), ]
 
-  bTab <- as.data.frame(batchVarsTable, row.names = as.character(batchVarsTable[['Sample_ID']]))
+  bTab <- as.data.frame(batchVarsTable, row.names = as.character(batchVarsTable[[sampleID]]))
   modcombat <- model.matrix(sampleID~1, data=data.new) # Add adjustment variables (just intersection for now)
   # modcombat <- as.data.frame(modcombat) 
 
@@ -121,7 +122,7 @@ normalizeDataComBat <- function(data.new, bTabName, batchVar) {
 
   # Batching according to variable
   batch <- bTab[[batchVar]]
-  normdata <- ComBat(dat=exprs(data.new), batch=batch, mod=modcombat)
+  normdata <- ComBat(dat=exprs(data.new), batch=as.factor(batch), mod=modcombat)
   return (normdata)
   }, error = function() {
     message("Normalizing with ComBat failed. Returning original data. Try other batch")

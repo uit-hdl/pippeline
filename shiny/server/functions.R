@@ -304,7 +304,7 @@ generatePipeline <- function( params) {
     if (input$nmeth == 'ComBat') {
       code <- c(
         #'#+ norm-cmbt, echo=FALSE, message=FALSE',
-        sprintf('data <- pippeline::normalizeDataComBat(data, "%s", "%s")', input$batchTab, input$batchVar)
+        sprintf('data <- pippeline::normalizeDataComBat(data, "%s", "%s", "%s")', input$batchTab, input$batchSampleID, input$batchVar)
         #cmt()
       )
     }
@@ -484,6 +484,7 @@ resetChosenValues <- function(){
   reset ('filtEnabled')
   reset ('normEnabled')
   reset ('batchTab')
+  reset ('batchSampleID')
   reset ('batchVar')
   reset ('questEnabled')
   reset ('wantGenes')

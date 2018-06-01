@@ -304,6 +304,7 @@ observeEvent(input$normSkip, {
   reset ('normEnabled')
   reset ('nmeth')
   reset ('batchTab')
+  reset ('batchSampleID')
   reset ('batchVar')
   shinyjs::show("normNext")
   shinyjs::hide("normApply")
@@ -329,7 +330,9 @@ observeEvent({
   input$normEnabled
   input$nmeth
   input$batchTab
+  input$batchSampleID
   input$batchVar
+  input$batchSampleID
   }, {
     # Show "apply/skip" buttons
     shinyjs::hide("normNext")
@@ -352,6 +355,13 @@ observeEvent(input$batchTab, {
   if (input$batchTab != notSelOpt) btchvar <<- c(btchvar, getDSColNames(input$batchTab))
   else btchvar <<- c(notSelOpt)
   updateSelectInput(session, "batchVar", choices = btchvar, selected = notSelOpt)
+})
+
+# Populating batchSampleID
+observeEvent(input$batchTab, {
+  if (input$batchTab != notSelOpt) btchvar <<- c(btchvar, getDSColNames(input$batchTab))
+  else btchvar <<- c(notSelOpt)
+  updateSelectInput(session, "batchSampleID", choices = btchvar, selected = notSelOpt)
 })
 
 observeEvent(input$normReq, {

@@ -176,6 +176,10 @@ normTab <- list(
           conditionalPanel(
             condition = sprintf('input.batchTab != "%s"', notSelOpt),
             selectInput('batchVar', label = 'Batch variable (Note: using <Plate> variable is recommended)', choices = btchvar)
+          ),
+          conditionalPanel(
+            condition = sprintf('input.batchTab != "%s"', notSelOpt),
+            selectInput('batchSampleID', label = 'Sample ID variable (Note: using <Sample_ID> variable is recommended)', choices = btchvar)
           )
         )
       ),

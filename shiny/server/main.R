@@ -83,7 +83,7 @@ outputOptions(output, 'cctFileExists', suspendWhenHidden = FALSE)
 # method valid reactive
 methodIsValid <- reactive( { 
   if ((input$normEnabled && input$nmeth == 'vstQuantileNorm') || 
-    (input$normEnabled && input$nmeth == 'ComBat' && input$batchTab != notSelOpt && input$batchVar != notSelOpt)) 
+    (input$normEnabled && input$nmeth == 'ComBat' && input$batchTab != notSelOpt && input$batchVar != notSelOpt && input$batchSampleID != notSelOpt)) 
     return (TRUE)
   else return (FALSE)
 })
