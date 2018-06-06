@@ -518,14 +518,14 @@ observeEvent(input$process, {
     # fill files with content
     tryCatch({
       # Copy outliers report
-      if (file.exists(file.path(nowacleanFolder, input$outlierFileReport)) && input$outlierFileReport != notSelOpt && input$outlierEnabled) {
-        reportFile <- file.path(nowacleanFolder, input$outlierFileReport)
+      if (file.exists(file.path(nowacleanReports, input$outlierFileReport)) && input$outlierFileReport != notSelOpt && input$outlierEnabled) {
+        reportFile <- file.path(nowacleanReports, input$outlierFileReport)
         file.copy(reportFile, file.path(tmpDir, input$outlierFileReport))
       }
 
       # Copy transitions report
-      if (file.exists(file.path(cctransFolder, input$transFileReport)) && input$transFileReport != notSelOpt && input$transEnabled) {
-        reportFile <- file.path(cctransFolder, input$transFileReport)
+      if (file.exists(file.path(cctransReports, input$transFileReport)) && input$transFileReport != notSelOpt && input$transEnabled) {
+        reportFile <- file.path(cctransReports, input$transFileReport)
         file.copy(reportFile, file.path(tmpDir, input$transFileReport))
       }
 

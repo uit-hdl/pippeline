@@ -29,8 +29,11 @@ notProcMsg <- 'Dataset is not processed'
 jobID <- Sys.getenv("SLURM_JOB_ID")
 
 pipFolder <- '/project/tice/pippelinen'
-nowacleanFolder <- file.path(pipFolder, 'nowaclean_outliers')
-cctransFolder <- file.path(pipFolder, 'transition_information')
+nowacleanOutliers <- file.path(pipFolder, 'nowaclean_outliers', 'outliers')
+nowacleanReports <- file.path(pipFolder, 'nowaclean_outliers', 'reports')
+
+cctransExcl <- file.path(pipFolder, 'transition_information', 'to_exclude')
+cctransReports <- file.path(pipFolder, 'transition_information', 'reports')
 
 # determine options for basic choices
 options <- NULL
@@ -44,16 +47,16 @@ locs <- c( notSelOpt, levels( options[ , 'Location'] ) )
 mats <- c( notSelOpt, levels( options[ , 'Material'] ) )
 anas <- c( notSelOpt, levels( options[ , 'Analysis'] ) )
 
-outls <- list.files(file.path(nowacleanFolder,'outliers'), pattern='\\.rds$')
+outls <- list.files(nowacleanOutliers, pattern='\\.rds$')
 outls <- c(notSelOpt, outls)
 
-outls_rprts <- list.files(file.path(nowacleanFolder,'reports'), pattern='\\.html$')
+outls_rprts <- list.files(nowacleanReports, pattern='\\.html$')
 outls_rprts <- c(notSelOpt, outls_rprts)
 
-trns <- list.files(file.path(cctransFolder, 'to_exclude'), pattern='\\.rds$')
+trns <- list.files(cctransExcl, pattern='\\.rds$')
 trns <- c(notSelOpt, trns)
 
-trns_rprts <- list.files(file.path(cctransFolder, 'reports'), pattern='\\.html$')
+trns_rprts <- list.files(cctransReports, pattern='\\.html$')
 trns_rprts <- c(notSelOpt, trns_rprts)
 
 # Batching

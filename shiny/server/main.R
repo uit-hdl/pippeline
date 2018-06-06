@@ -45,7 +45,7 @@ outputOptions( output, 'objsExist', suspendWhenHidden = FALSE)
 # Outlier file reactive
 outlFileExists <- reactive( { 
   if (input$outlierFile != notSelOpt){
-    if (typeof(readRDS(file.path(nowacleanFolder, input$outlierFile))) == 'character'){
+    if (typeof(readRDS(file.path(nowacleanOutliers, input$outlierFile))) == 'character'){
       return (TRUE)
     }
     else {
@@ -64,7 +64,7 @@ outputOptions( output, 'outlFileExists', suspendWhenHidden = FALSE)
 # Transitions file reactive
 cctFileExists <- reactive( { 
   if (input$cctFile != notSelOpt){
-    if (typeof(readRDS(file.path(cctransFolder, input$cctFile))) == 'character'){
+    if (typeof(readRDS(file.path(cctransExcl, input$cctFile))) == 'character'){
       return (TRUE)
     }
     else {

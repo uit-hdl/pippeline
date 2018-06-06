@@ -209,7 +209,7 @@ generatePipeline <- function( params) {
       cmt(paste('Description of outliers:', ifelse(input$outlierDescr != '', input$outlierDescr, 'Not available')))
     )
 
-    outlierFile <- file.path(nowacleanFolder, input$outlierFile)
+    outlierFile <- file.path(nowacleanOutliers, input$outlierFile)
     if(!file.exists(outlierFile) ||
         as.integer(file.access(outlierFile, mode = 4)) < 0) {
       code <- c(
@@ -237,7 +237,7 @@ generatePipeline <- function( params) {
   # details for non-mandatory processing steps
   # step: control transitions
   generateCode <- function() {
-    cctFile <- file.path(cctransFolder, input$cctFile)
+    cctFile <- file.path(cctransExcl, input$cctFile)
     if(!file.exists(cctFile) ||
         as.integer(file.access(cctFile, mode = 4)) < 0) {
       c(
