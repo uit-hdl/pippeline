@@ -119,7 +119,7 @@ writeScript <- function( pipeline,
     '',
     '# requirements',
     # suppressMessages(library())
-    sprintf( 'library(%s)', pkgInfo[ 1] ),
+    sprintf( 'library(%s)', pkgInfo[1] ),
     sprintf( 'library(arrayQualityMetrics)'),
     sprintf( 'library(limma)'),
     sprintf( 'library(lumi)'),
@@ -195,9 +195,9 @@ generatePipeline <- function( params) {
   # step: storage
   generateCode <- function( file) {
     c(
-      sprintf( 'saveRDS(data,file="%s")', file),
+      sprintf('saveRDS(data,file="%s")', file),
       cmt('# Cleaning environment')
-      #'rm(list=ls())'
+      #'rm()'
     )
   }
   writeStep <- createStep( 'Storage', 'Writing processed datasets', TRUE, generateCode, list( params$targetFile) )
@@ -286,6 +286,7 @@ generatePipeline <- function( params) {
     c(
       sprintf('pValue <- %1.2f', input$pval),
       sprintf('pLimit <- %1.2f', input$plimit),
+      'unfiltered_data <- data',
       'data <- pippeline::filterData(data,pValue,pLimit)',
       'rm(pValue, pLimit)'
     ) 
@@ -416,13 +417,13 @@ performInterSteps <- function(tempDataFile, tempScriptFile){
     invisible(capture.output(source(tempScriptFile)))
     removeNotification('waitInter')
     file.remove(tempScriptFile)
+    
     #showNotification('Successfull step execution', type = 'message', duration = 4)
   }, error = function(err){
     removeNotification('waitInter')
     showNotification('Could not perform step. Error code #11.', type = 'error', duration = NULL)
     showNotification('Error info: ', toString(err), type = 'error', duration = NULL)
   })
-
   rm(pipeline)
 }
 
@@ -534,5 +535,44 @@ getDSColNames <- function(dataset) {
   result <- c()
   ds <- get(dataset)
   result <- colnames(ds)
+  return (result)
+}
+
+# For ad-hoc
+removeLine <- function(line, file) {
+  print ("Removing")
+  system(sprintf("sed -i '/%s/d' %s", line, file))
+}
+
+buildGraph <- function(dataset) {
+  xvalues <- seq(from = 0.0, to = 1.0, by = 0.05)
+  datacopy <- dataset
+  prLimitVariate_Features <- c()
+  pValVariate_Features <- c()
+
+  for (i in xvalues){
+    tempd <- pippeline::filterData(datacopy,i,input$plimit)
+    pValVariate_Features <- c(pValVariate_Features, dim(tempd)[1])
+  }
+  for (i in xvalues){
+    tempd <- pippeline::filterData(datacopy,input$pval,i)
+    prLimitVariate_Features <- c(prLimitVariate_Features, dim(tempd)[1])
+  }
+
+  plot_data <-
+    data.frame(
+      pValVariate_Features,
+      prLimitVariate_Features,
+      xvalues
+  )
+
+  require(ggplot2)
+  result <- ggplot(plot_data, aes(x = xvalues)) + 
+    geom_line(aes(y = pValVariate_Features, colour = sprintf("const presentLimit = %1.2f, p-Value variate", input$plimit))) + 
+    geom_point(y = pValVariate_Features) + 
+    geom_line(aes(y = prLimitVariate_Features, colour = sprintf("const p-Value = %1.2f, presentLimit variate", input$pval))) + 
+    geom_point(y = prLimitVariate_Features) +
+    labs(title = "p-Value/presentLimit vs feature number", x = "p-Value, %", y = "Number of features", color='Legend')
+  
   return (result)
 }

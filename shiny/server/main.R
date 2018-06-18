@@ -5,7 +5,7 @@ prereqsAreValid <- reactive( {
   input$projname != ''
 } )
 output$prereqsAreValid <- reactive( { prereqsAreValid() } )
-outputOptions( output, 'prereqsAreValid', suspendWhenHidden = FALSE)
+outputOptions(output, 'prereqsAreValid', suspendWhenHidden = FALSE)
 
 choicesAreValid <- reactive( {
   if (
@@ -20,7 +20,7 @@ choicesAreValid <- reactive( {
   else return (FALSE)
 } )
 output$choicesAreValid <- reactive( { choicesAreValid() } )
-outputOptions( output, 'choicesAreValid', suspendWhenHidden = FALSE)
+outputOptions(output, 'choicesAreValid', suspendWhenHidden = FALSE)
 
 sourceObjs <- reactive( {
   if(choicesAreValid()){
@@ -40,7 +40,7 @@ objsExist <- reactive( {
   !is.null( sourceObjs() )
 } )
 output$objsExist <- reactive( { objsExist() } )
-outputOptions( output, 'objsExist', suspendWhenHidden = FALSE)
+outputOptions(output, 'objsExist', suspendWhenHidden = FALSE)
 
 # Outlier file reactive
 outlFileExists <- reactive( { 
@@ -59,7 +59,7 @@ outlFileExists <- reactive( {
 })
 
 output$outlFileExists <- reactive( { outlFileExists() } )
-outputOptions( output, 'outlFileExists', suspendWhenHidden = FALSE)
+outputOptions(output, 'outlFileExists', suspendWhenHidden = FALSE)
 
 # Transitions file reactive
 cctFileExists <- reactive( { 
@@ -80,6 +80,21 @@ cctFileExists <- reactive( {
 output$cctFileExists <- reactive( { cctFileExists() } )
 outputOptions(output, 'cctFileExists', suspendWhenHidden = FALSE)
 
+# plotExist <- reactive({ 
+#   !is.null( output$filterPlot )
+# })
+# output$plotExist <- reactive( { plotExist() } )
+# outputOptions(output, 'plotExist', suspendWhenHidden = FALSE)
+
+output$filterPlot <- renderPlot({
+  if (input$showPlot && input$filtApply) {
+    showNotification('Plotting p-value and presentLimit influence on number of features...', type = 'message', duration = 0, id = 'plot')
+    filterGraph <- buildGraph(unfiltered_data)
+    plot(filterGraph)
+    removeNotification('plot')
+  }
+})
+
 # method valid reactive
 methodIsValid <- reactive( { 
   if ((input$normEnabled && input$nmeth == 'vstQuantileNorm') || 
@@ -94,7 +109,7 @@ outputOptions(output, 'methodIsValid', suspendWhenHidden = FALSE)
 # questionnaire variables
 questIsValid <- reactive( { input$questObj != notSelOpt} )
 output$questIsValid <- reactive( { questIsValid() } )
-outputOptions( output, 'questIsValid', suspendWhenHidden = FALSE)
+outputOptions(output, 'questIsValid', suspendWhenHidden = FALSE)
 
 output$qvarPicker <- renderUI( {
   if (exists(input$questObj)) {
@@ -115,7 +130,7 @@ procIsAllowed <- reactive( {
     !is.null( sourceObjs() )
 } )
 output$procIsAllowed <- reactive( { procIsAllowed() } )
-outputOptions( output, 'procIsAllowed', suspendWhenHidden = FALSE)
+outputOptions(output, 'procIsAllowed', suspendWhenHidden = FALSE)
 
 ####################
 # allInputIsValid <- reactive( {
@@ -129,7 +144,8 @@ outputOptions( output, 'procIsAllowed', suspendWhenHidden = FALSE)
 output$procIsAllowed <- reactive( { 
   prereqsAreValid() && procIsAllowed() # && allInputIsValid()
 })
-outputOptions( output, 'procIsAllowed', suspendWhenHidden = FALSE)
+outputOptions(output, 'procIsAllowed', suspendWhenHidden = FALSE)
+
 
 # global variables for events
 # normal variables

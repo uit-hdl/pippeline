@@ -136,7 +136,12 @@ filterTab <- list(
         condition = 'input.filtEnabled',
         p('Default values are 0.05 for p-value and 0.7 for filtering limit.'),
         sliderInput('pval', 'P-value', min = 0, max = 1, value = 0.05),
-        sliderInput('plimit', 'Filtering limit', min = 0, max = 1, value = 0.7)
+        sliderInput('plimit', 'Filtering limit', min = 0, max = 1, value = 0.7),
+        checkboxInput('showPlot', 'Show plot')
+      ),
+      conditionalPanel(
+        condition = 'input.showPlot && input.filtApply',
+        plotOutput("filterPlot")
       ),
       hr(),
       div(class = 'row-btn', 
@@ -147,7 +152,7 @@ filterTab <- list(
         div(class='divider'),
         actionButton('filtDown', label = 'To final step'),
         actionButton('filtSkip', label = 'Skip')
-      )
+      ) 
     )
   )
 )

@@ -4,12 +4,12 @@ library(rmarkdown)
 
 # globals, common resources
 source('globals.R', local = TRUE)
-source(file.path( 'client', 'tabs.R'), local = TRUE)
+source(file.path('client', 'tabs.R'), local = TRUE)
 
 # client: GUI
 ui <- fluidPage(
   # external CSS
-  includeCSS( file.path( 'www', 'pippeline.css') ),
+  includeCSS(file.path('www', 'pippeline.css') ),
   # window title
   title = basics$appName,
 
@@ -36,9 +36,9 @@ ui <- fluidPage(
 server <- function( input, output, session) {
   # global variables
   
-  source(file.path( 'server', 'functions.R'), local = TRUE)
-  source(file.path( 'server', 'main.R'), local = TRUE) # name different from 'server.R' to avoid RStudio bug
-  source(file.path( 'server', 'events.R'), local = TRUE)
+  source(file.path('server', 'functions.R'), local = TRUE)
+  source(file.path('server', 'main.R'), local = TRUE) # name different from 'server.R' to avoid RStudio bug
+  source(file.path('server', 'events.R'), local = TRUE)
 }
 
 # run app, build UI, start webserver
