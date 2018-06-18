@@ -537,14 +537,6 @@ observeEvent(input$process, {
       #showNotification('Successful render', scriptFile, type='message', duration = NULL)
 
       removeNotification('wait')
-
-      # Create git repo
-      # #TODO
-      setwd(tmpDir)
-      #system('git status')
-      #system('git init')
-      #system(sprintf('git commit -m"%s"'), paste0("First commit for pippelinen repo", format(startTime, "%d%m%Y-%H%M%OS3")))
-
       showNotification('All files successfully written.', type = 'message', duration = 8)
       
     }, error = function(err){
@@ -558,8 +550,16 @@ observeEvent(input$process, {
     # }, warning = function(wrn){
     #   NULL
     # })
-    rm(unfiltered_data)
 
+    # Create git repo
+    setwd(tmpDir)
+    system('git init')
+    system('git add .')
+    system(sprintf("git commit -m'%s'", paste0("First commit for pippelinen repo - ", format(startTime, "%d%m%Y-%H%M%OS3"))))
+
+    # Add project? Needed?
+
+    rm(unfiltered_data)
     showNotification('Process ended.')
 })
 
