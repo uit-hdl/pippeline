@@ -552,14 +552,20 @@ observeEvent(input$process, {
     # })
 
     # Create git repo
-    setwd(tmpDir)
-    system('git init')
-    system('git add .')
-    system(sprintf("git commit -m'%s'", paste0("First commit for pippelinen repo - ", format(startTime, "%d%m%Y-%H%M%OS3"))))
+    tryCatch({
+      setwd(tmpDir)
+      system('git init')
+      system('git add .')
+      system(sprintf("git commit -m'%s'", paste0("First commit for pippelinen repo - ", format(startTime, "%d%m%Y-%H%M%OS3"))))
 
-    # Add project? Needed?
+      print (tmpDir)
+      # Add R-project file?
+     }, warning = function(wrn) {
+      NULL
+    })
 
     rm(unfiltered_data)
+
     showNotification('Process ended.')
 })
 

@@ -572,7 +572,7 @@ buildGraph <- function(dataset) {
     geom_point(y = pValVariate_Features) + 
     geom_line(aes(y = prLimitVariate_Features, colour = sprintf("const p-Value = %1.2f, presentLimit variate", input$pval))) + 
     geom_point(y = prLimitVariate_Features) +
-    labs(title = "p-Value/presentLimit vs feature number", x = "p-Value, %", y = "Number of features", color='Legend')
+    labs(title = "p-Value/presentLimit vs feature number", x = "p-Value/presentLimit, %", y = "Number of features", color='Legend')
   
   return (result)
 }
