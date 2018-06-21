@@ -564,8 +564,6 @@ observeEvent(input$process, {
       NULL
     })
 
-    rm(unfiltered_data)
-
     showNotification('Process ended.')
 })
 
