@@ -12,10 +12,13 @@ params$ts <- format(Sys.time(), "%d%m%Y-%H%M%OS3")
 #' # Edit those parameters for the script
 #+ params-set-up, eval=FALSE
 params$path <- "/project/tice/pippelinen/nowaclean_outliers"
-params$experiment <- "prospective_breast_cancer_run2"
-params$script <- "nowaclean-gen.R"
-params$overviewVars <- c("RIN", "_260_280_RNA", "_260_230_RNA", "ng_ul_RNA") # Check names of overview dataframe!
+params$experiment <- "breast_hospital_nmc3_195_cc2"
+params$script <- "~/pippeline/SOP/nowaclean-gen.R"
+params$overviewVars <- c("RIN", "260/280_RNA", "260/230_RNA", "ng/ul_RNA") # Check names of overview dataframe!
 # c("RIN", "260/280_RNA", "260/230_RNA", "ng/µl_RNA")
+# c("RIN", "_260_280_RNA", "_260_230_RNA", "ng_ul_RNA")
+# c("RIN", "X_260_280_RNA", "X_260_230_RNA", "ng_ul_RNA")
+# c("RIN", "X260.280_RNA", "X260.230_RNA", "ng.µl_RNA")
 
 # Not eligible outlier from Hege report
 params$nonElSamples <- c()
@@ -251,8 +254,8 @@ if (choiceTech == T)
 
 #+ naming-setup, include=FALSE
 # used for .rds and .html files
-path_outl <- file.path(params$path, 'outliers', paste0('outliers', '-', params$experiment, '-', params$ts))
-path_report <- file.path(params$path, 'reports', paste0('report-outliers', '-', params$experiment, '-', params$ts))
+path_outl <- file.path(params$path, 'outliers', paste0('otl', '-', params$experiment, '-', params$ts))
+path_report <- file.path(params$path, 'reports', paste0('rpr-otl', '-', params$experiment, '-', params$ts))
 path_data <- file.path(params$path, paste0('ge-data', '-', params$experiment, '-', params$ts))
 #'
 
