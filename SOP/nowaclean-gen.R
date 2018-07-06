@@ -12,9 +12,9 @@ params$ts <- format(Sys.time(), "%d%m%Y-%H%M%OS3")
 #' # Edit those parameters for the script
 #+ params-set-up, eval=FALSE
 params$path <- "/project/tice/pippelinen/nowaclean_outliers"
-params$experiment <- "breast_hospital_nmc3_195_cc2"
+params$experiment <- "lung_gcf2015_373"
 params$script <- "~/pippeline/SOP/nowaclean-gen.R"
-params$overviewVars <- c("RIN", "260/280_RNA", "260/230_RNA", "ng/ul_RNA") # Check names of overview dataframe!
+params$overviewVars <- c("RIN", "260/280_RNA", "260/230_RNA", "ng/µl_RNA") # Check names of overview dataframe!
 # c("RIN", "260/280_RNA", "260/230_RNA", "ng/µl_RNA")
 # c("RIN", "_260_280_RNA", "_260_230_RNA", "ng_ul_RNA")
 # c("RIN", "X_260_280_RNA", "X_260_230_RNA", "ng_ul_RNA")
