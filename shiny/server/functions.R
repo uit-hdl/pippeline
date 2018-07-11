@@ -193,11 +193,11 @@ generatePipeline <- function( params) {
   anoStep <- createStep( 'Anonymization', 'Overwriting all identifying labels and numbers', TRUE, generateCode)
 
   # step: storage
-  generateCode <- function( file) {
+  generateCode <- function(file) {
     c(
       sprintf('saveRDS(data,file="%s")', file),
       cmt('# Cleaning environment')
-      #'rm()'
+      'rm(unfiltered_data)'
     )
   }
   writeStep <- createStep( 'Storage', 'Writing processed datasets', TRUE, generateCode, list( params$targetFile) )
