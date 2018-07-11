@@ -173,7 +173,7 @@ normTab <- list(
       conditionalPanel(
         condition = 'input.normEnabled',
         p('VST-quantile method(VST transformation followed by quantile-normalization).'),
-        p('log2 normalization with', code(lumiT), 'followed by ComBat (adjusts batch effects in datasets).'),
+        p('log2 normalization with', code('lumiT'), 'followed by ComBat (adjusts batch effects in datasets).'),
         selectInput('nmeth', label = 'Method', choices = nmeths, selected = notSelOpt),
         conditionalPanel(
           condition = 'input.nmeth == "ComBat"',
