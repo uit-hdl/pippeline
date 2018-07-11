@@ -68,16 +68,16 @@ outlierTab <- list(
           '. Outliers object should be a vector of sample names. Place your file to pippeline/nowaclean_outliers folder. 
           You can then choose this file here. Report will be available in generated folder for this pipeline run.'),
         #fileInput('outlierFile', 'RData file with outliers', accept = c(".rds")),
-        selectInput('outlierFile', label = 'Outliers file', choices = outls),
-        selectInput('outlierFileReport', label = 'Outliers report (optional)', choices = outls_rprts),
+        selectInput('outlierFile', label = 'Outliers file', choices = outls, width = '200%'),
+        selectInput('outlierFileReport', label = 'Outliers report (optional)', choices = outls_rprts, width = '200%'),
         textAreaInput(inputId = 'outlierDescr', label = 'Outlier description (optional) ', value = '')
       ),
       hr(),
       checkboxInput('transEnabled', label = 'Exclude control-case transitions'),
       conditionalPanel(
         condition = 'input.transEnabled',
-        selectInput('cctFile', label = 'Transitions to remove', choices = trns),
-        selectInput('transFileReport', label = 'Transitions report (optional)', choices = trns_rprts)
+        selectInput('cctFile', label = 'Transitions to remove', choices = trns, width = '200%'),
+        selectInput('transFileReport', label = 'Transitions report (optional)', choices = trns_rprts, width = '200%')
       ),
       hr(),
       div(class = 'row-btn', 
@@ -177,7 +177,7 @@ normTab <- list(
         selectInput('nmeth', label = 'Method', choices = nmeths, selected = notSelOpt),
         conditionalPanel(
           condition = 'input.nmeth == "ComBat"',
-          selectInput('batchTab', label = 'Table for batching', choices = btchtab),
+          selectInput('batchTab', label = 'Table for batching', choices = btchtab, width = '200%'),
           conditionalPanel(
             condition = sprintf('input.batchTab != "%s"', notSelOpt),
             selectInput('batchVar', label = 'Batch variable (Note: using <Plate> variable is recommended)', choices = btchvar)
