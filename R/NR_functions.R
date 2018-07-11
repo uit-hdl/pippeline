@@ -111,7 +111,7 @@ normalizeDataComBat <- function(data.new, bTabName, sampleID, batchVar) {
   # stop('Method not supported.')
   tryCatch({
     # First stabilize variance using lumiT with log2 method
-    vstdata <- lumiT(data.new, method = 'log2', verbose=FALSE)
+    vstdata <- lumiT(data.new, method='log2', verbose=FALSE)
 
     batchVarsTable <- get(bTabName)[, c(sampleID, batchVar)]
     batchVarsTable <- batchVarsTable[complete.cases(batchVarsTable), ]

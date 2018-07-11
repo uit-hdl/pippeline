@@ -505,7 +505,7 @@ observeEvent(input$process, {
     ts <<- Sys.time()
     showNotification('Processing. This may take some time. Please stand by ..', duration = NULL, id = 'wait')  
     
-    procFolder <<- gsub('//', '/', file.path(pipFolder, paste0(basics$appName, '-', input$projname, '-', format(startTime, "%d%m%Y-%H%M%OS3"))))
+    procFolder <<- gsub('//', '/', file.path(pipFolder, paste0(input$projname, '-', format(startTime, "%d%m%Y-%H%M%OS3"))))
     dir.create(procFolder, recursive=TRUE)
 
     tmpDir <- procFolder
