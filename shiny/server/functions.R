@@ -196,7 +196,7 @@ generatePipeline <- function( params) {
   generateCode <- function(file) {
     c(
       sprintf('saveRDS(data,file="%s")', file),
-      cmt('# Cleaning environment')
+      cmt('# Cleaning environment'),
       'rm(unfiltered_data)'
     )
   }
