@@ -1,3 +1,5 @@
+rm(list = ls())
+
 # small fix
 library(Cairo)
 options(bitmapType = "cairo")

@@ -462,7 +462,9 @@ observeEvent(input$newStart, {
   updateSelectInput(session, "mat", selected = notSelOpt)
   updateSelectInput(session, "ana", selected = notSelOpt)
 
-  resetStepsAndInfo() 
+  resetStepsAndInfo()
+  # TODO: check cleaning
+  rm (list = ls())
   updateNavlistPanel(session, 'steps', selected = 'name')
 })
 
@@ -505,7 +507,7 @@ observeEvent(input$process, {
     ts <<- Sys.time()
     showNotification('Processing. This may take some time. Please stand by ..', duration = NULL, id = 'wait')  
     
-    procFolder <<- gsub('//', '/', file.path(pipFolder, paste0(input$projname, '-', format(startTime, "%d%m%Y-%H%M%OS3"))))
+    procFolder <<- gsub('//', '/', file.path(pipProjects, paste0(input$projname, '-', format(startTime, "%d%m%Y-%H%M%OS3"))))
     dir.create(procFolder, recursive=TRUE)
 
     tmpDir <- procFolder
@@ -537,7 +539,7 @@ observeEvent(input$process, {
       #showNotification('Successful render', scriptFile, type='message', duration = NULL)
 
       removeNotification('wait')
-      showNotification('All files successfully written.', type = 'message', duration = 8)
+      showNotification('All files successfully written.', type = 'message', duration = NULL)
       
     }, error = function(err){
       removeNotification('wait')

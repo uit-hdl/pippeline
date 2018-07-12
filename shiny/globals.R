@@ -29,6 +29,7 @@ notProcMsg <- 'Dataset is not processed'
 jobID <- Sys.getenv("SLURM_JOB_ID")
 
 pipFolder <- '/project/tice/pippelinen'
+pipProjects <- file.path(pipFolder, 'projects')
 nowacleanOutliers <- file.path(pipFolder, 'nowaclean_outliers', 'outliers')
 nowacleanReports <- file.path(pipFolder, 'nowaclean_outliers', 'reports')
 
