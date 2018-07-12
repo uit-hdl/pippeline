@@ -196,8 +196,7 @@ generatePipeline <- function( params) {
   generateCode <- function(file) {
     c(
       sprintf('saveRDS(data,file="%s")', file),
-      cmt('# Cleaning environment'),
-      'rm(unfiltered_data)'
+      cmt('# Cleaning environment')
     )
   }
   writeStep <- createStep( 'Storage', 'Writing processed datasets', TRUE, generateCode, list( params$targetFile) )
@@ -286,7 +285,7 @@ generatePipeline <- function( params) {
     c(
       sprintf('pValue <- %1.2f', input$pval),
       sprintf('pLimit <- %1.2f', input$plimit),
-      'unfiltered_data <- data',
+      'graph_data <- data', # unfiltered_data
       'data <- pippeline::filterData(data,pValue,pLimit)',
       'rm(pValue, pLimit)'
     ) 

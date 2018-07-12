@@ -89,7 +89,7 @@ outputOptions(output, 'cctFileExists', suspendWhenHidden = FALSE)
 output$filterPlot <- renderPlot({
   if (input$showPlot && input$filtApply) {
     showNotification('Plotting p-value and presentLimit influence on number of features...', type = 'message', duration = 0, id = 'plot')
-    filterGraph <- buildGraph(unfiltered_data)
+    filterGraph <- buildGraph(graph_data)
     plot(filterGraph)
     removeNotification('plot')
   }
