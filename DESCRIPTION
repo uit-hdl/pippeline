@@ -10,7 +10,7 @@ Description: This package consists of statistical functions for background corre
 	removal of outliers, background correction, filtering, normalization, linking questionnaires,
       	and other methods. It requires some non-CTAN packages; see the README for
       	installation directions.
-Depends: R (>= 3.2.3)
+Depends: R (>= 3.1.2)
 Imports: arrayQualityMetrics (>= 3.26.1),
    limma (>= 3.26.9),
    lumi (>= 2.22.1),
