@@ -12,7 +12,7 @@ params$ts <- format(Sys.time(), "%d%m%Y-%H%M%OS3")
 #' # Edit those parameters for the script
 #+ params-set-up, eval=FALSE
 params$path <- "/project/tice/pippelinen/nowaclean_outliers"
-params$experiment <- "lung_gcf2015_373"
+params$experiment <- "stress_gcf2014_317"
 params$script <- "~/pippeline/SOP/nowaclean-gen.R"
 params$overviewVars <- c("RIN", "260/280_RNA", "260/230_RNA", "ng/µl_RNA") # Check names of overview dataframe!
 # c("RIN", "260/280_RNA", "260/230_RNA", "ng/µl_RNA")
@@ -275,10 +275,7 @@ if (choiceSave == 'ro') {
 #'
 
 
-#' ## Saving found outliers
-#+ save-found-outl, eval=FALSE, include=FALSE
-saveRDS(getOutlierNames(for_removal_obj), file=paste0(path_outl, ".rds"))
-#'
+
 
 #' ## Dataset and outliers information
 #+ loading-vars, echo=FALSE, eval=FALSE, include=FALSE
@@ -315,13 +312,20 @@ if (length(for_removal_obj) != 0){
       cat (paste0('\n','\n'))
     }
   }
+  
+  #' ## Saving found outliers
+  #+ save-found-outl, eval=FALSE, include=FALSE
+  saveRDS(getOutlierNames(for_removal_obj), file=paste0(path_outl, ".rds"))
+  #'
+  
+  #+ render, include=FALSE, eval=FALSE
+  library(rmarkdown)
+  rmarkdown::render(params$script, output_file = paste0(path_report, '.html'), quiet = FALSE)
+  #'
 }
 #' 
 
-#+ render, include=FALSE, eval=FALSE
-library(rmarkdown)
-rmarkdown::render(params$script, output_file = paste0(path_report, '.html'), quiet = FALSE)
-#'
+
 
 #+ cleaning-proc, include=FALSE, eval=FALSE
 # `rmarkdown::render('script.R')`
