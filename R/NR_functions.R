@@ -116,21 +116,18 @@ normalizeDataComBat <- function(data.new, bTabName, sampleID, batchVar) {
     batchVarsTable <- get(bTabName)[, c(sampleID, batchVar)]
     batchVarsTable <- batchVarsTable[complete.cases(batchVarsTable), ]
 
-    if (nlevels(batchVarsTable[[batchVar]]) > 1) {
-      bTab <- as.data.frame(batchVarsTable, row.names = as.character(batchVarsTable[[sampleID]]))
-      modcombat <- model.matrix(sampleID~1, data=vstdata) # Add adjustment variables (just intersection for now)
-      # modcombat <- as.data.frame(modcombat) 
+    # if (nlevels(batchVarsTable[[batchVar]]) > 1) 
+    bTab <- as.data.frame(batchVarsTable, row.names = as.character(batchVarsTable[[sampleID]]))
+    modcombat <- model.matrix(sampleID~1, data=vstdata) # Add adjustment variables (just intersection for now)
+    # modcombat <- as.data.frame(modcombat) 
 
-      # Correct number of samples in batch table
-      bTab <- bTab[which(rownames(modcombat) %in% rownames(bTab)), ]
+    # Correct number of samples in batch table
+    bTab <- bTab[which(rownames(modcombat) %in% rownames(bTab)), ]
 
-      # Batching according to variable
-      batch <- bTab[[batchVar]]
-      normdata <- ComBat(dat=exprs(vstdata), batch=as.factor(batch), mod=modcombat)
-      return (normdata)
-    } else {
-      return (data.new)
-    }
+    # Batching according to variable
+    batch <- bTab[[batchVar]]
+    normdata <- ComBat(dat=exprs(vstdata), batch=as.factor(batch), mod=modcombat)
+    return (normdata)
   }, error = function() {
     message("Normalizing with ComBat failed. Returning original data. Try other batch")
     return (data.new)
