@@ -13,15 +13,15 @@ getDataObjs <- function() {
   }
   jObjs <- as.list( t( options[ row, c( 'Obj1', 'Obj2', 'Obj3') ] ) )  # joint objects and remove empty elements
   jObjs <- jObjs[ jObjs != '']  # remove empty elements
-  jObjs <- lapply( jObjs, function( e){ 
+  jObjs <- lapply( jObjs, function( e){
     l <- as.list( strsplit( e, ',')[[ 1]] )
     names( l) <- c( 'ge', 'nc') # gene expressions and negative controls
     l
   } )
   # check existance
   allObjsExist <- TRUE
-  sapply( jObjs, function( e) { 
-    sapply( e, function( ee) { 
+  sapply( jObjs, function( e) {
+    sapply( e, function( ee) {
       if( !exists( ee) ) {
         showNotification( paste0( 'Object "', ee, '" does not exist. (Check file "', basics$optionsFile,'" or load object.) Error code #2.'), type = 'error', duration = NULL, id = 'data')
         allObjsExist <<- FALSE
@@ -48,16 +48,16 @@ cmt <- function( line = '') {
 # @param function which generates a vector with code line strings
 # @param arguments to the function call
 # @return mixed: list if enabled, NULL otherwise
-createStep <- function( label, 
-                        explanation = c(), 
-                        enabled = FALSE, 
-                        generateCode = function(){c()}, 
+createStep <- function( label,
+                        explanation = c(),
+                        enabled = FALSE,
+                        generateCode = function(){c()},
                         args = list() ) {
   if( enabled)
-    list( 
-      label = label, 
-      expl = explanation, 
-      enabled = enabled, 
+    list(
+      label = label,
+      expl = explanation,
+      enabled = enabled,
       code = do.call( generateCode, args)
     )
   else
@@ -87,7 +87,7 @@ documentSteps <- function( pipeline) {
 # Write the code that instantiates both the processing and documentation of a processing pipeline.
 # @param list object with pipeline attributes
 # @param string: filename to write the code to
-writeScript <- function( pipeline, 
+writeScript <- function( pipeline,
                          scriptFile) {
   pkgInfo = read.dcf( file.path( '..', 'DESCRIPTION'), fields = c( 'Package', 'Version') )
   doc <- c(
@@ -166,7 +166,7 @@ generatePipeline <- function( params) {
     code
   }
   readStep <- createStep( 'Datasets', 'Reading in datasets', TRUE, generateCode, list( unlist( lapply( params$sourceObjs, '[', 'ge') ) ) )
-  
+
   # step: combination
   generateCode <- function() {
     if( numberOfRuns > 1) {
@@ -177,7 +177,7 @@ generatePipeline <- function( params) {
     }
   }
   combStep <- createStep( 'Combination', 'Combining all runs', TRUE, generateCode)
-  
+
   # step: anonymization
   generateCode <- function() {
     c(
@@ -241,7 +241,7 @@ generatePipeline <- function( params) {
         as.integer(file.access(cctFile, mode = 4)) < 0) {
       c(
         'stop("Could not read transitions file. Error code #4_1.")'
-      ) 
+      )
     } else {
       c(
         sprintf('cctrans <- readRDS("%s")', cctFile),
@@ -251,7 +251,7 @@ generatePipeline <- function( params) {
         sprintf('if(length(m[[%1$d]])) data[[%1$d]]$lumi <- data[[%1$d]]$lumi[,-m[[%1$d]]]', idxSeq),
         'rm(m,cctrans)'
       )
-    } 
+    }
   }
   exclStep <- createStep( 'Transitions', 'Exclusion of control-case transitions', as.logical(input$transEnabled), generateCode)
 
@@ -279,7 +279,7 @@ generatePipeline <- function( params) {
     code
   }
   bcorrStep <- createStep( 'Background correction', 'Perform background correction and remove bad probes', as.logical(input$corrEnabled), generateCode, list( unlist( lapply( params$sourceObjs, '[', 'nc') )) )
-  
+
   # step: probe filtering
   generateCode <- function() {
     c(
@@ -288,10 +288,10 @@ generatePipeline <- function( params) {
       'graph_data <- data', # unfiltered_data
       'data <- pippeline::filterData(data,pValue,pLimit)',
       'rm(pValue, pLimit)'
-    ) 
+    )
   }
   filtStep <- createStep( 'Probe filtering', 'Filtering based on on pValue and presentLimit', as.logical(input$filtEnabled), generateCode)
-  
+
   # step: normalization
   generateCode <- function() {
     if (input$nmeth == 'vstQuantileNorm') {
@@ -311,7 +311,7 @@ generatePipeline <- function( params) {
     code
   }
   normStep <- createStep( 'Normalization', 'log2 transformation and quantile normalization or ComBat', as.logical(input$normEnabled), generateCode)
-  
+
   # step: extraction
   generateCode <- function() {
     if( as.logical( input$normEnabled) )
@@ -324,7 +324,7 @@ generatePipeline <- function( params) {
       )
   }
   extrStep <- createStep( 'Extraction', 'Extraction of gene expression matrix from lumi object', TRUE, generateCode)
-  
+
   # step: conversion
   generateCode <- function() {
     if( as.logical( input$wantGenes) ) {
@@ -346,11 +346,13 @@ generatePipeline <- function( params) {
       )
   }
   convStep <- createStep( 'Conversion', 'Optional mapping of probes to genes', TRUE, generateCode)
-  
-  # step: questionnaires 
+
+  # step: questionnaires
   generateCode <- function() {
-    if(exists(input$questObj) ) {
-      c(
+    code <- c()
+    if (exists(input$questObj)) {
+      code <- c(code,
+        '# ',
         sprintf('quest <- get("%s")', input$questObj),
         '# determine sample ID matches',
         'm <- match(colnames(data), quest$labnr)',
@@ -371,12 +373,25 @@ generatePipeline <- function( params) {
         'rm(qvars,m,quest,questmatr,extrquest)'
       )
     } else
-      c(
-        'stop("Questionnaire object non-existant. Error code #10.")'
-      )
+        code <- c(
+          'stop("Questionnaire object non-existant. Error code #10.")')
+      if (as.logical(input$deathEnabled)) {
+        code <- c(code,
+          '# ',
+          '# Adding death information',
+          sprintf('deathInfo <- read.csv(file="%s")', deathInfoFile),
+          'md <- match(colnames(data), deathInfo$labnr)',
+          'deathVars <- c("DODDT","DC")',
+          'deathInfoMatr <- as.matrix(deathInfo)',
+          'extr <- as.matrix(t(deathInfoMatr)[deathVars,md])',
+          'data <- rbind(data,extr)',
+          'rm(deathInfo,md,deathVars,deathInfoMatr,extr)'
+        )
+      }
+    return (code)
   }
-  questStep <- createStep( 'Questionnaires', 'Selecting variables from associated questionnaires', as.logical(input$questEnabled), generateCode)
-  
+  questStep <- createStep( 'Questionnaires', 'Selecting variables from associated questionnaires', (as.logical(input$questEnabled)), generateCode)
+
   # now concatenate all steps
   list(
     readStep, # mandatory
@@ -404,7 +419,7 @@ performInterSteps <- function(tempDataFile, tempScriptFile){
   }, warning = function(wrn){
     NULL
     })
-   
+
   pipeline <- generatePipeline(list(
     sourceObjs = sourceObjs(),
     targetFile = tempDataFile
@@ -416,7 +431,7 @@ performInterSteps <- function(tempDataFile, tempScriptFile){
     invisible(capture.output(source(tempScriptFile)))
     removeNotification('waitInter')
     file.remove(tempScriptFile)
-    
+
     #showNotification('Successfull step execution', type = 'message', duration = 4)
   }, error = function(err){
     removeNotification('waitInter')
@@ -435,7 +450,7 @@ getTempDataset <- function(tempDataFile) {
     showNotification('Error info: ', toString(err), type = 'error', duration = NULL)
     return (NULL)
   })
-  
+
 }
 
 interStepAndUpdate <- function(tmpDSVec){
@@ -455,7 +470,7 @@ setBtnInitState <- function()
   shinyjs::hide("normDown")
   shinyjs::hide("normApply")
   shinyjs::hide("questApply")
-  
+
   shinyjs::show("outlierNext")
   shinyjs::show("outlierSkip")
   shinyjs::show("corrNext")
@@ -487,6 +502,7 @@ resetChosenValues <- function(){
   reset ('batchSampleID')
   reset ('batchVar')
   reset ('questEnabled')
+  reset ('deathEnabled')
   reset ('wantGenes')
 }
 
@@ -506,7 +522,7 @@ resetStepsAndInfo <- function(){
 
 # setWorkingTabs <- function(nextId){
 #   for (id in tabsId){
-#     if (id != nextId || !(id %in% nextId)) js$disableTab(id) 
+#     if (id != nextId || !(id %in% nextId)) js$disableTab(id)
 #     else js$enableTab(id)
 #   }
 # }
@@ -514,7 +530,7 @@ resetStepsAndInfo <- function(){
 setTabInitialState <- function(tbId){
   for (id in tbId) {
     js$disableTab(id)
-  }  
+  }
 }
 
 # Using for pkg='nowac'
@@ -566,12 +582,12 @@ buildGraph <- function(dataset) {
   )
 
   require(ggplot2)
-  result <- ggplot(plot_data, aes(x = xvalues)) + 
-    geom_line(aes(y = pValVariate_Features, colour = sprintf("const presentLimit = %1.2f, p-Value variate", input$plimit))) + 
-    geom_point(y = pValVariate_Features) + 
-    geom_line(aes(y = prLimitVariate_Features, colour = sprintf("const p-Value = %1.2f, presentLimit variate", input$pval))) + 
+  result <- ggplot(plot_data, aes(x = xvalues)) +
+    geom_line(aes(y = pValVariate_Features, colour = sprintf("const presentLimit = %1.2f, p-Value variate", input$plimit))) +
+    geom_point(y = pValVariate_Features) +
+    geom_line(aes(y = prLimitVariate_Features, colour = sprintf("const p-Value = %1.2f, presentLimit variate", input$pval))) +
     geom_point(y = prLimitVariate_Features) +
     labs(title = "p-Value/presentLimit vs feature number", x = "p-Value/presentLimit, %", y = "Number of features", color='Legend')
-  
+
   return (result)
 }

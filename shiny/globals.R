@@ -32,6 +32,7 @@ pipFolder <- '/project/tice/pippelinen'
 pipProjects <- file.path(pipFolder, 'projects')
 nowacleanOutliers <- file.path(pipFolder, 'nowaclean_outliers', 'outliers')
 nowacleanReports <- file.path(pipFolder, 'nowaclean_outliers', 'reports')
+deathInfoFile <- file.path(pipFolder, 'utility', 'death_causes', 'DI280119.csv')
 
 cctransExcl <- file.path(pipFolder, 'transition_information', 'to_exclude')
 cctransReports <- file.path(pipFolder, 'transition_information', 'reports')

@@ -24,7 +24,7 @@ observeEvent(input$descrNext, {
   }, warning = function(wrn){
     NULL
   })
-  
+
   tryCatch({
     dir.create(tmpFolder, recursive=TRUE)
     showNotification('Temporary files will be written to: ', toString(tmpFolder), type = 'message', duration = 8)
@@ -36,7 +36,7 @@ observeEvent(input$descrNext, {
 # General tab observers - default transition events
 observeEvent(input$steps, {
   if (input$steps == 'design') {
-    resetStepsAndInfo() 
+    resetStepsAndInfo()
     showNotification("Resetting project options...", type='warning', duration=3)
   }
 })
@@ -86,7 +86,7 @@ observeEvent(input$outlierApply, {
   }
 
   outlierStatus <- (input$outlierEnabled && input$outlierFile != notSelOpt && outlFileExists()) || !input$outlierEnabled
-  transStatus <- (input$transEnabled && input$cctFile != notSelOpt && cctFileExists()) || !input$transEnabled 
+  transStatus <- (input$transEnabled && input$cctFile != notSelOpt && cctFileExists()) || !input$transEnabled
   if (outlierStatus && transStatus) applyAction()
 })
 
@@ -294,7 +294,7 @@ observeEvent(input$normApply, {
 
   # normStatus <- FALSE
   # if (input$nmeth == 'vstQuantileNorm') normStatus <- (input$normEnabled && input$nmeth != notSelOpt) || !input$normEnabled
-  # if (input$nmeth == 'ComBat') normStatus <- 
+  # if (input$nmeth == 'ComBat') normStatus <-
   #   (input$normEnabled && input$nmeth != notSelOpt && input$batchTab != notSelOpt && input$batchVar != notSelOpt) || !input$normEnabled
   # if (normStatus) applyAction()
   if (methodIsValid()) applyAction()
@@ -399,6 +399,7 @@ observeEvent(input$questApply, {
 observeEvent(input$questSkip, {
   # Reset current tab
   reset ('questEnabled')
+  reset ('deathEnabled')
   reset ('questObj')
   reset ('questVars')
 
@@ -418,6 +419,7 @@ observeEvent(input$questNext, {
 # <Changes on page> observe event
 observeEvent({
   input$questEnabled
+  input$deathEnabled
   input$questObj
   input$questVars
   }, {
@@ -470,8 +472,8 @@ observeEvent(input$newStart, {
 
 observeEvent(input$wantGenes, {
   if(as.logical(input$wantGenes) &&
-      !as.logical(input$normEnabled)) 
-  showNotification('Conversion to samples implies taking the average of multiple probes. 
+      !as.logical(input$normEnabled))
+  showNotification('Conversion to samples implies taking the average of multiple probes.
     You may thus want to consider to enable normalization.', type = 'warning')
 })
 
@@ -502,11 +504,11 @@ session$onSessionEnded(stopApp)
 
 # produce and save (assembly, computation, documentation)
 observeEvent(input$process, {
-  # setting the filename works currently only when run in an external browser window, 
+  # setting the filename works currently only when run in an external browser window,
   # but not in Rstudio window/viewer pan
     ts <<- Sys.time()
-    showNotification('Processing. This may take some time. Please stand by ..', duration = NULL, id = 'wait')  
-    
+    showNotification('Processing. This may take some time. Please stand by ..', duration = NULL, id = 'wait')
+
     procFolder <<- gsub('//', '/', file.path(pipProjects, paste0(input$projname, '-', format(startTime, "%d%m%Y-%H%M%OS3"))))
     dir.create(procFolder, recursive=TRUE)
 
@@ -540,15 +542,15 @@ observeEvent(input$process, {
 
       removeNotification('wait')
       showNotification('All files successfully written.', type = 'message', duration = NULL)
-      
+
     }, error = function(err){
       removeNotification('wait')
       showNotification('Could not produce data/documentation. (Error while sourcing script.) Error code #3.', type = 'error', duration = NULL)
       showNotification('Error info: ', toString(err), type = 'error', duration = NULL)
     })
-    
+
     # tryCatch({
-    #   unlink(tmpFolder, recursive=TRUE) 
+    #   unlink(tmpFolder, recursive=TRUE)
     # }, warning = function(wrn){
     #   NULL
     # })
@@ -568,4 +570,3 @@ observeEvent(input$process, {
 
     showNotification('Process ended.')
 })
-

@@ -1,13 +1,13 @@
 # UI elements: tabs
-aboutTab <- list( 
+aboutTab <- list(
   h2('About'),
   p(paste0('This is ', basics$appName, ', a ', tolower(read.dcf(file.path('..', 'DESCRIPTION'), fields = 'Title')[1,1] ), '.')),
   p('Navigate by the following buttons through the pipeline with advised processing steps.'),
   hr(),
-  actionButton('aboutNext', label = 'Continue') 
+  actionButton('aboutNext', label = 'Continue')
 )
 
-descrTab <- list( 
+descrTab <- list(
   h2('Description'),
   p('Please enter the information below, i.e. your name, project and processing description.'),
   p('This information will be used in the generated report for the project.'),
@@ -15,20 +15,20 @@ descrTab <- list(
   textInput( inputId = 'projname', label = 'Project name'),
   textAreaInput( inputId = 'descr', label = 'Processing description'),
   hr(),
-  conditionalPanel( 
+  conditionalPanel(
     condition = 'output.prereqsAreValid',
-    actionButton('descrNext', label = 'Continue') 
+    actionButton('descrNext', label = 'Continue')
   )
 )
 
-designTab <- list( 
+designTab <- list(
   h2('Dataset description & project design'),
-  conditionalPanel( 
+  conditionalPanel(
     condition = '!output.prereqsAreValid',
     p('First you must provide right user information.'),
-    actionButton('designReq', label = 'Go there') 
+    actionButton('designReq', label = 'Go there')
   ),
-  conditionalPanel( 
+  conditionalPanel(
     condition = 'output.prereqsAreValid',
     p('Please state the experiment design, which specify the dataset.'),
     p('These values will be used for choosing right dataset and report generation.'),
@@ -37,7 +37,7 @@ designTab <- list(
     selectInput('mat', label = 'Biological material', choices = mats),
     selectInput('ana', label = 'Genomic analysis', choices = anas),
     hr(),
-    conditionalPanel( 
+    conditionalPanel(
       condition = 'output.procIsAllowed && output.objsExist',
       div(class='row-btn',
         actionButton('designNext', label = 'Continue'),
@@ -50,22 +50,22 @@ designTab <- list(
 
 outlierTab <- list(
   h2('Outlier removal'),
-  conditionalPanel( 
+  conditionalPanel(
     condition = '!output.procIsAllowed',
     p(procMsg),
-    actionButton('outlierReq', label = 'Go there') 
+    actionButton('outlierReq', label = 'Go there')
   ),
-  conditionalPanel( 
+  conditionalPanel(
     condition = 'output.procIsAllowed',
-    list( 
+    list(
       p('Here you can delete outliers from the dataset.'),
       p('Outliers can be found by means of the ', a('nowaclean', href='https://github.com/3inar/nowaclean'), ' R package.'),
       checkboxInput('outlierEnabled', label = 'Enabled'),
       conditionalPanel(
         condition = 'input.outlierEnabled',
         #p('Identify outliers as described in the vignette of nowaclean and save them like so:', code('saveRDS(outliers, file="outliers.rds")'), '. You can then import this file here.'),
-        p('Here you can choose outlier file from premade ones or save your own by sourcing "report_nowaclean.R" script or by providing outlier definition by your own with:', code('saveRDS(outliers, file="outliers.rds")'), 
-          '. Outliers object should be a vector of sample names. Place your file to pippeline/nowaclean_outliers folder. 
+        p('Here you can choose outlier file from premade ones or save your own by sourcing "report_nowaclean.R" script or by providing outlier definition by your own with:', code('saveRDS(outliers, file="outliers.rds")'),
+          '. Outliers object should be a vector of sample names. Place your file to pippeline/nowaclean_outliers folder.
           You can then choose this file here. Report will be available in generated folder for this pipeline run.'),
         #fileInput('outlierFile', 'RData file with outliers', accept = c(".rds")),
         selectInput('outlierFile', label = 'Outliers file', choices = outls, width = '200%'),
@@ -80,7 +80,7 @@ outlierTab <- list(
         selectInput('transFileReport', label = 'Transitions report (optional)', choices = trns_rprts, width = '200%')
       ),
       hr(),
-      div(class = 'row-btn', 
+      div(class = 'row-btn',
         actionButton('outlierApply', label = 'Apply'),
         actionButton('outlierNext', label = 'Continue'),
         div(class='divider'),
@@ -94,19 +94,19 @@ outlierTab <- list(
 
 corrTab <- list(
   h2('Background correction'),
-  conditionalPanel( 
+  conditionalPanel(
     condition = '!output.procIsAllowed',
     p( procMsg),
-    actionButton('corrReq', label = 'Go there') 
+    actionButton('corrReq', label = 'Go there')
   ),
-  conditionalPanel( 
+  conditionalPanel(
     condition = 'output.procIsAllowed',
-    list( 
+    list(
       p(paste0( 'Background correction is carried out by means of negative control probes as specified in the file "', basics$optionsFile, '".') ),
       p('This procedure includes processing of lumi object and negative control probes files, using limma', code('nec'), 'function and removing of extracted bad probes.'),
       checkboxInput('corrEnabled', 'Enabled'),
       hr(),
-      div(class = 'row-btn', 
+      div(class = 'row-btn',
         actionButton('corrApply', label = 'Apply'),
         actionButton('corrNext', label = 'Continue'),
         div(class='divider'),
@@ -121,14 +121,14 @@ corrTab <- list(
 
 filterTab <- list(
   h2('Probe filtering'),
-  conditionalPanel( 
+  conditionalPanel(
     condition = '!output.procIsAllowed',
     p(procMsg),
-    actionButton('filtReq', label = 'Go there') 
+    actionButton('filtReq', label = 'Go there')
   ),
-  conditionalPanel( 
+  conditionalPanel(
     condition = 'output.procIsAllowed',
-    list( 
+    list(
       p('Here you can filter the probes with regard to p-value and limit.'),
       p('This is done by lumi function', code('detectionCall'), 'with Th parameter as p-value and filtering this data by limit value.'),
       checkboxInput('filtEnabled', 'Enabled'),
@@ -144,7 +144,7 @@ filterTab <- list(
         plotOutput("filterPlot")
       ),
       hr(),
-      div(class = 'row-btn', 
+      div(class = 'row-btn',
         actionButton('filtApply', label = 'Apply'),
         actionButton('filtNext', label = 'Continue'),
         div(class='divider'),
@@ -152,7 +152,7 @@ filterTab <- list(
         div(class='divider'),
         actionButton('filtDown', label = 'To final step'),
         actionButton('filtSkip', label = 'Skip')
-      ) 
+      )
     )
   )
 )
@@ -160,14 +160,14 @@ filterTab <- list(
 
 normTab <- list(
   h2( 'Normalization'),
-  conditionalPanel( 
+  conditionalPanel(
     condition = '!output.procIsAllowed',
     p(procMsg),
-    actionButton('normReq', label = 'Go there') 
+    actionButton('normReq', label = 'Go there')
   ),
-  conditionalPanel( 
+  conditionalPanel(
     condition = 'output.procIsAllowed',
-    list( 
+    list(
       p('Here you can normalize the current dataset.'),
       checkboxInput( 'normEnabled', 'Enabled'),
       conditionalPanel(
@@ -189,7 +189,7 @@ normTab <- list(
         )
       ),
       hr(),
-      div(class = 'row-btn', 
+      div(class = 'row-btn',
         actionButton('normApply', label = 'Apply'),
         actionButton('normNext', label = 'Continue'),
         div(class='divider'),
@@ -204,17 +204,17 @@ normTab <- list(
 
 questTab <- list(
   h2( 'Questionnaires'),
-  conditionalPanel( 
+  conditionalPanel(
     condition = '!output.procIsAllowed',
     p(procMsg),
     actionButton('questReq', label = 'Go there')
   ),
-  conditionalPanel( 
+  conditionalPanel(
     condition = 'output.procIsAllowed',
-    list( 
+    list(
       p('Here you can link questionnaires to the biobank datasets.'),
       p('Results will be combined with questionaire variables.'),
-      checkboxInput( 'questEnabled', 'Enabled'),
+      checkboxInput('questEnabled', 'Enabled'),
       conditionalPanel(
         condition = 'input.questEnabled',
         p('Choose a questionnaire first, then select the available variables.'),
@@ -222,11 +222,12 @@ questTab <- list(
         conditionalPanel(
           condition = 'output.questIsValid',
           p('Add variables to (by typing names or picking from the list) or delete from the list of questionnaire variables.'),
-          uiOutput('qvarPicker')
+          uiOutput('qvarPicker'),
+          checkboxInput('deathEnabled', 'Add death info (date and cause)')
         )
       ),
       hr(),
-      div(class = 'row-btn', 
+      div(class = 'row-btn',
         actionButton('questApply', label = 'Apply'),
         actionButton('questNext', label = 'Continue'),
         div(class='divider'),
@@ -240,22 +241,22 @@ questTab <- list(
 
 processTab <- list(
   h2('Process & quit'),
-  conditionalPanel( 
+  conditionalPanel(
     condition = '!output.procIsAllowed',
     p('Processing is not allowed.'),
     p('This could be due to incomplete or invalid input in any of the processing steps.'),
-    actionButton( 'processReq', label = 'Go there') 
+    actionButton( 'processReq', label = 'Go there')
   ),
-  conditionalPanel( 
+  conditionalPanel(
     condition = 'output.procIsAllowed',
-    list( 
-      p(paste0( 'Here you can process dataset (.rds format), documentation of all processing steps (.', 
+    list(
+      p(paste0( 'Here you can process dataset (.rds format), documentation of all processing steps (.',
         basics$docFormat,' file) and the source (.R file).') ),
       p('The datset consists of probes if not chosen otherwise.'),
       p('All prosessing options, stated in "Project info" panel, will be applied.'),
       checkboxInput('wantGenes', 'Genes instead of probes'),
       hr(),
-      div(class = 'row-btn', 
+      div(class = 'row-btn',
         actionButton('process', label = 'Process and assemble files'),
         div(class='divider'),
         actionButton ('processBack', label = 'Previous step'),
