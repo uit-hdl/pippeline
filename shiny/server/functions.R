@@ -1,140 +1,129 @@
 # Helper functions
 
-# Determine the name of the data objects.
-# @return A character vector with object names, or NULL in case of errors
+# Determine the name of the data objects.  @return A character vector
+# with object names, or NULL in case of errors
 getDataObjs <- function() {
-  row <- which( options[ , 'Design'] == input$dsg &
-                  options[ , 'Location'] == input$loc &
-                  options[ , 'Material'] == input$mat &
-                  options[ , 'Analysis'] == input$ana )
-  if( row < 1) {
-    showNotification( 'No matching or unique data found. (Check file "', basics$optionsFile,'"?) Error code #1.', type = 'error', duration = basics$msgDuration)
-    return( NULL)
+  row <- which(options[, "Design"] == input$dsg &
+               options[, "Location"] == input$loc &
+               options[, "Material"] == input$mat &
+               options[, "Analysis"] == input$ana)
+  if (row < 1) {
+    showNotification("No matching or unique data found. (Check file \"",
+                     basics$optionsFile, "\"?) Error code #1.", type = "error",
+                     duration = basics$msgDuration)
+    return(NULL)
   }
-  jObjs <- as.list( t( options[ row, c( 'Obj1', 'Obj2', 'Obj3') ] ) )  # joint objects and remove empty elements
-  jObjs <- jObjs[ jObjs != '']  # remove empty elements
-  jObjs <- lapply( jObjs, function( e){
-    l <- as.list( strsplit( e, ',')[[ 1]] )
-    names( l) <- c( 'ge', 'nc') # gene expressions and negative controls
+  jObjs <- as.list(t(options[row, c("Obj1", "Obj2", "Obj3")]))  # joint objects and remove empty elements
+  jObjs <- jObjs[jObjs != ""]  # remove empty elements
+  jObjs <- lapply(jObjs, function(e) {
+    l <- as.list(strsplit(e, ",")[[1]])
+    names(l) <- c("ge", "nc")  # gene expressions and negative controls
     l
-  } )
+  })
   # check existance
   allObjsExist <- TRUE
-  sapply( jObjs, function( e) {
-    sapply( e, function( ee) {
-      if( !exists( ee) ) {
-        showNotification( paste0( 'Object "', ee, '" does not exist. (Check file "', basics$optionsFile,'" or load object.) Error code #2.'), type = 'error', duration = NULL, id = 'data')
+  sapply(jObjs, function(e) {
+    sapply(e, function(ee) {
+      if (!exists(ee)) {
+        showNotification(paste0("Object \"", ee, "\" does not exist. (Check file \"",
+                                basics$optionsFile, "\" or load object.) Error code #2."),
+                         type = "error", duration = NULL, id = "data")
         allObjsExist <<- FALSE
       }
-    } )
-  } )
-  if( !allObjsExist)
-    return( NULL)
-  removeNotification( 'data')
+    })
+  })
+  if (!allObjsExist)
+    return(NULL)
+  removeNotification("data")
   jObjs
-} # function getDataObjs
+}  # function getDataObjs
 
-# Format a code line as a comment.
-# @param string: Code line
-# @return string
-cmt <- function( line = '') {
-  paste( "#'", line)
+# Format a code line as a comment.  @param string: Code line @return
+# string
+cmt <- function(line = "") {
+  paste("#'", line)
 }
 
 # Create a list object to store the attributes of a processing step.
-# @param string: step label
-# @param character vector: step explanation
-# @param boolean: true if step is enabled, false otherwise
-# @param function which generates a vector with code line strings
-# @param arguments to the function call
-# @return mixed: list if enabled, NULL otherwise
-createStep <- function( label,
-                        explanation = c(),
-                        enabled = FALSE,
-                        generateCode = function(){c()},
-                        args = list() ) {
-  if( enabled)
-    list(
-      label = label,
-      expl = explanation,
-      enabled = enabled,
-      code = do.call( generateCode, args)
-    )
-  else
-    NULL
+# @param string: step label @param character vector: step explanation
+# @param boolean: true if step is enabled, false otherwise @param
+# function which generates a vector with code line strings @param
+# arguments to the function call @return mixed: list if enabled, NULL
+# otherwise
+createStep <- function(label, explanation = c(), enabled = FALSE, generateCode = function() {
+  c()
+}, args = list()) {
+  if (enabled)
+    list(label = label,
+         expl = explanation,
+         enabled = enabled,
+         code = do.call(generateCode, args)) else NULL
 }
 
-# Generate the documentation for all processing steps.
-# @param list object with processing pipeline attributes
-# @return character vector: code lines
-documentSteps <- function( pipeline) {
+# Generate the documentation for all processing steps.  @param list
+# object with processing pipeline attributes @return character vector:
+# code lines
+documentSteps <- function(pipeline) {
   doc <- c()
-  for( step in pipeline) {
-    if( !is.null( step) &&
-        step$enabled) {
-      doc <- c(
-        doc,
-        '',
-        cmt( paste( '#', step$label) ),
-        cmt( step$expl),
-        step$code
-      )
+  for (step in pipeline) {
+    if (!is.null(step) && step$enabled) {
+      doc <- c(doc, "", cmt(paste("#", step$label)), cmt(step$expl),
+               step$code)
     }
   }
-  return( doc)
-} # function documentSteps
+  return(doc)
+}  # function documentSteps
 
 # Write the code that instantiates both the processing and documentation of a processing pipeline.
 # @param list object with pipeline attributes
 # @param string: filename to write the code to
-writeScript <- function( pipeline,
-                         scriptFile) {
-  pkgInfo = read.dcf( file.path( '..', 'DESCRIPTION'), fields = c( 'Package', 'Version') )
+writeScript <- function(pipeline, scriptFile) {
+  pkgInfo = read.dcf(file.path('..', 'DESCRIPTION'), fields = c('Package', 'Version'))
   doc <- c(
     # YAML
-    cmt( '---'),
-    cmt( paste0( 'title: "', basics$title, '"') ),
-    cmt( paste0( 'author: "', input$author, '"') ),
-    cmt( paste0( 'project name: "', input$projname, '"') ),
-    cmt( paste0( 'date: "', ts, '"') ),
-    cmt( '---'),
+    cmt('---'),
+    cmt(paste0('title: "', basics$title, '"')),
+    cmt(paste0('author: "', input$author, '"')),
+    cmt(paste0('project name: "', input$projname, '"')),
+    cmt(paste0('date: "', ts, '"')),
+    cmt('---'),
     # header
     cmt(),
-    cmt( 'This document describes how the associated biobank dataset was prepared.'),
-    cmt( paste0( 'It was generated by ', basics$appName, ', an application included in the R package ', pkgInfo[ 1], ', version ', pkgInfo[ 2], '.') ),
-    cmt( 'See the R directory for documentation and implementation of statistical functions.'),
+    cmt('This document describes how the associated biobank dataset was prepared.'),
+    cmt(paste0('It was generated by ', basics$appName, ', an application included in the R package ', pkgInfo[ 1], ', version ', pkgInfo[ 2], '.')),
+    cmt('See the R directory for documentation and implementation of statistical functions.'),
     cmt(),
-    cmt( '***'),
+    cmt('***'),
     cmt(),
-    cmt( '# Basic choices'),
-    cmt( paste( '* Processing description:', input$descr) ),
-    cmt( paste( '* Design:', input$dsg) ),
-    cmt( paste( '* Probe location:', input$loc) ),
-    cmt( paste( '* Biological material:', input$mat) ),
-    cmt( paste( '* Genomic analysis:', input$ana) ),
+    cmt('# Basic choices'),
+    cmt(paste('* Processing description:', input$descr)),
+    cmt(paste('* Design:', input$dsg)),
+    cmt(paste('* Probe location:', input$loc)),
+    cmt(paste('* Biological material:', input$mat)),
+    cmt(paste('* Genomic analysis:', input$ana)),
     cmt(),
-    cmt( paste0( 'Data source file names are read from file: ', basics$optionsFile, '.') ),
+    cmt(paste0('Data source file names are read from file: ', basics$optionsFile, '.')),
     cmt(),
-    cmt( paste0( 'Questionnaire object names are read from file: ', basics$questsFile, '.') ),
+    cmt(paste0('Questionnaire object names are read from file: ', basics$questsFile, '.')),
     '',
     '# requirements',
     # suppressMessages(library())
-    sprintf( 'library(%s)', pkgInfo[1] ),
-    sprintf( 'library(arrayQualityMetrics)'),
-    sprintf( 'library(limma)'),
-    sprintf( 'library(lumi)'),
-    sprintf( 'library(nlme)'),
-    sprintf( 'library(sva)'),
-    sprintf( 'library(illuminaHumanv3.db)'),
-    sprintf( 'library(illuminaHumanv4.db)'),
-    sprintf( 'library(lumiHumanIDMapping)'),
-    sprintf( 'library(genefilter)'),
-    sprintf( 'library(Biobase)'),
+    sprintf('library(%s)', pkgInfo[1] ),
+    sprintf('library(arrayQualityMetrics)'),
+    sprintf('library(limma)'),
+    sprintf('library(lumi)'),
+    sprintf('library(nlme)'),
+    sprintf('library(sva)'),
+    sprintf('library(illuminaHumanv3.db)'),
+    sprintf('library(illuminaHumanv4.db)'),
+    sprintf('library(lumiHumanIDMapping)'),
+    sprintf('library(genefilter)'),
+    sprintf('library(Biobase)'),
     # steps, incl. read and write
-    documentSteps( pipeline),
+    documentSteps(pipeline),
     # footer
     cmt(),
-    cmt( '***')
+    cmt('***')
   )
   writeLines( doc, scriptFile)
 } # function writeScript
@@ -142,325 +131,278 @@ writeScript <- function( pipeline,
 # Build a list object which keeps all pipeline details stored.
 # @param list: parameters
 # @return list: pipeline attributes
-generatePipeline <- function( params) {
-  numberOfRuns <- length( params$sourceObjs)
-  idxSeq <- 1 : numberOfRuns
+generatePipeline <- function(params) {
+  numberOfRuns <- length(params$sourceObjs)
+  idxSeq <- 1:numberOfRuns
 
-  # details for mandatory processing steps
-  # step: reading
-  generateCode <- function( gExprs) {
-    code <- c(   # instructions
-      sprintf( 'data <- vector("list",length=%d)', numberOfRuns),
-      sprintf( 'data[[%d]] <- vector("list",length=2)', idxSeq)
-    )
-    if( sum( sapply( gExprs, exists) ) == numberOfRuns)
-      code <- c(
-        code,
-        sprintf( 'data[[%d]]$lumi <- get("%s")', idxSeq, gExprs)
-      )
-    else
-      code <- c(
-        code,
-        'stop("Source dataset is non-existant. Error code #7.")'
-      )
-    code
+  # details for mandatory processing steps step: reading
+  generateCode <- function(gExprs) {
+    code <- c(sprintf("data <- vector(\"list\",length=%d)", numberOfRuns),
+              sprintf("data[[%d]] <- vector(\"list\",length=2)", idxSeq))
+    if (sum(sapply(gExprs, exists)) == numberOfRuns)
+      code <- c(code, sprintf("data[[%d]]$lumi <- get(\"%s\")", idxSeq, gExprs))
+    else code <- c(code, "stop(\"Source dataset is non-existant. Error code #7.\")")
+      code
   }
-  readStep <- createStep( 'Datasets', 'Reading in datasets', TRUE, generateCode, list( unlist( lapply( params$sourceObjs, '[', 'ge') ) ) )
+  readStep <- createStep("Datasets", "Reading in datasets", TRUE, generateCode,
+                         list(unlist(lapply(params$sourceObjs, "[", "ge"))))
 
   # step: combination
   generateCode <- function() {
-    if( numberOfRuns > 1) {
-      args <- paste( sprintf( 'data[[%d]]', idxSeq), collapse = ',')
-      c( sprintf( 'data <- BiocGenerics::combine(%s)', args) )
+    if (numberOfRuns > 1) {
+      args <- paste(sprintf("data[[%d]]", idxSeq), collapse = ",")
+      c(sprintf("data <- BiocGenerics::combine(%s)", args))
     } else {
-      c( sprintf( 'data <- data[[1]]$lumi') )
+      c(sprintf("data <- data[[1]]$lumi"))
     }
   }
-  combStep <- createStep( 'Combination', 'Combining all runs', TRUE, generateCode)
+  combStep <- createStep("Combination", "Combining all runs", TRUE, generateCode)
 
   # step: anonymization
   generateCode <- function() {
-    c(
-      '# simply overwrite all sample/person IDs',
-      'colnames(data) <- 1:ncol(data)',
-      '# remove all other identification traces',
-      sprintf( 'm <- match(c("%s"),rownames(data))', paste( as.character(basics$ids), collapse = '","') ),
-      'm <- m[!is.na(m)]',
-      'if(length(m)) data <- data[-m,]',
-      'rm(m)'
-    )
+    c("# simply overwrite all sample/person IDs",
+      "colnames(data) <- 1:ncol(data)",
+      "# remove all other identification traces",
+      sprintf("m <- match(c(\"%s\"), rownames(data))",
+      paste(as.character(basics$ids), collapse = "\",\"")),
+      "m <- m[!is.na(m)]",
+      "if(length(m)) data <- data[-m,]", "rm(m)")
   }
-  anoStep <- createStep( 'Anonymization', 'Overwriting all identifying labels and numbers', TRUE, generateCode)
+  anoStep <- createStep("Anonymization", "Overwriting all identifying labels and numbers",
+                        TRUE, generateCode)
 
   # step: storage
   generateCode <- function(file) {
-    c(
-      sprintf('saveRDS(data,file="%s")', file),
-      cmt('# Cleaning environment')
-    )
+    c(sprintf("saveRDS(data,file=\"%s\")", file),
+      cmt("# Cleaning environment"))
   }
-  writeStep <- createStep( 'Storage', 'Writing processed datasets', TRUE, generateCode, list( params$targetFile) )
+  writeStep <- createStep("Storage", "Writing processed datasets", TRUE,
+                          generateCode, list(params$targetFile))
 
   # step: outliers
   generateCode <- function() {
-    code <- c(
-      cmt(),
-      cmt(paste('Description of outliers:', ifelse(input$outlierDescr != '', input$outlierDescr, 'Not available')))
-    )
+    code <- c(cmt(),
+              cmt(paste("Description of outliers:",
+              ifelse(input$outlierDescr != "", input$outlierDescr, "Not available"))))
 
     outlierFile <- file.path(nowacleanOutliers, input$outlierFile)
-    if(!file.exists(outlierFile) ||
-        as.integer(file.access(outlierFile, mode = 4)) < 0) {
-      code <- c(
-        code,
-        'stop("Could not read outliers file. Error code #4.")'
-      )
+    if (!file.exists(outlierFile) || as.integer(file.access(outlierFile,  mode = 4)) < 0) {
+      code <- c(code, "stop(\"Could not read outliers file. Error code #4.\")")
     } else {
-      code <- c(
-        code,
-        #sprintf( '# original filename: %s (copied to temporary location)', input$outlierFile),
-        sprintf('# filename: %s (using original file)', input$outlierFile),
-        sprintf('outliers <- readRDS("%s")', outlierFile),
-        sprintf('m <- vector("list",length=%d)', numberOfRuns),
-        sprintf('m[[%1$d]] <- match(outliers,colnames(exprs(data[[%1$d]]$lumi)))', idxSeq),
-        sprintf('m[[%1$d]] <- m[[%1$d]][!is.na(m[[%1$d]])]', idxSeq),  # remove non-matching pairs
-        sprintf('if(length(m[[%1$d]])) data[[%1$d]]$lumi <- data[[%1$d]]$lumi[,-m[[%1$d]]]', idxSeq),
-        'rm(m,outliers)'
-      )
+      code <- c(code, sprintf("# filename: %s (using original file)", input$outlierFile),
+                sprintf("outliers <- readRDS(\"%s\")", outlierFile),
+                sprintf("m <- vector(\"list\",length=%d)", numberOfRuns),
+                sprintf("m[[%1$d]] <- match(outliers,colnames(exprs(data[[%1$d]]$lumi)))",idxSeq),
+                sprintf("m[[%1$d]] <- m[[%1$d]][!is.na(m[[%1$d]])]", idxSeq),
+                sprintf("if(length(m[[%1$d]])) data[[%1$d]]$lumi <- data[[%1$d]]$lumi[,-m[[%1$d]]]", idxSeq),
+                "rm(m,outliers)")
     }
     code
   }
 
-  outlStep <- createStep( 'Outliers', 'Removal of outliers', as.logical(input$outlierEnabled), generateCode)
+  outlStep <- createStep("Outliers", "Removal of outliers", as.logical(input$outlierEnabled),
+                         generateCode)
 
-  # details for non-mandatory processing steps
-  # step: control transitions
+  # details for non-mandatory processing steps step: control transitions
   generateCode <- function() {
     cctFile <- file.path(cctransExcl, input$cctFile)
-    if(!file.exists(cctFile) ||
-        as.integer(file.access(cctFile, mode = 4)) < 0) {
-      c(
-        'stop("Could not read transitions file. Error code #4_1.")'
-      )
+    if (!file.exists(cctFile) || as.integer(file.access(cctFile, mode = 4)) < 0) {
+      c("stop(\"Could not read transitions file. Error code #4_1.\")")
     } else {
-      c(
-        sprintf('cctrans <- readRDS("%s")', cctFile),
-        sprintf('m <- vector("list",length=%d)', numberOfRuns),
-        sprintf('m[[%1$d]] <- match(cctrans,colnames(exprs(data[[%1$d]]$lumi)))', idxSeq),
-        sprintf('m[[%1$d]] <- m[[%1$d]][!is.na(m[[%1$d]])]', idxSeq),
-        sprintf('if(length(m[[%1$d]])) data[[%1$d]]$lumi <- data[[%1$d]]$lumi[,-m[[%1$d]]]', idxSeq),
-        'rm(m,cctrans)'
-      )
+      c(sprintf("cctrans <- readRDS(\"%s\")", cctFile),
+        sprintf("m <- vector(\"list\",length=%d)", numberOfRuns), 
+        sprintf("m[[%1$d]] <- match(cctrans,colnames(exprs(data[[%1$d]]$lumi)))", idxSeq),
+        sprintf("m[[%1$d]] <- m[[%1$d]][!is.na(m[[%1$d]])]", idxSeq),
+        sprintf("if(length(m[[%1$d]])) data[[%1$d]]$lumi <- data[[%1$d]]$lumi[,-m[[%1$d]]]", idxSeq),
+        "rm(m,cctrans)")
     }
   }
-  exclStep <- createStep( 'Transitions', 'Exclusion of control-case transitions', as.logical(input$transEnabled), generateCode)
+  exclStep <- createStep("Transitions", "Exclusion of control-case transitions",
+                         as.logical(input$transEnabled), generateCode)
 
   # step: background correction
-  generateCode <- function( nCtrls) {
-    if( sum( sapply( nCtrls, exists) ) == numberOfRuns)
-      code <- c(
-        '# preparing the negative control probes',
-        sprintf( 'data[[%d]]$negCtrl <- get("%s")', idxSeq, nCtrls),
-        sprintf( 'pIDs <- vector("list",length=%d)', numberOfRuns),
-        sprintf( 'pIDs[[%1$d]] <- data[[%1$d]]$negCtrl$ProbeID', idxSeq),
-        sprintf( 'data[[%1$d]]$negCtrl <- t(data[[%1$d]]$negCtrl[,-c(1,2)])', idxSeq),
-        sprintf( 'colnames(data[[%1$d]]$negCtrl) <- pIDs[[%1$d]]', idxSeq),
-        'rm(pIDs)'
-      )
-    else
-      code <- c(
-        'stop("Negative control probes are non-existant. Error code #8.")'
-      )
-    code <- c(
-      code,
-      '# now correct',
-      sprintf( 'data[[%d]]$lumi <- pippeline::performBackgroundCorrection(data[[%1$d]]$lumi,data[[%1$d]]$negCtrl)', idxSeq)
-    )
+  generateCode <- function(nCtrls) {
+    if (sum(sapply(nCtrls, exists)) == numberOfRuns)
+      code <- c("# preparing the negative control probes",
+                sprintf("data[[%d]]$negCtrl <- get(\"%s\")", idxSeq, nCtrls),
+                sprintf("pIDs <- vector(\"list\",length=%d)", numberOfRuns),
+                sprintf("pIDs[[%1$d]] <- data[[%1$d]]$negCtrl$ProbeID", idxSeq),
+                sprintf("data[[%1$d]]$negCtrl <- t(data[[%1$d]]$negCtrl[,-c(1,2)])", idxSeq),
+                sprintf("colnames(data[[%1$d]]$negCtrl) <- pIDs[[%1$d]]", idxSeq),
+                "rm(pIDs)")
+    else code <- c("stop(\"Negative control probes are non-existant. Error code #8.\")")
+    code <- c(code,
+              "# now correct",
+              sprintf("data[[%d]]$lumi <- pippeline::performBackgroundCorrection(data[[%1$d]]$lumi,data[[%1$d]]$negCtrl)", idxSeq))
     code
   }
-  bcorrStep <- createStep( 'Background correction', 'Perform background correction and remove bad probes', as.logical(input$corrEnabled), generateCode, list( unlist( lapply( params$sourceObjs, '[', 'nc') )) )
+  bcorrStep <- createStep("Background correction", "Perform background correction and remove bad probes",
+                          as.logical(input$corrEnabled), generateCode,
+                          list(unlist(lapply(params$sourceObjs, "[", "nc"))))
 
   # step: probe filtering
   generateCode <- function() {
-    c(
-      sprintf('pValue <- %1.2f', input$pval),
-      sprintf('pLimit <- %1.2f', input$plimit),
-      'graph_data <- data', # unfiltered_data
-      'data <- pippeline::filterData(data,pValue,pLimit)',
-      'rm(pValue, pLimit)'
-    )
+    c(sprintf("pValue <- %1.2f", input$pval),
+      sprintf("pLimit <- %1.2f", input$plimit),
+      "graph_data <- data",
+      "data <- pippeline::filterData(data,pValue,pLimit)",
+      "rm(pValue, pLimit)")
   }
-  filtStep <- createStep( 'Probe filtering', 'Filtering based on on pValue and presentLimit', as.logical(input$filtEnabled), generateCode)
+  filtStep <- createStep("Probe filtering", "Filtering based on on pValue and presentLimit",
+                         as.logical(input$filtEnabled), generateCode)
 
   # step: normalization
   generateCode <- function() {
-    if (input$nmeth == 'vstQuantileNorm') {
-      code <- c(
-        #'#+ norm-vst, echo=FALSE, message=FALSE',
-        'data <- pippeline::normalizeDataVstQ(data)'
-        #cmt()
-      )
+    if (input$nmeth == "vstQuantileNorm") {
+      code <- c("data <- pippeline::normalizeDataVstQ(data)")
     }
-    if (input$nmeth == 'ComBat') {
-      code <- c(
-        #'#+ norm-cmbt, echo=FALSE, message=FALSE',
-        sprintf('data <- pippeline::normalizeDataComBat(data, "%s", "%s", "%s")', input$batchTab, input$batchSampleID, input$batchVar)
-        #cmt()
-      )
+    if (input$nmeth == "ComBat") {
+      code <- c(sprintf("data <- pippeline::normalizeDataComBat(data, \"%s\", \"%s\", \"%s\")",
+                        input$batchTab, input$batchSampleID, input$batchVar))
     }
     code
   }
-  normStep <- createStep( 'Normalization', 'log2 transformation and quantile normalization or ComBat', as.logical(input$normEnabled), generateCode)
+  normStep <- createStep("Normalization", "log2 transformation and quantile normalization or ComBat",
+                         as.logical(input$normEnabled), generateCode)
 
   # step: extraction
   generateCode <- function() {
-    if( as.logical( input$normEnabled) )
-      c(
-        '# have gene expressions matrix due to normalization: no need for extraction'
-      )
+    if (as.logical(input$normEnabled))
+      c("# have gene expressions matrix due to normalization: no need for extraction")
     else
-      c(
-        'data <- exprs(data)'
-      )
+      c("data <- exprs(data)")
   }
-  extrStep <- createStep( 'Extraction', 'Extraction of gene expression matrix from lumi object', TRUE, generateCode)
+  extrStep <- createStep("Extraction", "Extraction of gene expression matrix from lumi object",
+                         TRUE, generateCode)
 
   # step: conversion
   generateCode <- function() {
-    if( as.logical( input$wantGenes) ) {
-      code <- c(
-        '# Note: The target data file contains genes.'
-      )
-      if( !as.logical(input$normEnabled) )
-        code <- c(
-          code,
-          cmt( 'Also, as the normalization is currently disabled, consider that the mapping relies on taking the average of multiple probes. You may thus want to enable normalization.')
-        )
-      c(
-        code,
-        'data <- pippeline::mapToGenes(data)'
-      )
+    if (as.logical(input$wantGenes)) {
+      code <- c("# Note: The target data file contains genes.")
+      if (!as.logical(input$normEnabled))
+        code <- c(code,
+                  cmt("Also, as the normalization is currently disabled, consider
+                      that the mapping relies on taking the average of multiple probes.
+                      You may thus want to enable normalization."))
+      c(code, "data <- pippeline::mapToGenes(data)")
     } else
-      c(
-        '# Note: The target data file contains probes.'
-      )
+      c("# Note: The target data file contains probes.")
   }
-  convStep <- createStep( 'Conversion', 'Optional mapping of probes to genes', TRUE, generateCode)
+  convStep <- createStep("Conversion", "Optional mapping of probes to genes",
+                         TRUE, generateCode)
 
   # step: questionnaires
   generateCode <- function() {
     code <- c()
     if (exists(input$questObj)) {
-      code <- c(code,
-        '# ',
-        sprintf('quest <- get("%s")', input$questObj),
-        '# determine sample ID matches',
-        'm <- match(colnames(data), quest$labnr)',
-        '# reduce variable set if necessary',
-        sprintf('qvars <- c("%s")', paste(as.character(input$questVars), collapse = '","')),
-        '# ad-hoc for column naming',
-        'questmatr <- as.matrix(quest)',
-        'if (length(qvars) > 1) {',
-          'extrquest <- as.matrix(t(questmatr)[qvars,m])',
-        '} else {',
-          'extrquest <- as.matrix(t(t(questmatr)[qvars,m]))',
-          'rownames(extrquest) <- qvars',
-        '}',
-        '',
-        '# sew together matches',
-        'data <- rbind(data,extrquest)',
-        'questData <- as.data.frame(extrquest)',
-        'rm(qvars,m,quest,questmatr,extrquest)'
-      )
+      code <- c(code, "# ",
+                sprintf("quest <- get(\"%s\")", input$questObj),
+                "# determine sample ID matches",
+                "m <- match(colnames(data), quest$labnr)",
+                "# reduce variable set if necessary",
+                sprintf("qvars <- c(\"%s\")", paste(as.character(input$questVars), collapse = "\",\"")),
+                "# ad-hoc for column naming",
+                "questmatr <- as.matrix(quest)",
+                "if (length(qvars) > 1) {",
+                "extrquest <- as.matrix(t(questmatr)[qvars,m])",
+                "} else {",
+                "extrquest <- as.matrix(t(t(questmatr)[qvars,m]))",
+                "rownames(extrquest) <- qvars",
+                "}",
+                "",
+                "# sew together matches",
+                "data <- rbind(data,extrquest)",
+                "questData <- as.data.frame(extrquest)",
+                "rm(qvars,m,quest,questmatr,extrquest)")
     } else
-        code <- c(
-          'stop("Questionnaire object non-existant. Error code #10.")')
-      if (as.logical(input$deathEnabled)) {
-        code <- c(code,
-          '# ',
-          '# Adding death information',
-          sprintf('deathInfo <- read.csv(file="%s")', deathInfoFile),
-          'md <- match(colnames(data), deathInfo$labnr)',
-          'deathVars <- c("DODDT","DC")',
-          'deathInfoMatr <- as.matrix(deathInfo)',
-          'extr <- as.matrix(t(deathInfoMatr)[deathVars,md])',
-          'data <- rbind(data,extr)',
-          'rm(deathInfo,md,deathVars,deathInfoMatr,extr)'
-        )
-      }
-    return (code)
+      code <- c("stop(\"Questionnaire object non-existant. Error code #10.\")")
+    if (as.logical(input$deathEnabled)) {
+      code <- c(code,
+                "# ",
+                "# Adding death information",
+                sprintf("deathInfo <- read.csv(file=\"%s\")", deathInfoFile),
+                "md <- match(colnames(data), deathInfo$labnr)",
+                "deathVars <- c(\"DODDT\",\"DC\")",
+                "deathInfoMatr <- as.matrix(deathInfo)",
+                "extr <- as.matrix(t(deathInfoMatr)[deathVars,md])",
+                "data <- rbind(data,extr)",
+                "rm(deathInfo,md,deathVars,deathInfoMatr,extr)")
+    }
+    return(code)
   }
-  questStep <- createStep( 'Questionnaires', 'Selecting variables from associated questionnaires', (as.logical(input$questEnabled)), generateCode)
-
+  questStep <- createStep("Questionnaires", "Selecting variables from associated questionnaires",
+                          (as.logical(input$questEnabled)), generateCode)
   # now concatenate all steps
   list(
-    readStep, # mandatory
+    readStep,
     outlStep,
     exclStep,
     bcorrStep,
-    combStep, # mandatory
+    combStep,
     filtStep,
     normStep,
-    extrStep, # mandatory
-    convStep, # mandatory
+    extrStep,
+    convStep,
     questStep,
-    anoStep, # mandatory
-    writeStep # mandatory
+    anoStep,
+    writeStep
   )
 } # function generatePipeline
 
 
-performInterSteps <- function(tempDataFile, tempScriptFile){
-  showNotification('Processing...Please wait a moment.', duration = NULL, id = 'waitInter')
+performInterSteps <- function(tempDataFile, tempScriptFile) {
+  showNotification("Processing...Please wait a moment.", duration = NULL,
+                   id = "waitInter")
 
   tryCatch({
     file.remove(tempDataFile)
     file.remove(tempScriptFile)
-  }, warning = function(wrn){
+  }, warning = function(wrn) {
     NULL
-    })
+  })
 
-  pipeline <- generatePipeline(list(
-    sourceObjs = sourceObjs(),
-    targetFile = tempDataFile
-  ))
+  pipeline <- generatePipeline(list(sourceObjs = sourceObjs(), targetFile = tempDataFile))
 
   tryCatch({
     writeScript(pipeline, tempScriptFile)
     # Hide cat messages from libs (check source params(echo, verbose))
     invisible(capture.output(source(tempScriptFile)))
-    removeNotification('waitInter')
+    removeNotification("waitInter")
     file.remove(tempScriptFile)
 
-    #showNotification('Successfull step execution', type = 'message', duration = 4)
-  }, error = function(err){
-    removeNotification('waitInter')
-    showNotification('Could not perform step. Error code #11.', type = 'error', duration = NULL)
-    showNotification('Error info: ', toString(err), type = 'error', duration = NULL)
+    # showNotification('Successfull step execution', type = 'message',
+    # duration = 4)
+  }, error = function(err) {
+    removeNotification("waitInter")
+    showNotification("Could not perform step. Error code #11.", type = "error",
+                     duration = NULL)
+    showNotification("Error info: ", toString(err), type = "error",
+                     duration = NULL)
   })
   rm(pipeline)
 }
 
-getTempDataset <- function(tempDataFile) {
-  tryCatch( {
-    ds <- readRDS(tempDataFile)
-    return (ds)
-  }, error = function(err) {
-    showNotification('Could not produce data/documentation. (Error while sourcing script.) Error code #14.', type = 'error', duration = NULL)
-    showNotification('Error info: ', toString(err), type = 'error', duration = NULL)
-    return (NULL)
-  })
 
+getTempDataset <- function(tempDataFile) {
+  tryCatch({
+    ds <- readRDS(tempDataFile)
+    return(ds)
+  }, error = function(err) {
+    showNotification("Could not produce data/documentation. (Error while sourcing script.) Error code #14.",
+                     type = "error", duration = NULL)
+    showNotification("Error info: ", toString(err), type = "error",
+                     duration = NULL)
+    return(NULL)
+  })
 }
 
-interStepAndUpdate <- function(tmpDSVec){
+interStepAndUpdate <- function(tmpDSVec) {
   performInterSteps(tmpDSVec[1], tmpDSVec[2])
   ds <- getTempDataset(tmpDSVec[1])
-  return (c(as.numeric(dim(ds)[1]), as.numeric(dim(ds)[2])))
+  return(c(as.numeric(dim(ds)[1]), as.numeric(dim(ds)[2])))
 }
 
-setBtnInitState <- function()
-{
+setBtnInitState <- function() {
   shinyjs::hide("outlierDown")
   shinyjs::hide("outlierApply")
   shinyjs::hide("corrDown")
@@ -487,31 +429,31 @@ setBtnInitState <- function()
   shinyjs::show("questBack")
 }
 
-resetChosenValues <- function(){
+resetChosenValues <- function() {
   # reset all checkboxes
-  reset ('outlierEnabled')
-  reset ('outlierFile')
-  reset ('outlierFileReport')
-  reset ('transEnabled')
-  reset ('cctFile')
-  reset ('transFileReport')
-  reset ('corrEnabled')
-  reset ('filtEnabled')
-  reset ('normEnabled')
-  reset ('batchTab')
-  reset ('batchSampleID')
-  reset ('batchVar')
-  reset ('questEnabled')
-  reset ('deathEnabled')
-  reset ('wantGenes')
+  reset("outlierEnabled")
+  reset("outlierFile")
+  reset("outlierFileReport")
+  reset("transEnabled")
+  reset("cctFile")
+  reset("transFileReport")
+  reset("corrEnabled")
+  reset("filtEnabled")
+  reset("normEnabled")
+  reset("batchTab")
+  reset("batchSampleID")
+  reset("batchVar")
+  reset("questEnabled")
+  reset("deathEnabled")
+  reset("wantGenes")
 }
 
-resetStepsAndInfo <- function(){
+resetStepsAndInfo <- function() {
   # reset choices and btns
   resetChosenValues()
   setBtnInitState()
 
-  updateTextAreaInput(session, "outlierDescr", value = '')
+  updateTextAreaInput(session, "outlierDescr", value = "")
 
   # reset reactive values
   piplInfo$origInfoStr <<- notProcMsg
@@ -520,74 +462,68 @@ resetStepsAndInfo <- function(){
   origPairs <<- NULL
 }
 
-# setWorkingTabs <- function(nextId){
-#   for (id in tabsId){
-#     if (id != nextId || !(id %in% nextId)) js$disableTab(id)
-#     else js$enableTab(id)
+# setWorkingTabs <- function(nextId) {
+# for (id in tabsId) {
+#   if (id != nextId || !(id %in% nextId)) js$disableTab(id) else js$enableTab(id)
 #   }
 # }
 
-setTabInitialState <- function(tbId){
+setTabInitialState <- function(tbId) {
   for (id in tbId) {
     js$disableTab(id)
   }
 }
 
 # Using for pkg='nowac'
-getPkgDataSetNames <- function(pkg, prefix='') {
+getPkgDataSetNames <- function(pkg, prefix = "") {
   result <- c()
-  ds_vector <- c(data(package=pkg))
+  ds_vector <- c(data(package = pkg))
   df_info <- as.data.frame(ds_vector$results)
   raw_ds_names <- as.character(df_info$Item)
-  splitted_ds_names <- strsplit(raw_ds_names, ' ')
-  for (i in splitted_ds_names){
+  splitted_ds_names <- strsplit(raw_ds_names, " ")
+  for (i in splitted_ds_names) {
     result <- c(result, i[1])
   }
-  return (result)
+  return(result)
 }
 
 getDSColNames <- function(dataset) {
   result <- c()
   ds <- get(dataset)
   result <- colnames(ds)
-  return (result)
+  return(result)
 }
 
 # For ad-hoc
 removeLine <- function(line, file) {
-  print ("Removing")
+  print("Removing")
   system(sprintf("sed -i '/%s/d' %s", line, file))
 }
 
 buildGraph <- function(dataset) {
-  xvalues <- seq(from = 0.0, to = 1.0, by = 0.05)
+  xvalues <- seq(from = 0, to = 1, by = 0.05)
   datacopy <- dataset
   prLimitVariate_Features <- c()
   pValVariate_Features <- c()
 
-  for (i in xvalues){
-    tempd <- pippeline::filterData(datacopy,i,input$plimit)
+  for (i in xvalues) {
+    tempd <- pippeline::filterData(datacopy, i, input$plimit)
     pValVariate_Features <- c(pValVariate_Features, dim(tempd)[1])
   }
-  for (i in xvalues){
-    tempd <- pippeline::filterData(datacopy,input$pval,i)
+  for (i in xvalues) {
+    tempd <- pippeline::filterData(datacopy, input$pval, i)
     prLimitVariate_Features <- c(prLimitVariate_Features, dim(tempd)[1])
   }
 
-  plot_data <-
-    data.frame(
-      pValVariate_Features,
-      prLimitVariate_Features,
-      xvalues
-  )
+  plot_data <- data.frame(pValVariate_Features, prLimitVariate_Features,
+                          xvalues)
 
   require(ggplot2)
   result <- ggplot(plot_data, aes(x = xvalues)) +
-    geom_line(aes(y = pValVariate_Features, colour = sprintf("const presentLimit = %1.2f, p-Value variate", input$plimit))) +
-    geom_point(y = pValVariate_Features) +
-    geom_line(aes(y = prLimitVariate_Features, colour = sprintf("const p-Value = %1.2f, presentLimit variate", input$pval))) +
-    geom_point(y = prLimitVariate_Features) +
-    labs(title = "p-Value/presentLimit vs feature number", x = "p-Value/presentLimit, %", y = "Number of features", color='Legend')
-
-  return (result)
+            geom_line(aes(y = pValVariate_Features, colour = sprintf("const presentLimit = %1.2f, p-Value variate", input$plimit))) +
+            geom_point(y = pValVariate_Features) +
+            geom_line(aes(y = prLimitVariate_Features, colour = sprintf("const p-Value = %1.2f, presentLimit variate", input$pval))) +
+            geom_point(y = prLimitVariate_Features) +
+            labs(title = "p-Value/presentLimit vs feature number", x = "p-Value/presentLimit, %", y = "Number of features", color = "Legend")
+  return(result)
 }

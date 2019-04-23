@@ -2,6 +2,6 @@
 
 export(filterData)
 export(mapToGenes)
-export(normalizeDataVstQ)
 export(normalizeDataComBat)
+export(normalizeDataVstQ)
 export(performBackgroundCorrection)

@@ -1,8 +1,8 @@
 Package: pippeline
 Title: Pipeline for processing high-dimensional multi-omics biobank datasets
 Version: 1.0
-License: file LICENSE
-Maintainer: TBA TBA <tba@uit.no>
+License: MIT + file LICENSE
+Maintainer: Nikita Shvetsov <nikita.shvetsov@uit.no>
 Date: 2017-10-03
 Description: This package consists of statistical functions for background correction, filtering,
 	and normalization of biobank data. It also contains an application offering a graphical
@@ -25,4 +25,5 @@ Suggests: shiny (>= 1.0.0),
 	 shinyjs (>= 0.9),
 	 rmarkdown (>= 1.4)
 Author: Till Halbach <till.halbach@nr.no>
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.1
+Encoding: UTF-8

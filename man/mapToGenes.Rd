@@ -2,7 +2,7 @@
 % Please edit documentation in R/NR_functions.R
 \name{mapToGenes}
 \alias{mapToGenes}
-\title{Map probes to genes.}
+\title{Map probes to genes using lumiHumanIDMapping.}
 \usage{
 mapToGenes(data)
 }
@@ -13,5 +13,5 @@ mapToGenes(data)
 matrix where colnames(data)=sample IDs and rownames(data) = gene IDs
 }
 \description{
-Map probes to genes.
+Map probes to genes using lumiHumanIDMapping.
 }

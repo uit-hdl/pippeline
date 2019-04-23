@@ -1,3 +1,6 @@
+# ! This is a dev version of the original pippeline, made by Till Halbach <till.halbach@nr.no> !
+# In order to run properly you should have access to NOWAC datasets in NOWAC package
+
 # Installing
 After having installed this package in a regular manner (e.g., with `install.packages()` in R),
 additional non-CTAN packages are needed to finalize the installation.
@@ -18,7 +21,7 @@ a prerequisite for the arrayQualityMetrics package, and the latter is required b
 package. You may also have to run
 
 ```
-install.packages( 'Cairo', dependencies=T)
+install.packages('Cairo', dependencies=T)
 ```
 
 in an R terminal afterwards.
@@ -48,6 +51,9 @@ The former contains the names of the R objects holding the available gene expres
 available questionnaire data. See also the next section.
 Set working directory inside pippeline, if you are working from RStudio.
 
+Also don't forget to set up *pippelinen* folder in globals.R - ```pipFolder```. It is used for storing
+results from pippeline, including SOP, outliers, reports and cleaned data.
+
 That's it.
 Now write in an R terminal:
 
@@ -55,7 +61,7 @@ Now write in an R terminal:
 source('run.R')
 ```
 
-You may be needed to generate outliers for the datasets. For this you can use nowaclean-gen.R script.
+You may be needed to generate outliers for the datasets. For this you can use SOP/nowaclean-gen.R script.
 This is interactive exploratory script you can use before you perform outlier removal step in the pippeline. It is not the actual part of pippeline.
 
 # File formats

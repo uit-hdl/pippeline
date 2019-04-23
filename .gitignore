@@ -2,7 +2,5 @@
 .Rhistory
 .RData
 .Ruserdata
-*_orig
-outliers.rds
-false_outliers.rds
 .Rbuildignore
+pippeline.Rproj
