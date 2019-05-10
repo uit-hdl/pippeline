@@ -1,5 +1,6 @@
-# ! This is a dev version of the original pippeline, made by Till Halbach <till.halbach@nr.no> !
-# In order to run properly you should have access to NOWAC datasets in NOWAC package
+# Pippeline
+
+Pippeline is an interactive pipeline developed to standardize gene expression data processing in the NOWAC project.
 
 # Installing
 After having installed this package in a regular manner (e.g., with `install.packages()` in R),
@@ -84,7 +85,6 @@ object), the second is the (lumi) object with the negative controls
 A file with one object name per line.  The app reads them in by means of
 *readLine()*.
 
-
 # Known issues
 * The browser window doesn't close after the Quit button is pressed.
   There is currently no solution for this as JavaScript's
@@ -94,3 +94,7 @@ A file with one object name per line.  The app reads them in by means of
   1.16.0.2, therefore the docFormat has been set to "html" in
   file globals.R. This may change with other versions; then the value
   "pdf" might be possible. This works in RStudio 1.0.136, though.
+  
+ # Contributions
+
+The following have contributed to the Pippeline development: Bjørn Fjukstad, Nikita Shvetsov, Therese H. Nøst, Hege Bøvelstad, Till Halbach, Einar Holsbø, Knut Hansen, Eiliv Lund, Lars Ailo Bongo
